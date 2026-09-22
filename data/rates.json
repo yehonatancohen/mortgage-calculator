@@ -1,0 +1,18 @@
+{
+  "$comment": "Average new-mortgage rates by track (nominal annual %). Linked tracks are real rates before CPI. Fill from the Bank of Israel monthly mortgage-rate publication.",
+  "period": { "value": "2026-08", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER: month the figures below describe" },
+  "tracks": {
+    "prime": { "label": "פריים", "value": 4.5, "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+    "fixedUnlinked": { "label": "קבועה לא צמודה", "value": 5.0, "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+    "fixedLinked": { "label": "קבועה צמודה", "value": 3.5, "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+    "variableUnlinked5y": { "label": "משתנה כל 5 שנים לא צמודה", "value": 4.75, "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+    "variableLinked5y": { "label": "משתנה כל 5 שנים צמודה", "value": 3.25, "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" }
+  },
+  "fixedRateByOriginBucket": {
+    "$comment": "Typical contract rate range on fixed tracks for loans taken in each period; drives the prepayment-fee estimate.",
+    "before2015": { "value": [4.0, 6.0], "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+    "2015to2019": { "value": [2.5, 4.0], "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+    "2020to2022": { "value": [2.0, 3.5], "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+    "since2023": { "value": [4.5, 6.0], "unit": "percent", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" }
+  }
+}

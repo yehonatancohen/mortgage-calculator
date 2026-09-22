@@ -1,0 +1,239 @@
+---
+/**
+ * Token specimen (development review only, noindex). Shows the design tokens and the
+ * shared components in both themes side by side. Figures are illustrative.
+ */
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { formatILS, formatILSRange } from '../../../lib/mortgage';
+
+const themes = [
+  { id: 'light', name: 'בהיר' },
+  { id: 'dark', name: 'כהה' },
+] as const;
+
+const swatches = [
+  ['--c-bg', 'רקע'],
+  ['--c-surface', 'משטח'],
+  ['--c-border', 'קו'],
+  ['--c-text', 'טקסט'],
+  ['--c-text-2', 'טקסט משני'],
+  ['--c-accent', 'הדגשה'],
+  ['--c-accent-soft', 'הדגשה רכה'],
+  ['--c-savings', 'חיסכון'],
+  ['--c-attention', 'תשומת לב'],
+] as const;
+
+const scale = [
+  ['--text-hero', 'תוצאה', formatILSRange(84000, 126000)],
+  ['--text-2xl', 'כותרת ראשית', 'מחשבון מחזור משכנתא'],
+  ['--text-xl', 'כותרת משנה', 'איך חישבנו'],
+  ['--text-lg', 'פתיח', 'בדקו תוך דקה אם מחזור יחסוך לכם כסף.'],
+  ['--text-md', 'גוף', 'הזינו את הנתונים מדוח המשכנתא השנתי שקיבלתם מהבנק.'],
+  ['--text-sm', 'הערה', 'אפשר להקליד 800 ונשלים ל־800,000'],
+  ['--text-xs', 'משפטי', 'הערכה בלבד, לא ייעוץ פיננסי.'],
+] as const;
+---
+<Base title="Tokens · specimen" description="Design token specimen" noindex>
+  <main id="main" class="specimen">
+    {themes.map((t) => (
+      <section class="pane" data-theme={t.id} aria-label={`ערכת ${t.name}`}>
+        <h2 class="pane__title">ערכה: {t.name}</h2>
+
+        <div class="card calc">
+          <h1 class="calc__title">כמה תחסכו במחזור?</h1>
+
+          <div class="field">
+            <label class="field__label" for={`balance-${t.id}`}>יתרת המשכנתא</label>
+            <div class="amount">
+              <span class="amount__unit" aria-hidden="true">₪</span>
+              <input class="amount__input" id={`balance-${t.id}`} inputmode="numeric" autocomplete="off" value="800,000" />
+            </div>
+            <input class="slider" type="range" min="100000" max="3000000" step="10000" value="800000" style="--fill: 24%" aria-label="יתרת המשכנתא" />
+            <div class="slider-scale" aria-hidden="true"><span class="num">₪100K</span><span class="num">₪3M</span></div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for={`payment-${t.id}`}>החזר חודשי נוכחי</label>
+            <div class="amount" data-invalid>
+              <span class="amount__unit" aria-hidden="true">₪</span>
+              <input class="amount__input" id={`payment-${t.id}`} inputmode="numeric" autocomplete="off" value="2,000" />
+            </div>
+            <p class="field__hint field__hint--attention">ההחזר נמוך מדי ליתרה ולתקופה. כדאי לבדוק שוב.</p>
+          </div>
+
+          <hr class="rule" />
+
+          <div class="result" aria-live="polite">
+            <p class="result__label">חיסכון אפשרי לאורך התקופה <span class="tag">דוגמה</span></p>
+            <p class="result__figure" style={`--chars: ${formatILSRange(84000, 126000).length}`}>{formatILSRange(84000, 126000)}</p>
+            <p class="result__figure" style={`--chars: ${formatILSRange(2480000, 2630000).length}`}>{formatILSRange(2480000, 2630000)}</p>
+            <p class="result__sub">כ־<bdi class="num">{formatILS(420)}</bdi> פחות בחודש</p>
+          </div>
+
+          <div class="compare">
+            <div class="compare__row">
+              <span class="compare__label">היום</span>
+              <span class="compare__track"><span class="compare__bar" style="--w: 100%"></span><bdi class="compare__value num">{formatILS(5200)}</bdi></span>
+            </div>
+            <div class="compare__row compare__row--after">
+              <span class="compare__label">אחרי מחזור</span>
+              <span class="compare__track"><span class="compare__bar" style="--w: 92%"></span><bdi class="compare__value num">{formatILS(4780)}</bdi></span>
+            </div>
+          </div>
+
+          <details class="disclosure">
+            <summary>איך חישבנו <Icon name="chevron-down" /></summary>
+            <div class="disclosure__body">ריבית אפקטיבית מחושבת מהיתרה, ההחזר והתקופה, מול ריבית ממוצעת לתמהיל טיפוסי.</div>
+          </details>
+
+          <div class="meter">
+            <div class="meter__head"><span>דיוק החישוב</span><bdi class="num">70%</bdi></div>
+            <div class="meter__track"><div class="meter__fill" style="--value: 70%"></div></div>
+          </div>
+
+          <fieldset class="question">
+            <legend class="field__label">יש במשכנתא מסלול בריבית קבועה?</legend>
+            <div class="chips" role="radiogroup">
+              <button type="button" class="chip" role="radio" aria-checked="true"><Icon name="check" class="chip__check" />כן</button>
+              <button type="button" class="chip" role="radio" aria-checked="false"><Icon name="check" class="chip__check" />לא</button>
+              <button type="button" class="chip" role="radio" aria-checked="false"><Icon name="check" class="chip__check" />לא יודע/ת</button>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="button" class="btn btn--primary">לבדיקה חינם מול יועץ משכנתאות</button>
+            <button type="button" class="btn btn--quiet">דלג</button>
+          </div>
+          <p class="disclaimer">הערכה בלבד, לא ייעוץ פיננסי.</p>
+        </div>
+
+        <h3 class="pane__sub">צבעים</h3>
+        <ul class="swatches">
+          {swatches.map(([v, n]) => (
+            <li><span class="swatch" style={`background: var(${v})`}></span><span>{n}</span><code>{v}</code></li>
+          ))}
+        </ul>
+
+        <h3 class="pane__sub">טיפוגרפיה · Heebo</h3>
+        <ul class="scale">
+          {scale.map(([v, n, sample]) => (
+            <li><span class="scale__meta">{n} <code>{v}</code></span><span class="scale__sample" style={`font-size: var(${v})`}>{sample}</span></li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </main>
+</Base>
+
+<style>
+  .specimen {
+    display: grid;
+    gap: 0;
+  }
+  @media (min-width: 64rem) {
+    .specimen {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .pane {
+    grid-template-columns: minmax(0, 1fr);
+    background: var(--c-bg);
+    color: var(--c-text);
+    padding: var(--space-10) var(--gutter) var(--space-16);
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: var(--space-6);
+  }
+  .pane > * {
+    inline-size: 100%;
+    max-inline-size: var(--card-max);
+  }
+  .pane__title {
+    font-size: var(--text-sm);
+    font-weight: var(--fw-medium);
+    color: var(--c-text-2);
+  }
+  .pane__sub {
+    margin-block-start: var(--space-8);
+    font-size: var(--text-lg);
+  }
+  .calc {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .calc .field + .field {
+    margin-block-start: 0;
+  }
+  .calc__title {
+    font-size: var(--text-xl);
+  }
+  .rule {
+    border: 0;
+    border-block-start: var(--border-w) solid var(--c-border);
+  }
+  .tag {
+    font-size: var(--text-xs);
+    padding: 0.1em 0.5em;
+    border-radius: var(--radius-sm);
+    background: var(--c-surface-2);
+    color: var(--c-text-2);
+    vertical-align: middle;
+  }
+  .question {
+    border: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .actions {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+  }
+  .swatches {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .swatches li {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .swatch {
+    block-size: 2.5rem;
+    border-radius: var(--radius-md);
+    border: var(--border-w) solid var(--c-border);
+  }
+  code {
+    font-size: var(--text-xs);
+    color: var(--c-text-3);
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .scale {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .scale li {
+    display: grid;
+    gap: var(--space-1);
+    padding-block-end: var(--space-4);
+    border-block-end: var(--border-w) solid var(--c-border);
+  }
+  .scale__meta {
+    font-size: var(--text-xs);
+    color: var(--c-text-2);
+  }
+  .scale__sample {
+    overflow-wrap: anywhere;
+    line-height: var(--lh-heading);
+    font-weight: var(--fw-medium);
+  }
+</style>

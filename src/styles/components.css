@@ -1,0 +1,381 @@
+/* Shared components. Logical properties throughout so RTL is the natural direction. */
+
+/* ---------- Card ---------- */
+.card {
+  min-inline-size: 0;
+  background: var(--c-surface);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6) var(--space-5);
+}
+@media (min-width: 40rem) {
+  .card {
+    padding: var(--space-8);
+  }
+}
+
+/* ---------- Field: label, amount input, hint ---------- */
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+.field + .field {
+  margin-block-start: var(--space-6);
+}
+.field__label {
+  font-weight: var(--fw-medium);
+  font-size: var(--text-md);
+}
+.field__hint {
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+  min-block-size: 1.5em; /* reserved: hints never push the layout */
+}
+.field__hint--attention {
+  color: var(--c-attention);
+}
+
+.amount {
+  position: relative;
+  display: flex;
+  align-items: center;
+  block-size: var(--control-h);
+  background: var(--c-surface);
+  border: var(--border-w) solid var(--c-border-strong);
+  border-radius: var(--radius-md);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.amount:hover {
+  border-color: var(--c-text-3);
+}
+.amount:focus-within {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--c-focus) 25%, transparent);
+}
+.amount[data-invalid] {
+  border-color: var(--c-attention);
+}
+.amount__input {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 100%;
+  padding-inline: var(--space-4);
+  border: 0;
+  background: transparent;
+  font-size: var(--text-lg);
+  font-weight: var(--fw-medium);
+  direction: ltr;
+  text-align: end; /* in RTL layout with LTR input, end = right edge, next to the label */
+  outline: none;
+}
+.amount__unit {
+  padding-inline: var(--space-4) 0;
+  color: var(--c-text-2);
+  font-size: var(--text-lg);
+}
+.amount__suffix {
+  padding-inline: 0 var(--space-4);
+  color: var(--c-text-2);
+}
+
+/* ---------- Slider ---------- */
+.slider {
+  --fill: 50%;
+  position: relative;
+  inline-size: 100%;
+  block-size: var(--target-min);
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.slider::-webkit-slider-runnable-track {
+  block-size: 4px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to left, var(--c-accent) var(--fill), var(--c-border) var(--fill));
+}
+.slider::-moz-range-track {
+  block-size: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--c-border);
+}
+.slider::-moz-range-progress {
+  block-size: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--c-accent);
+}
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  margin-block-start: calc(2px - 0.75rem);
+  border-radius: 50%;
+  background: var(--c-surface);
+  border: 2px solid var(--c-accent);
+  box-shadow: 0 1px 3px var(--c-shadow);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.slider::-moz-range-thumb {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border-radius: 50%;
+  background: var(--c-surface);
+  border: 2px solid var(--c-accent);
+  box-shadow: 0 1px 3px var(--c-shadow);
+}
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.slider:focus-visible {
+  outline: none;
+}
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--c-focus) 35%, transparent);
+}
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--c-focus) 35%, transparent);
+}
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--c-text-3);
+  margin-block-start: calc(-1 * var(--space-2));
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-min);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  border: var(--border-w) solid transparent;
+  font-weight: var(--fw-medium);
+  font-size: var(--text-md);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn--primary {
+  inline-size: 100%;
+  min-block-size: var(--control-h);
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  font-weight: var(--fw-bold);
+}
+.btn--primary:hover {
+  background: var(--c-accent-hover);
+}
+.btn--secondary {
+  background: transparent;
+  color: var(--c-accent-ink);
+  border-color: var(--c-border-strong);
+}
+.btn--secondary:hover {
+  background: var(--c-accent-soft);
+}
+.btn--quiet {
+  background: transparent;
+  color: var(--c-text-2);
+  padding-inline: var(--space-2);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, currentColor 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+.btn--quiet:hover {
+  color: var(--c-text);
+}
+.btn[disabled],
+.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---------- Chips (tap-to-answer) ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-min);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: var(--border-w) solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-weight: var(--fw-medium);
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform 90ms var(--ease-out);
+}
+.chip:hover {
+  border-color: var(--c-accent);
+}
+.chip:active {
+  transform: scale(0.97);
+}
+.chip__check {
+  inline-size: 1rem;
+  block-size: 1rem;
+  margin-inline-start: calc(-1 * var(--space-1));
+  display: none;
+}
+.chip[aria-pressed='true'],
+.chip[aria-checked='true'] {
+  background: var(--c-accent-soft);
+  border-color: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+.chip[aria-pressed='true'] .chip__check,
+.chip[aria-checked='true'] .chip__check {
+  display: block;
+}
+
+/* ---------- Result ---------- */
+.result__label {
+  font-size: var(--text-md);
+  color: var(--c-text-2);
+}
+.result {
+  container-type: inline-size;
+}
+.result__figure {
+  display: block;
+  /* Sized by the card and the string length (--chars, set with the value) so any range fits on one line.
+     Heebo digits are 0.56em wide; 170cqi / chars leaves room for ₪, commas and the dash. */
+  font-size: clamp(1.375rem, calc(170cqi / var(--chars, 16)), var(--text-hero));
+  white-space: nowrap;
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.02em;
+  color: var(--c-savings);
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: right; /* LTR figure, aligned to the RTL start edge with its label */
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.result__figure--neutral {
+  color: var(--c-text);
+}
+.result__sub {
+  margin-block-start: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+/* Before/after bars: the figure is pinned to its bar; no legend. */
+.compare {
+  display: grid;
+  gap: var(--space-3);
+}
+.compare__row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+.compare__label {
+  color: var(--c-text-2);
+}
+.compare__track {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+.compare__bar {
+  block-size: 0.625rem;
+  inline-size: var(--w, 100%);
+  border-radius: var(--radius-pill);
+  justify-self: start;
+  background: var(--c-border-strong);
+  transition: inline-size var(--dur-slow) var(--ease-out);
+}
+.compare__row--after .compare__bar {
+  background: var(--c-accent);
+}
+.compare__value {
+  min-inline-size: 4.5rem;
+  text-align: end;
+  font-weight: var(--fw-medium);
+  color: var(--c-text);
+}
+
+/* Accuracy meter */
+.meter {
+  display: grid;
+  gap: var(--space-2);
+}
+.meter__head {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.meter__track {
+  block-size: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--c-surface-2);
+  overflow: hidden;
+}
+.meter__fill {
+  block-size: 100%;
+  inline-size: var(--value, 0%);
+  background: var(--c-accent);
+  border-radius: inherit;
+  transition: inline-size var(--dur-slow) var(--ease-out);
+}
+
+/* One-line disclaimer */
+.disclaimer {
+  font-size: var(--text-xs);
+  color: var(--c-text-3);
+  line-height: 1.5;
+}
+
+/* Disclosure ("how we calculated this") */
+.disclosure > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--target-min);
+  color: var(--c-accent-ink);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  list-style: none;
+}
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.disclosure > summary svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.disclosure[open] > summary svg {
+  transform: rotate(180deg);
+}
+.disclosure__body {
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+  padding-block-end: var(--space-2);
+}
+
+/* Inline notice (never red while typing; attention color after blur only) */
+.notice {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--c-attention-soft);
+  color: var(--c-text);
+  font-size: var(--text-sm);
+}

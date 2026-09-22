@@ -1,0 +1,143 @@
+/* Base: reset, document defaults, and the browser surfaces we did not draw. */
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scrollbar-color: var(--c-border-strong) var(--c-bg);
+  scroll-padding-block: var(--space-6) calc(var(--space-20) + env(safe-area-inset-bottom));
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-regular);
+  /* Every figure on this site is tabular. Heebo's digits are tabular by default; this keeps it explicit. */
+  font-variant-numeric: tabular-nums lining-nums;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--c-accent);
+  accent-color: var(--c-accent);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: var(--lh-heading);
+  font-weight: var(--fw-bold);
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-lg); }
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--c-accent-ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in oklch, currentColor 45%, transparent);
+  transition: text-decoration-color var(--dur-fast) var(--ease-out);
+}
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+::selection {
+  background: var(--c-accent-soft);
+  color: var(--c-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Figures and ranges inside Hebrew text: isolate as LTR so ₪ and dashes land correctly. */
+.num,
+bdi.num {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  top: var(--space-2);
+  z-index: var(--z-skip);
+  padding: var(--space-2) var(--space-4);
+  background: var(--c-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

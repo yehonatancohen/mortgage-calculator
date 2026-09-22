@@ -1,0 +1,11 @@
+{
+  "$comment": "Bank of Israel mortgage limits used by the affordability calculator.",
+  "maxLtv": {
+    "firstHome": { "label": "דירה ראשונה", "value": 0.75, "unit": "fraction", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true },
+    "replacementHome": { "label": "דירה חלופית", "value": 0.70, "unit": "fraction", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true },
+    "additionalHome": { "label": "דירה נוספת", "value": 0.50, "unit": "fraction", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true }
+  },
+  "maxPaymentToIncome": { "value": 0.50, "unit": "fraction", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "Hard cap. Banks usually approve well below it." },
+  "recommendedPaymentToIncome": { "value": 0.33, "unit": "fraction", "source": "internal:methodology", "lastUpdated": "2026-09-22", "note": "Our conservative default for the affordability result; not a regulatory figure." },
+  "maxTermYears": { "value": 30, "unit": "years", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true }
+}

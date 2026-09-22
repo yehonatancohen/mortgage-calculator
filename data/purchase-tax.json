@@ -1,0 +1,35 @@
+{
+  "$comment": "Purchase-tax brackets (ILS, marginal rates). Brackets are updated every January; fill from the Israel Tax Authority table and set validFrom.",
+  "validFrom": { "value": "2026-01-16", "source": "https://www.gov.il/he/departments/israel_tax_authority", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+  "singleHome": {
+    "label": "דירה יחידה",
+    "brackets": {
+      "value": [
+        { "upTo": 1900000, "rate": 0 },
+        { "upTo": 2300000, "rate": 0.035 },
+        { "upTo": 6000000, "rate": 0.05 },
+        { "upTo": 20000000, "rate": 0.08 },
+        { "upTo": null, "rate": 0.1 }
+      ],
+      "unit": "ils/fraction",
+      "source": "https://www.gov.il/he/departments/israel_tax_authority",
+      "lastUpdated": "2026-09-22",
+      "TODO_VERIFY": true,
+      "note": "PLACEHOLDER: round numbers, not the real table"
+    }
+  },
+  "additionalHome": {
+    "label": "דירה נוספת",
+    "brackets": {
+      "value": [
+        { "upTo": 6000000, "rate": 0.08 },
+        { "upTo": null, "rate": 0.1 }
+      ],
+      "unit": "ils/fraction",
+      "source": "https://www.gov.il/he/departments/israel_tax_authority",
+      "lastUpdated": "2026-09-22",
+      "TODO_VERIFY": true,
+      "note": "PLACEHOLDER: round numbers, not the real table"
+    }
+  }
+}

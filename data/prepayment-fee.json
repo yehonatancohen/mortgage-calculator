@@ -1,0 +1,17 @@
+{
+  "$comment": "Parameters for the SIMPLIFIED prepayment-fee estimate (lib/mortgage/prepaymentFee.ts). Verify against the Banking Order on early-repayment fees and Bank of Israel guidance.",
+  "operationalFee": { "value": 60, "unit": "ils", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+  "timeDiscounts": {
+    "value": [
+      { "minYears": 0, "discount": 0 },
+      { "minYears": 1, "discount": 0.2 },
+      { "minYears": 3, "discount": 0.3 }
+    ],
+    "unit": "fraction",
+    "source": "https://www.boi.org.il/",
+    "lastUpdated": "2026-09-22",
+    "TODO_VERIFY": true,
+    "note": "PLACEHOLDER: discount on the capitalization component by years since origination"
+  },
+  "noticeDiscount": { "value": 0.1, "unit": "fraction", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER: discount for advance notice" }
+}
