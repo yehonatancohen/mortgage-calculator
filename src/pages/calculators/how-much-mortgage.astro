@@ -1,0 +1,124 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import Icon from '../../components/Icon.astro';
+import LeadGate from '../../components/lead/LeadGate.astro';
+import { benchmarkRate, datasets, limits } from '../../../lib/data';
+import { formatILS, formatNumber, formatPercent } from '../../../lib/mortgage';
+import { affordView, type AffordState } from '../../ui/calcs';
+
+const opts = { rate: benchmarkRate(), pti: limits.recommendedPaymentToIncome, ltv: limits.maxLtv };
+const initial: AffordState = { income: 22_000, obligations: 0, equity: 600_000, years: 25, type: 'firstHome' };
+const v = affordView(initial, opts);
+const updated = datasets.regulation.maxLtv.firstHome.lastUpdated;
+const examples = [
+  { income: 15_000, equity: 400_000 },
+  { income: 22_000, equity: 600_000 },
+  { income: 30_000, equity: 1_000_000 },
+].map((e) => ({ ...e, v: affordView({ ...initial, ...e }, opts) }));
+
+const faq = [
+  { q: 'כמה משכנתא אפשר לקבל?', a: `שני דברים מגבילים: ההחזר החודשי (הבנקים בודקים את היחס בין ההחזר להכנסה הפנויה) וההון העצמי (אחוז המימון המרבי משווי הדירה). המחשבון מניח החזר של עד ${formatNumber(opts.pti * 100)}% מההכנסה נטו ומחזיר את הנמוך מבין שני הגבולות.` },
+  { q: 'כמה הון עצמי צריך?', a: `לדירה ראשונה אפשר לממן עד ${formatNumber(limits.maxLtv.firstHome * 100)}% משווי הדירה, לדירה חלופית עד ${formatNumber(limits.maxLtv.replacementHome * 100)}% ולדירה נוספת עד ${formatNumber(limits.maxLtv.additionalHome * 100)}%. את השאר צריך מהון עצמי, ועוד עלויות נלוות כמו מס רכישה ועורך דין.` },
+  { q: 'איזו הכנסה להזין?', a: 'הכנסה חודשית נטו של כל הלווים יחד. בהתחייבויות קיימות הזינו החזרים חודשיים של הלוואות אחרות.' },
+  { q: 'האם זה אישור עקרוני?', a: 'לא. זו הערכה. הבנק בודק גם את ההיסטוריה הפיננסית, יציבות ההכנסה וגיל הלווים. אישור עקרוני מקבלים מהבנק.' },
+];
+---
+<CalculatorPage
+  title="כמה משכנתא אפשר לקבל?"
+  metaTitle="מחשבון כמה משכנתא אפשר לקבל"
+  description="כמה משכנתא אפשר לקבל ובאיזה מחיר דירה? מחשבון לפי הכנסה נטו, הון עצמי ומגבלות המימון של בנק ישראל."
+  answer={`עם הכנסה נטו של ${formatILS(initial.income)} והון עצמי של ${formatILS(initial.equity)} אפשר לרכוש דירה ראשונה בכ־${v.out.maxPrice}, עם משכנתא של כ־${v.out.loan}.`}
+  appName="מחשבון כמה משכנתא אפשר לקבל"
+  updated={updated}
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'כמה משכנתא אפשר לקבל', path: '/calculators/how-much-mortgage/' }]}
+  sources={[{ label: 'בנק ישראל: מגבלות על הלוואות לדיור', url: 'https://www.boi.org.il/' }]}
+  next={{ href: '/calculators/purchase-tax/', title: 'כמה מס רכישה תשלמו?', text: 'חשוב לתכנון ההון העצמי.' }}
+>
+  <div class="card calc-card" data-calc="how-much-mortgage">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial, opts })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="income" label="הכנסה חודשית נטו (כל הלווים)" value={initial.income} min={5_000} max={80_000} step={500} textMin={1_000} textMax={1_000_000} shorthand="payment" scale={['₪5,000', '₪80,000']} />
+      <AmountField name="equity" label="הון עצמי" value={initial.equity} min={0} max={5_000_000} step={10_000} textMin={0} textMax={50_000_000} shorthand="balance" scale={['₪0', '₪5M']} />
+      <AmountField name="obligations" label="החזרי הלוואות אחרות בחודש" value={initial.obligations} min={0} max={20_000} step={100} textMin={0} textMax={200_000} scale={['₪0', '₪20,000']} />
+      <AmountField name="years" label="תקופה" value={initial.years} min={4} max={30} step={1} sliderOnly suffix="שנים" scale={['4', '30']} />
+      <fieldset class="field question question--inline">
+        <legend class="field__label" id="buyer-type">סוג הרכישה</legend>
+        <div class="chips" role="radiogroup" aria-labelledby="buyer-type" data-chips="type">
+          <button type="button" class="chip" role="radio" aria-checked="true" data-answer="firstHome"><Icon name="check" class="chip__check" />דירה ראשונה</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="replacementHome"><Icon name="check" class="chip__check" />דירה חלופית</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="additionalHome"><Icon name="check" class="chip__check" />דירה נוספת</button>
+        </div>
+      </fieldset>
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">מחיר דירה משוער (מקסימום)</p>
+        <p class="result__figure result__figure--neutral" data-out="maxPrice" data-count style={`--chars: ${v.out.maxPrice!.length}`}>{v.out.maxPrice}</p>
+      </div>
+      <p class="calc-card__note" data-out="binding">{v.out.binding}</p>
+      <dl class="kv" data-summary>
+        <div><dt>משכנתא משוערת</dt><dd data-out="loan">{v.out.loan}</dd></div>
+        <div><dt>החזר חודשי משוער</dt><dd data-out="monthly">{v.out.monthly}</dd></div>
+        <div><dt>ריבית בחישוב</dt><dd data-out="rate">{v.out.rate}</dd></div>
+      </dl>
+      <div class="calc-card__cta">
+        <button type="button" class="btn btn--primary" data-open-lead>לבדיקת משכנתא חינם מול יועץ</button>
+        <p class="disclaimer">הערכה בלבד, לא אישור עקרוני. <a href="/methodology/">איך חישבנו</a></p>
+      </div>
+    </div>
+    <div class="buyer-lead" data-buyer-lead hidden>
+      <LeadGate kind="buyer" />
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <p>דירה ראשונה, 25 שנה, בלי התחייבויות אחרות, בריבית {formatPercent(opts.rate)}:</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col" class="num">הכנסה נטו</th><th scope="col" class="num">הון עצמי</th><th scope="col" class="num">מחיר דירה</th><th scope="col" class="num">משכנתא</th></tr></thead>
+        <tbody>
+          {examples.map((e) => <tr><td class="num">{formatILS(e.income)}</td><td class="num">{formatILS(e.equity)}</td><td class="num">{e.v.out.maxPrice}</td><td class="num">{e.v.out.loan}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p>סכום המשכנתא מוגבל בשני אופנים, והמחשבון מחזיר את הנמוך מביניהם:</p>
+    <ol>
+      <li><strong>הכנסה:</strong> ההחזר החודשי לא יעלה על {formatNumber(opts.pti * 100)}% מההכנסה הפנויה (אחרי החזרי הלוואות אחרות). מההחזר הזה מחושב סכום ההלוואה המרבי.</li>
+      <li><strong>הון עצמי:</strong> שיעור המימון המרבי לפי סוג הרכישה קובע כמה הון עצמי צריך על כל שקל של מחיר הדירה.</li>
+    </ol>
+    <p>לא כלולות עלויות נלוות כמו מס רכישה, עורך דין ותיווך. כדאי להפחית אותן מההון העצמי לפני החישוב.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { setLeadContext } from '../../scripts/leadgate';
+  import { trackOnce } from '../../scripts/analytics';
+  import { affordView, type AffordState } from '../../ui/calcs';
+  const root = document.querySelector<HTMLElement>('[data-calc="how-much-mortgage"]');
+  if (root) {
+    const { initial, opts } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: AffordState; opts: Parameters<typeof affordView>[1] };
+    let current = initial;
+    initCalc(root, initial, (s) => {
+      current = s;
+      return affordView(s, opts);
+    });
+    const leadWrap = root.querySelector<HTMLElement>('[data-buyer-lead]')!;
+    const lead = leadWrap.querySelector<HTMLElement>('[data-lead]')!;
+    setLeadContext(lead, () => ({ netIncome: current.income, obligations: current.obligations, equity: current.equity, years: current.years, buyerType: current.type }));
+    const open = root.querySelector<HTMLButtonElement>('[data-open-lead]')!;
+    open.addEventListener('click', () => {
+      leadWrap.hidden = false;
+      open.hidden = true;
+      trackOnce('lead_gate_view', { kind: 'buyer' });
+      lead.dispatchEvent(new CustomEvent('lead:shown'));
+      lead.querySelector<HTMLElement>('.lead__title')?.focus();
+    });
+  }
+</script>

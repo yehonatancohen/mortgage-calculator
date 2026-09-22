@@ -1,0 +1,35 @@
+---
+import ProsePage from '../layouts/ProsePage.astro';
+import { SITE } from '../config/site';
+---
+<ProsePage
+  title="הצהרת נגישות"
+  description={`הצהרת הנגישות של ${SITE.brand}: רמת הנגישות, התאמות שבוצעו ודרכי פנייה.`}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'הצהרת נגישות', path: '/accessibility/' }]}
+  updated="2026-09-22"
+>
+  <!-- Fill the coordinator details and the audit date before launch (Equal Rights for Persons with Disabilities Regulations, 2013; IS 5568). -->
+  <p>אנחנו רואים חשיבות בהנגשת האתר לכל אדם, כולל אנשים עם מוגבלות. האתר נבנה בהתאם לתקן הישראלי ת"י 5568, המבוסס על הנחיות WCAG 2 ברמה AA.</p>
+
+  <h2>מה עשינו</h2>
+  <ul>
+    <li>כל הפעולות באתר זמינות במקלדת, עם סימון פוקוס בולט.</li>
+    <li>כל שדה מתויג, והודעות שגיאה מוצמדות לשדה ומוקראות לקוראי מסך.</li>
+    <li>תוצאות המחשבונים מוקראות בעדכון חי (aria-live).</li>
+    <li>ניגודיות צבעים ברמת AA בערכה בהירה ובערכה כהה.</li>
+    <li>האנימציות מבוטלות כשמוגדרת בדפדפן העדפה להפחתת תנועה.</li>
+    <li>האתר תומך בהגדלת טקסט עד 200% ובתצוגה במכשירים ניידים.</li>
+    <li>אין באתר תוכן מהבהב, וידאו או אודיו.</li>
+  </ul>
+
+  <h2>מגבלות ידועות</h2>
+  <p>ייתכן שחלקים באתר עדיין אינם נגישים במלואם. אם נתקלת בבעיה, נשמח שתספר/י לנו ונטפל בה.</p>
+
+  <h2>פנייה לרכז/ת הנגישות</h2>
+  <ul>
+    <li>שם: [שם רכז/ת הנגישות]</li>
+    <li>אימייל: <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a></li>
+    <li>טלפון: [טלפון]</li>
+  </ul>
+  <p>ההצהרה עודכנה בספטמבר 2026. <!-- TODO: date of the last accessibility audit. --></p>
+</ProsePage>

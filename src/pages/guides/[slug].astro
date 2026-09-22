@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import ProsePage from '../../layouts/ProsePage.astro';
+import { articleLd } from '../../seo/schema';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const path = `/guides/${entry.id}/`;
+const d = entry.data;
+---
+<ProsePage
+  title={d.title}
+  description={d.description}
+  answer={d.answer}
+  updated={d.updated}
+  draft={d.draft}
+  noindex={d.draft}
+  ogType="article"
+  related={d.related}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מדריכים', path: '/guides/' }, { name: d.title, path }]}
+  jsonLd={d.draft ? [] : [articleLd({ headline: d.title, description: d.description, path, datePublished: d.published, dateModified: d.updated })]}
+>
+  <Content />
+</ProsePage>

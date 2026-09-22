@@ -1,0 +1,102 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import { benchmarkRate, datasets } from '../../../lib/data';
+import { formatPercent } from '../../../lib/mortgage';
+import { amortView, type MonthlyState } from '../../ui/calcs';
+
+const rate = Math.round(benchmarkRate() * 100 * 20) / 20;
+const initial: MonthlyState = { loan: 1_000_000, rate, years: 25 };
+const v = amortView(initial);
+const updated = datasets.rates.tracks.prime.lastUpdated;
+
+const faq = [
+  { q: 'מה זה לוח סילוקין?', a: 'טבלה שמראה לכל תקופה כמה משלמים, כמה מזה ריבית, כמה קרן, ומה היתרה שנשארת. הבנק מחויב לתת לוח סילוקין לכל הלוואה.' },
+  { q: 'מה עדיף, שפיצר או קרן שווה?', a: 'קרן שווה חוסכת ריבית, אבל ההחזר בהתחלה גבוה יותר. שפיצר נותן החזר קבוע ונמוך יותר בהתחלה. הבחירה תלויה בכמה החזר נוח לך היום.' },
+  { q: 'למה בשפיצר רוב ההחזר בהתחלה הוא ריבית?', a: 'כי הריבית מחושבת על היתרה, והיתרה בהתחלה גבוהה. ככל שהיתרה יורדת, חלק הריבית בהחזר הקבוע קטן וחלק הקרן גדל.' },
+  { q: 'האם אפשר לשלב בין השיטות?', a: 'כן. אפשר לבחור שיטה שונה לכל מסלול במשכנתא, למשל קרן שווה במסלול אחד ושפיצר באחר.' },
+];
+---
+<CalculatorPage
+  title="לוח סילוקין: שפיצר מול קרן שווה"
+  metaTitle="מחשבון לוח סילוקין: שפיצר מול קרן שווה"
+  description="לוח סילוקין שנתי למשכנתא והשוואה בין שפיצר לקרן שווה: החזר ראשון, החזר אחרון, סך הריבית ויתרה לכל שנה."
+  answer={`במשכנתא של ₪1,000,000 ל־25 שנה בריבית ${formatPercent(rate / 100)}, קרן שווה חוסכת כ־${v.out.diff} בריבית לעומת שפיצר, אבל ההחזר הראשון גבוה יותר.`}
+  appName="מחשבון לוח סילוקין"
+  updated={updated}
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'לוח סילוקין', path: '/calculators/amortization/' }]}
+  sources={[{ label: 'בנק ישראל: המדריך למשכנתאות', url: 'https://www.boi.org.il/' }]}
+  next={{ href: '/', title: 'כבר יש לך משכנתא? בדוק מחזור', text: 'שלושה נתונים, ותראו מיד כמה אפשר לחסוך.' }}
+>
+  <div class="card calc-card" data-calc="amortization">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="loan" label="סכום המשכנתא" value={initial.loan} min={100_000} max={5_000_000} step={10_000} textMax={30_000_000} shorthand="balance" scale={['₪100K', '₪5M']} />
+      <AmountField name="rate" label="ריבית שנתית" value={initial.rate} min={1} max={10} step={0.05} textMin={0.1} textMax={20} unit="none" suffix="%" decimals={2} scale={['1%', '10%']} />
+      <AmountField name="years" label="תקופה" value={initial.years} min={4} max={30} step={1} sliderOnly suffix="שנים" scale={['4', '30']} />
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">קרן שווה חוסכת בריבית</p>
+        <p class="result__figure result__figure--neutral" data-out="diff" data-count style={`--chars: ${v.out.diff!.length}`}>{v.out.diff}</p>
+      </div>
+      <div class="table-wrap" data-summary>
+        <table class="data-table">
+          <thead><tr><th scope="col"></th><th scope="col" class="num">שפיצר</th><th scope="col" class="num">קרן שווה</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">החזר ראשון</th><td class="num" data-out="spFirst">{v.out.spFirst}</td><td class="num" data-out="ksFirst">{v.out.ksFirst}</td></tr>
+            <tr><th scope="row">החזר אחרון</th><td class="num" data-out="spLast">{v.out.spLast}</td><td class="num" data-out="ksLast">{v.out.ksLast}</td></tr>
+            <tr><th scope="row">סך הריבית</th><td class="num" data-out="spInterest">{v.out.spInterest}</td><td class="num" data-out="ksInterest">{v.out.ksInterest}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="disclosure">
+        <summary>לוח סילוקין שנתי <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9.5l6 6 6-6" /></svg></summary>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th scope="col" rowspan="2">שנה</th><th scope="colgroup" colspan="3" class="num">שפיצר</th><th scope="colgroup" colspan="3" class="num">קרן שווה</th></tr>
+              <tr><th scope="col" class="num">תשלומים</th><th scope="col" class="num">ריבית</th><th scope="col" class="num">יתרה</th><th scope="col" class="num">תשלומים</th><th scope="col" class="num">ריבית</th><th scope="col" class="num">יתרה</th></tr>
+            </thead>
+            <tbody data-rows="years">
+              {v.rows!.years!.map((cells) => <tr>{cells.map((c, i) => (i === 0 ? <th scope="row">{c}</th> : <td class="num">{c}</td>))}</tr>)}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <p class="disclaimer">הערכה בלבד, ללא הצמדה למדד. <a href="/methodology/">איך חישבנו</a></p>
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <p>משכנתא של ₪1,000,000 ל־25 שנה בריבית {formatPercent(rate / 100)}:</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col"></th><th scope="col" class="num">שפיצר</th><th scope="col" class="num">קרן שווה</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">החזר ראשון</th><td class="num">{v.out.spFirst}</td><td class="num">{v.out.ksFirst}</td></tr>
+          <tr><th scope="row">החזר אחרון</th><td class="num">{v.out.spLast}</td><td class="num">{v.out.ksLast}</td></tr>
+          <tr class="is-total"><th scope="row">סך הריבית</th><td class="num">{v.out.spInterest}</td><td class="num">{v.out.ksInterest}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p><strong>שפיצר</strong>: ההחזר החודשי קבוע. בהתחלה רובו ריבית ובסוף רובו קרן.</p>
+    <p><strong>קרן שווה</strong>: בכל חודש מחזירים אותו סכום קרן, ועליו ריבית על היתרה. ההחזר מתחיל גבוה ויורד בהדרגה, וסך הריבית נמוך יותר כי הקרן יורדת מהר יותר.</p>
+    <p>הלוח השנתי מסכם 12 תשלומים לכל שנה. בבנק מקבלים לוח חודשי מדויק, שכולל גם הצמדה למדד במסלולים צמודים.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { amortView, type MonthlyState } from '../../ui/calcs';
+  const root = document.querySelector<HTMLElement>('[data-calc="amortization"]');
+  if (root) {
+    const { initial } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: MonthlyState };
+    initCalc(root, initial, amortView);
+  }
+</script>

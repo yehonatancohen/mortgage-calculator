@@ -22,6 +22,7 @@ export function enhanceField(el: HTMLElement, onChange: (value: number) => void,
   const sMin = Number(el.dataset.sliderMin);
   const sMax = Number(el.dataset.sliderMax);
   const suffix = el.dataset.suffix ?? '';
+  const decimals = Number(el.dataset.decimals ?? 0);
   const shorthand = el.dataset.shorthand as ShorthandField | undefined;
   const text = el.querySelector<HTMLInputElement>('[data-amount]');
   const range = el.querySelector<HTMLInputElement>('[data-range]')!;
@@ -35,14 +36,15 @@ export function enhanceField(el: HTMLElement, onChange: (value: number) => void,
   let touched = false;
   let pendingShorthand: number | null = null;
 
-  const display = (v: number) => (suffix ? `${formatNumber(v)} ${suffix}` : formatILS(v));
+  const fmt = (v: number) => formatNumber(v, decimals);
+  const display = (v: number) => (suffix ? `${fmt(v)}${suffix === '%' ? '' : ' '}${suffix}` : formatILS(v));
 
   const syncRange = (v: number) => {
     const clamped = Math.min(sMax, Math.max(sMin, v));
     range.value = String(clamped);
     range.style.setProperty('--fill', `${(((clamped - sMin) / (sMax - sMin)) * 100).toFixed(2)}%`);
     range.setAttribute('aria-valuetext', display(v));
-    if (valueOut) valueOut.textContent = formatNumber(v);
+    if (valueOut) valueOut.textContent = fmt(v);
     if (bubble) {
       bubble.textContent = display(clamped);
       bubble.style.setProperty('--pos', `${(clamped - sMin) / (sMax - sMin)}`);
@@ -57,9 +59,9 @@ export function enhanceField(el: HTMLElement, onChange: (value: number) => void,
   };
 
   const problem = (v: number | null): string | null => {
-    if (v === null) return 'חסר סכום.';
-    if (v < min) return `הסכום נמוך מ־${display(min)}.`;
-    if (v > max) return `הסכום גבוה מ־${display(max)}.`;
+    if (v === null) return 'חסר ערך.';
+    if (v < min) return `הערך נמוך מ־${display(min)}.`;
+    if (v > max) return `הערך גבוה מ־${display(max)}.`;
     return extraValidate?.(v) ?? null;
   };
 
@@ -107,7 +109,7 @@ export function enhanceField(el: HTMLElement, onChange: (value: number) => void,
   range.addEventListener('input', () => {
     const v = Number(range.value);
     value = v;
-    if (text) text.value = formatNumber(v);
+    if (text) text.value = fmt(v);
     syncRange(v);
     setHint(defaultHint);
     onChange(v);
@@ -127,7 +129,7 @@ export function enhanceField(el: HTMLElement, onChange: (value: number) => void,
     get: () => value,
     set(v, opts) {
       value = v;
-      if (text) text.value = formatNumber(v);
+      if (text) text.value = fmt(v);
       syncRange(v);
       if (!opts?.silent) onChange(v);
     },

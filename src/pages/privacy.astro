@@ -1,0 +1,38 @@
+---
+import ProsePage from '../layouts/ProsePage.astro';
+import { SITE } from '../config/site';
+import { CONSENT } from '../config/consent';
+import { hebrewDate } from '../ui/dates';
+---
+<ProsePage
+  title="מדיניות פרטיות"
+  description={`מדיניות הפרטיות של ${SITE.brand}: אילו פרטים נאספים, למה, למי הם מועברים וכמה זמן הם נשמרים.`}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מדיניות פרטיות', path: '/privacy/' }]}
+  updated={CONSENT.version}
+  draft
+  noindex
+>
+  <!-- DRAFT: requires review by an Israeli privacy lawyer (Privacy Protection Law and its Amendment 13) before launch. -->
+  <p>{SITE.legalName} ("אנחנו") מפעילה את האתר {SITE.domain}. מדיניות זו מסבירה אילו מידע אנחנו אוספים וכיצד אנו משתמשים בו. גרסה מיום {hebrewDate(CONSENT.version)}.</p>
+
+  <h2>שימוש במחשבונים</h2>
+  <p>הנתונים שמוזנים למחשבונים (יתרה, החזר, שנים ותשובות לשאלות) מחושבים בדפדפן שלך ואינם נשמרים אצלנו, אלא אם בחרת לבקש בדיקה או התראה.</p>
+
+  <h2>בקשת בדיקה מול יועץ</h2>
+  <p>אם ביקשת בדיקה, אנחנו שומרים את השם הפרטי, מספר הטלפון, תשובת התזמון, הנתונים שהזנת במחשבון, דף הכניסה ופרמטרי הקמפיין (UTM). מספר הטלפון מאומת בקוד SMS. הפרטים מועברים ליועץ משכנתאות עצמאי אחד בלבד, לצורך יצירת קשר איתך לגבי הבדיקה, ולא נמכרים או מועברים לגורמים נוספים.</p>
+
+  <h2>התראת ריבית</h2>
+  <p>אם נרשמת להתראה, אנחנו שומרים את כתובת האימייל או מספר הוואטסאפ ואת נתוני החישוב, כדי לעדכן אותך כשמחזור עשוי להשתלם. אפשר לבטל בכל הודעה.</p>
+
+  <h2>דיוור שיווקי</h2>
+  <p>נשלח עדכונים שיווקיים רק אם סימנת הסכמה נפרדת לכך. אפשר לבטל בכל עת.</p>
+
+  <h2>אבטחה ושמירה</h2>
+  <p>המידע נשמר בשרתים מאובטחים של ספק הענן שלנו. <!-- TODO(legal): retention period, storage location, sub-processors (Cloudflare, SMS provider, email provider). --></p>
+
+  <h2>עוגיות וניתוח שימוש</h2>
+  <p>האתר עשוי להשתמש בכלי ניתוח (כגון Microsoft Clarity) כדי להבין איך משתמשים בו. <!-- TODO(legal): list tools actually enabled and consent approach. --></p>
+
+  <h2>הזכויות שלך</h2>
+  <p>אפשר לבקש לעיין במידע, לתקן אותו או למחוק אותו בפנייה ל־<a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>
+</ProsePage>

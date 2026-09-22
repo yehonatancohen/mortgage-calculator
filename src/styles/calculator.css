@@ -530,3 +530,61 @@
 ::view-transition-group(root) {
   animation-duration: var(--dur-base);
 }
+
+/* ---------- Secondary calculators ---------- */
+.calc-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+.calc-card .field + .field {
+  margin-block-start: 0;
+}
+.calc-card__fields {
+  display: grid;
+  gap: var(--space-3);
+}
+.calc-card__out {
+  display: grid;
+  gap: var(--space-4);
+  padding-block-start: var(--space-6);
+  border-block-start: var(--border-w) solid var(--c-border);
+}
+.calc-card .result__figure--neutral {
+  color: var(--c-text);
+}
+.kv {
+  display: grid;
+  gap: 0;
+  font-size: var(--text-sm);
+}
+.kv > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  border-block-end: var(--border-w) solid var(--c-border);
+}
+.kv > div:last-child {
+  border-block-end: 0;
+}
+.kv dt {
+  color: var(--c-text-2);
+}
+.kv dd {
+  margin: 0;
+  font-weight: var(--fw-medium);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.calc-card__note {
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.calc-card__cta {
+  display: grid;
+  gap: var(--space-2);
+}
+.check--plain {
+  font-size: var(--text-md);
+}

@@ -1,0 +1,87 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import { benchmarkRate, datasets } from '../../../lib/data';
+import { formatILS, formatPercent, payment } from '../../../lib/mortgage';
+import { monthlyView, type MonthlyState } from '../../ui/calcs';
+
+const rate = Math.round(benchmarkRate() * 100 * 20) / 20; // nearest 0.05%
+const initial: MonthlyState = { loan: 1_000_000, rate, years: 25 };
+const v = monthlyView(initial);
+const updated = datasets.rates.tracks.prime.lastUpdated;
+
+const table = [500_000, 1_000_000, 1_500_000].map((loan) => ({
+  loan,
+  cells: [20, 25, 30].map((y) => formatILS(payment(loan, rate / 100, y * 12))),
+}));
+
+const faq = [
+  { q: 'איך מחשבים החזר חודשי של משכנתא?', a: 'בשיטת שפיצר ההחזר קבוע לאורך כל התקופה, ומחושב מסכום ההלוואה, הריבית החודשית (הריבית השנתית חלקי 12) ומספר החודשים. בתחילת התקופה רוב ההחזר הוא ריבית, ובסופה רובו קרן.' },
+  { q: 'מה ההבדל בין שפיצר לקרן שווה?', a: 'בקרן שווה מחזירים בכל חודש אותו סכום קרן, ולכן ההחזר מתחיל גבוה ויורד עם הזמן, וסך הריבית נמוך יותר. בשפיצר ההחזר קבוע ונוח יותר לתכנון.' },
+  { q: 'האם ההחזר כולל הצמדה למדד?', a: 'לא. המחשבון מניח ריבית קבועה ללא הצמדה. במסלול צמוד, ההחזר והיתרה עולים עם מדד המחירים לצרכן.' },
+  { q: 'איזו ריבית להזין?', a: `כברירת מחדל מוזנת ריבית ממוצעת לתמהיל טיפוסי (${formatPercent(rate / 100)}). אם קיבלת הצעה מהבנק, הזן את הריבית המשוקללת שלה.` },
+];
+---
+<CalculatorPage
+  title="מחשבון החזר חודשי למשכנתא"
+  description="כמה תשלמו כל חודש על משכנתא? מחשבון החזר חודשי בשיטת שפיצר עם השוואה לקרן שווה, סך הריבית וסך התשלומים."
+  answer={`משכנתא של ${formatILS(initial.loan)} ל־25 שנה בריבית ${formatPercent(rate / 100)} תעלה כ־${v.out.payment} בחודש. שנו את הסכום, הריבית והתקופה.`}
+  appName="מחשבון החזר חודשי"
+  updated={updated}
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'החזר חודשי', path: '/calculators/monthly-payment/' }]}
+  sources={[{ label: 'בנק ישראל: ריביות ממוצעות על משכנתאות', url: 'https://www.boi.org.il/' }]}
+  next={{ href: '/', title: 'כבר יש לך משכנתא? בדוק מחזור', text: 'שלושה נתונים, ותראו מיד כמה אפשר לחסוך.' }}
+>
+  <div class="card calc-card" data-calc="monthly-payment">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="loan" label="סכום המשכנתא" value={initial.loan} min={100_000} max={5_000_000} step={10_000} textMax={30_000_000} shorthand="balance" scale={['₪100K', '₪5M']} />
+      <AmountField name="rate" label="ריבית שנתית" value={initial.rate} min={1} max={10} step={0.05} textMin={0.1} textMax={20} unit="none" suffix="%" decimals={2} scale={['1%', '10%']} />
+      <AmountField name="years" label="תקופה" value={initial.years} min={4} max={30} step={1} sliderOnly suffix="שנים" scale={['4', '30']} />
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">החזר חודשי (שפיצר)</p>
+        <p class="result__figure result__figure--neutral" data-out="payment" data-count style={`--chars: ${v.out.payment!.length}`}>{v.out.payment}</p>
+      </div>
+      <dl class="kv" data-summary>
+        <div><dt>סך הריבית</dt><dd data-out="interest">{v.out.interest}</dd></div>
+        <div><dt>סך כל התשלומים</dt><dd data-out="total">{v.out.total}</dd></div>
+        <div><dt>קרן שווה: החזר ראשון</dt><dd data-out="ksFirst">{v.out.ksFirst}</dd></div>
+        <div><dt>קרן שווה: החזר אחרון</dt><dd data-out="ksLast">{v.out.ksLast}</dd></div>
+        <div><dt>קרן שווה חוסכת בריבית</dt><dd data-out="ksSaving">{v.out.ksSaving}</dd></div>
+      </dl>
+      <p class="disclaimer">הערכה בלבד, ללא הצמדה למדד. <a href="/methodology/">איך חישבנו</a></p>
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <p>החזר חודשי בשפיצר בריבית {formatPercent(rate / 100)}, לפי סכום ותקופה:</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">סכום</th><th scope="col" class="num">20 שנה</th><th scope="col" class="num">25 שנה</th><th scope="col" class="num">30 שנה</th></tr></thead>
+        <tbody>
+          {table.map((r) => <tr><th scope="row" class="num">{formatILS(r.loan)}</th>{r.cells.map((c) => <td class="num">{c}</td>)}</tr>)}
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p><strong>החזר חודשי</strong> הוא הסכום שמשלמים לבנק כל חודש: חלק ריבית וחלק החזר קרן. בשיטת שפיצר, הנפוצה בישראל, ההחזר קבוע לאורך כל התקופה.</p>
+    <p>הנוסחה: החזר = סכום ההלוואה × r ÷ (1 − (1 + r)<sup>−n</sup>), כאשר r היא הריבית השנתית חלקי 12 ו־n הוא מספר החודשים.</p>
+    <p>ככל שהתקופה ארוכה יותר, ההחזר החודשי נמוך יותר אבל סך הריבית גבוה יותר. לכן כדאי לבחור את ההחזר הגבוה ביותר שנוח לעמוד בו לאורך זמן.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { monthlyView, type MonthlyState } from '../../ui/calcs';
+  const root = document.querySelector<HTMLElement>('[data-calc="monthly-payment"]');
+  if (root) {
+    const { initial } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: MonthlyState };
+    initCalc(root, initial, monthlyView);
+  }
+</script>

@@ -1,0 +1,47 @@
+---
+/**
+ * Refinance-by-bank template. Generic, informational content; nothing here claims anything
+ * about a specific bank's rates, offers or policies. Replace the TODO blocks with reviewed content.
+ */
+import ProsePage from '../../layouts/ProsePage.astro';
+import { BANKS } from '../../config/banks';
+import { faqLd } from '../../seo/schema';
+import Icon from '../../components/Icon.astro';
+
+export function getStaticPaths() {
+  return BANKS.map((b) => ({ params: { bank: b.slug }, props: { bank: b } }));
+}
+const { bank } = Astro.props;
+const path = `/banks/${bank.slug}/`;
+const faq = [
+  { q: `איך מבקשים מ${bank.name} דוח יתרות לסילוק?`, a: 'בדרך כלל אפשר לבקש את הדוח באתר הבנק, באפליקציה או בסניף המשכנתאות. הדוח מפרט את היתרה בכל מסלול ואת עמלת הפירעון המשוערת.' },
+  { q: `האם אפשר למחזר בתוך ${bank.name}?`, a: 'כן. אפשר לבקש מהבנק הקיים הצעה למחזור, וגם לבקש הצעות מבנקים אחרים ולהשוות.' },
+];
+---
+<ProsePage
+  title={`מחזור משכנתא ב${bank.name}`}
+  description={`מחזור משכנתא ב${bank.name}: איך לבדוק אם משתלם, אילו מסמכים צריך ואיך משווים הצעות. מידע כללי ומחשבון חיסכון.`}
+  answer={`כדי לבדוק מחזור משכנתא ב${bank.name}, התחילו מדוח יתרות לסילוק, הזינו את הנתונים במחשבון המחזור, והשוו את ההצעה של הבנק להצעות מבנקים אחרים.`}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחזור לפי בנק', path: '/banks/' }, { name: bank.name, path }]}
+  draft={bank.draft}
+  noindex={bank.draft}
+  jsonLd={bank.draft ? [] : [faqLd(faq)]}
+  related={[{ href: '/', title: 'מחשבון מחזור משכנתא', text: 'תוצאה מיידית, בלי להשאיר פרטים.' }]}
+>
+  <p>האתר אינו קשור ל{bank.name} ואינו מייצג אותו. המידע כללי ואינו מתאר הצעות או מדיניות של הבנק.</p>
+
+  <h2>שלב 1: דוח יתרות לסילוק</h2>
+  <p>הדוח מראה את היתרה בכל מסלול, את הריבית ואת עמלת הפירעון המשוערת. זה הבסיס לכל בדיקת מחזור.</p>
+
+  <h2>שלב 2: בדיקה במחשבון</h2>
+  <p>הזינו את היתרה, ההחזר החודשי והשנים שנותרו ב<a href="/">מחשבון מחזור המשכנתא</a>, ותראו טווח חיסכון נטו אחרי עמלות.</p>
+
+  <h2>שלב 3: השוואת הצעות</h2>
+  <p>בקשו הצעה מהבנק הקיים ומבנקים נוספים, והשוו את התמהיל, הריבית בכל מסלול וסך ההחזר לאורך התקופה, לא רק את ההחזר החודשי.</p>
+  <!-- TODO(content): מידע כללי ומאומת בלבד על תהליך המחזור. לא לכלול ריביות או מבצעים של הבנק. -->
+
+  <h2>שאלות נפוצות</h2>
+  <div class="faq">
+    {faq.map((f) => <details><summary>{f.q}<Icon name="chevron-down" /></summary><div><p>{f.a}</p></div></details>)}
+  </div>
+</ProsePage>

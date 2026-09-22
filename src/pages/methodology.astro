@@ -1,0 +1,64 @@
+---
+/** How the calculators work: formulas, assumptions (live from data files), sources, full disclaimer. */
+import ProsePage from '../layouts/ProsePage.astro';
+import { datasets, refinanceAssumptions, sourcedValues } from '../../lib/data';
+import { formatILSRange, formatNumber, formatPercent } from '../../lib/mortgage';
+import { hebrewDate, hebrewMonth } from '../ui/dates';
+
+const a = refinanceAssumptions();
+const period = hebrewMonth(String(datasets.rates.period.value));
+const values = sourcedValues();
+const updated = values.reduce((m, v) => (v.entry.lastUpdated > m ? v.entry.lastUpdated : m), '0000-00-00');
+const sources = [...new Set(values.map((v) => v.entry.source).filter((s) => s.startsWith('https://')))];
+---
+<ProsePage
+  title="איך אנחנו מחשבים"
+  description="המתודולוגיה של מחשבוני המשכנתא: נוסחאות, הנחות, מקורות הנתונים ומגבלות החישוב."
+  answer="כל החישובים באתר שקופים: הנוסחאות, ההנחות והמקורות מפורטים כאן, והנתונים מתעדכנים מקבצים עם מקור ותאריך."
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'איך אנחנו מחשבים', path: '/methodology/' }]}
+  updated={updated}
+>
+  <h2>הבהרה</h2>
+  <p>המחשבונים באתר נותנים הערכה בלבד. הם אינם ייעוץ פיננסי, אינם הצעה לאשראי ואינם מחליפים בדיקה של בנק או של יועץ משכנתאות מוסמך. התוצאות מבוססות על הנתונים שהוזנו, על ממוצעים שפורסמו ועל הנחות מפושטות שמפורטות בעמוד זה. תנאי ההלוואה בפועל נקבעים על ידי הבנק ועשויים להיות שונים. אין לקבל החלטה פיננסית על סמך המחשבון בלבד.</p>
+
+  <h2>מוסכמת ריבית</h2>
+  <p>כל הריביות הן שנתיות נומינליות, עם חישוב חודשי: ריבית חודשית = ריבית שנתית ÷ 12. זו המוסכמה שבה הבנקים בישראל מציגים ריבית משכנתא.</p>
+
+  <h2>מחשבון מחזור המשכנתא</h2>
+  <ol>
+    <li><strong>ריבית אפקטיבית:</strong> מתוך היתרה, ההחזר החודשי ומספר החודשים מחושבת הריבית שבה ההחזר הנוכחי מסלק את היתרה בדיוק (שיטת ניוטון בתוך טווח חסום). אם אין ריבית חיובית שמתאימה לנתונים, מוצגת הערה במקום תוצאה.</li>
+    <li><strong>ריבית למחזור:</strong> טווח סביב הריבית הממוצעת לתמהיל טיפוסי לא צמוד ({formatPercent(a.benchmarkRate)}, נתוני {period}). הטווח מתחיל ב־±{formatNumber(a.bandBase * 100, 2)} נקודות אחוז ומצטמצם עם כל שאלה שנענית, עד ±{formatNumber(a.bandMin * 100, 2)}.</li>
+    <li><strong>החזר חדש וחיסכון:</strong> ההחזר החדש מחושב לאותה יתרה ולאותה תקופה. החיסכון הגולמי = ההפרש החודשי × מספר החודשים.</li>
+    <li><strong>עלויות:</strong> מהחיסכון מופחתות הערכת עמלת פירעון מוקדם (ראו בהמשך) ועלויות מעבר של {formatILSRange(a.switchingCosts[0], a.switchingCosts[1])}.</li>
+    <li><strong>הצגה:</strong> התרחיש השמרני (ריבית גבוהה, עלויות גבוהות) והאופטימי (ריבית נמוכה, עלויות נמוכות) מוצגים כטווח, מעוגל כלפי מטה לאלף שקלים. אם בתרחיש השמרני אין חיסכון משמעותי, מוצג רק "עד". חיסכון נחשב משמעותי מ־₪{formatNumber(a.meaningfulTotal)} לאורך התקופה ו־₪{formatNumber(a.meaningfulMonthly)} בחודש.</li>
+  </ol>
+  <p><strong>מה לא נכלל:</strong> הצמדה למדד המחירים לצרכן, שינויים עתידיים בריבית הפריים ובמסלולים המשתנים, והתנאים האישיים שהבנק יציע. לכן ההחזר בפועל במסלולים צמודים ומשתנים ישתנה עם הזמן.</p>
+
+  <h2>עמלת פירעון מוקדם (הערכה מפושטת)</h2>
+  <p>עמלת היוון במסלול קבוע = הערך הנוכחי של התשלומים שנותרו, מהוונים בריבית הממוצעת היום, פחות היתרה (רק אם החיובי). מהסכום מנוכות הנחה לפי שנים מאז לקיחת ההלוואה והנחת הודעה מוקדמת, ומתווספת עמלה תפעולית. במחשבון המחזור, כשהמסלולים לא ידועים, שיעור המסלול הקבוע והריבית בחוזה מוערכים בטווח, והריבית בחוזה לא יכולה לעלות על הריבית האפקטיבית של כל ההלוואה ביותר מ־{formatNumber(a.fixedRateMaxAboveBlended * 100, 1)} נקודות אחוז.</p>
+
+  <h2>שאר המחשבונים</h2>
+  <ul>
+    <li><strong>החזר חודשי ולוח סילוקין:</strong> נוסחת שפיצר (החזר קבוע) וקרן שווה (קרן קבועה, ריבית על היתרה).</li>
+    <li><strong>כמה משכנתא אפשר לקבל:</strong> הנמוך מבין הגבלת ההחזר מההכנסה הפנויה לבין שיעור המימון המרבי לפי סוג הרכישה.</li>
+    <li><strong>מס רכישה:</strong> חישוב מדורג לפי טבלת המדרגות של רשות המסים.</li>
+  </ul>
+
+  <h2>הנתונים</h2>
+  <p>כל נתון שוק שמור בקובץ נתונים עם מקור ותאריך עדכון, ואינו כתוב בקוד. הנתונים המשמשים כעת:</p>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th scope="col">נתון</th><th scope="col" class="num">ערך</th><th scope="col">עודכן</th></tr></thead>
+      <tbody>
+        {values.filter((v) => typeof v.entry.value === 'number').map((v) => (
+          <tr><th scope="row">{v.entry.label ?? `${v.file}.${v.path}`}</th><td class="num">{v.entry.unit === 'percent' ? `${v.entry.value}%` : v.entry.unit === 'fraction' ? formatPercent(Number(v.entry.value), 0) : formatNumber(Number(v.entry.value))}</td><td>{hebrewDate(v.entry.lastUpdated)}</td></tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>מקורות</h2>
+  <ul>
+    {sources.map((s) => <li><a href={s} rel="noopener">{new URL(s).hostname}</a></li>)}
+  </ul>
+</ProsePage>

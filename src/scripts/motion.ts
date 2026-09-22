@@ -8,7 +8,7 @@ const running = new WeakMap<Element, number>();
  * Count a figure from its previous numbers to new ones. `render` formats the in-between values;
  * tabular numerals keep the width steady while digits change.
  */
-export function countTo(el: HTMLElement, from: number[], to: number[], render: (vals: number[]) => string, duration = 320) {
+export function countTo(el: HTMLElement, from: number[], to: number[], render: (vals: number[]) => string, rounding = 1000, duration = 320) {
   const prev = running.get(el);
   if (prev) cancelAnimationFrame(prev);
   if (reducedMotion() || from.length !== to.length || from.every((v, i) => v === to[i])) {
@@ -20,7 +20,7 @@ export function countTo(el: HTMLElement, from: number[], to: number[], render: (
   const step = (now: number) => {
     const t = Math.min(1, (now - start) / duration);
     const k = ease(t);
-    el.textContent = render(to.map((v, i) => Math.round((from[i]! + (v - from[i]!) * k) / 1000) * 1000));
+    el.textContent = render(to.map((v, i) => Math.round((from[i]! + (v - from[i]!) * k) / rounding) * rounding));
     if (t < 1) running.set(el, requestAnimationFrame(step));
     else {
       el.textContent = render(to);

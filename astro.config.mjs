@@ -9,6 +9,6 @@ export default defineConfig({
   trailingSlash: 'always',
   devToolbar: { enabled: false },
   // Images are optimized at build time; no Cloudflare Images binding needed.
-  adapter: cloudflare({ imageService: 'compile' }),
+  adapter: cloudflare({ imageService: 'compile', prerenderEnvironment: 'node' }),
   build: { inlineStylesheets: 'auto' },
 });

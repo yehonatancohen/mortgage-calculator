@@ -100,6 +100,11 @@ a:hover {
   border-radius: var(--radius-sm);
 }
 
+/* Headings receive programmatic focus on step changes (for screen readers); no ring for them. */
+[tabindex='-1']:focus {
+  outline: none;
+}
+
 /* Figures and ranges inside Hebrew text: isolate as LTR so ₪ and dashes land correctly. */
 .num,
 bdi.num {

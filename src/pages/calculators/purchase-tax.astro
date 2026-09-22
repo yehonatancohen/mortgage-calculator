@@ -1,0 +1,99 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import Icon from '../../components/Icon.astro';
+import { datasets, purchaseTaxBrackets } from '../../../lib/data';
+import { formatILS, formatPercent, purchaseTax } from '../../../lib/mortgage';
+import { taxView, type TaxState } from '../../ui/calcs';
+import { hebrewDate } from '../../ui/dates';
+
+const tables = { singleHome: purchaseTaxBrackets.singleHome, additionalHome: purchaseTaxBrackets.additionalHome };
+const initial: TaxState = { price: 2_500_000, type: 'singleHome' };
+const v = taxView(initial, tables);
+const updated = datasets.purchaseTax.singleHome.brackets.lastUpdated;
+const examples = [1_800_000, 2_500_000, 3_500_000, 5_000_000].map((p) => ({
+  p,
+  single: purchaseTax(p, tables.singleHome).total,
+  additional: purchaseTax(p, tables.additionalHome).total,
+}));
+
+const faq = [
+  { q: 'כמה מס רכישה משלמים על דירה יחידה?', a: 'על דירה יחידה המס מדורג: עד תקרה מסוימת לא משלמים מס, ומעליה משלמים שיעורים עולים לפי מדרגות. המדרגות מתעדכנות מדי שנה בינואר.' },
+  { q: 'מה ההבדל בדירה נוספת?', a: 'על דירה נוספת (למשל להשקעה) אין מדרגת פטור, והמס מתחיל בשיעור גבוה כבר מהשקל הראשון.' },
+  { q: 'מתי משלמים את מס הרכישה?', a: 'בדרך כלל תוך 60 יום ממועד החתימה על החוזה, לפי השומה של רשות המסים. כדאי להכניס את הסכום לתכנון ההון העצמי.' },
+  { q: 'האם יש הקלות מיוחדות?', a: 'יש הקלות לקבוצות מסוימות, למשל עולים חדשים ונכים. המחשבון לא כולל אותן. בדקו מול רשות המסים או עורך דין.' },
+];
+---
+<CalculatorPage
+  title="מחשבון מס רכישה"
+  description="כמה מס רכישה תשלמו על דירה? מחשבון לפי מדרגות רשות המסים לדירה יחידה ולדירה נוספת, עם פירוט לכל מדרגה."
+  answer={`על דירה יחידה ב־${formatILS(initial.price)} מס הרכישה המשוער הוא ${v.out.total}. בחרו סוג דירה והזינו מחיר.`}
+  appName="מחשבון מס רכישה"
+  updated={updated}
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'מס רכישה', path: '/calculators/purchase-tax/' }]}
+  sources={[{ label: 'רשות המסים: מדרגות מס רכישה', url: 'https://www.gov.il/he/departments/israel_tax_authority' }]}
+  next={{ href: '/calculators/how-much-mortgage/', title: 'כמה משכנתא אפשר לקבל?', text: 'בדקו כמה דירה ההון וההכנסה שלכם מאפשרים.' }}
+>
+  <div class="card calc-card" data-calc="purchase-tax">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial, tables })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="price" label="מחיר הדירה" value={initial.price} min={500_000} max={10_000_000} step={50_000} textMin={10_000} textMax={100_000_000} shorthand="balance" scale={['₪500K', '₪10M']} />
+      <fieldset class="field question question--inline">
+        <legend class="field__label" id="tax-type">סוג הדירה</legend>
+        <div class="chips" role="radiogroup" aria-labelledby="tax-type" data-chips="type">
+          <button type="button" class="chip" role="radio" aria-checked="true" data-answer="singleHome"><Icon name="check" class="chip__check" />דירה יחידה</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="additionalHome"><Icon name="check" class="chip__check" />דירה נוספת</button>
+        </div>
+      </fieldset>
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">מס רכישה משוער</p>
+        <p class="result__figure result__figure--neutral" data-out="total" data-count style={`--chars: ${v.out.total!.length}`}>{v.out.total}</p>
+      </div>
+      <dl class="kv" data-summary>
+        <div><dt>שיעור מס אפקטיבי</dt><dd data-out="effective">{v.out.effective}</dd></div>
+        <div><dt>מחיר כולל מס</dt><dd data-out="net">{v.out.net}</dd></div>
+      </dl>
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption>מדרגות בתוקף מ־{hebrewDate(String(purchaseTaxBrackets.validFrom))}</caption>
+          <thead><tr><th scope="col">מדרגה</th><th scope="col" class="num">שיעור</th><th scope="col" class="num">חייב במס</th><th scope="col" class="num">מס</th></tr></thead>
+          <tbody data-rows="lines">
+            {v.rows!.lines!.map((cells) => <tr>{cells.map((c, i) => (i === 0 ? <th scope="row">{c}</th> : <td class="num">{c}</td>))}</tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="disclaimer">הערכה בלבד, ללא הקלות מיוחדות. <a href="/methodology/">איך חישבנו</a></p>
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">מחיר הדירה</th><th scope="col" class="num">דירה יחידה</th><th scope="col" class="num">דירה נוספת</th></tr></thead>
+        <tbody>
+          {examples.map((e) => <tr><th scope="row" class="num">{formatILS(e.p)}</th><td class="num">{formatILS(Math.round(e.single))}</td><td class="num">{formatILS(Math.round(e.additional))}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p><strong>מס רכישה</strong> הוא מס שהקונה משלם על רכישת דירה. הוא מחושב במדרגות: כל חלק של המחיר ממוסה בשיעור של המדרגה שלו, והמס הכולל הוא סכום המדרגות.</p>
+    <p>לדירה יחידה יש מדרגה ראשונה פטורה ממס. לדירה נוספת המס מתחיל בשיעור {formatPercent(tables.additionalHome[0]!.rate, 0)} מהשקל הראשון.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { taxView, type TaxState } from '../../ui/calcs';
+  import type { TaxBracket } from '../../../lib/mortgage';
+  const root = document.querySelector<HTMLElement>('[data-calc="purchase-tax"]');
+  if (root) {
+    const { initial, tables } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: TaxState; tables: Record<TaxState['type'], TaxBracket[]> };
+    initCalc(root, initial, (s) => taxView(s, tables));
+  }
+</script>

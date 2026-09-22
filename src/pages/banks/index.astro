@@ -1,0 +1,16 @@
+---
+import ProsePage from '../../layouts/ProsePage.astro';
+import { BANKS } from '../../config/banks';
+---
+<ProsePage
+  title="מחזור משכנתא לפי בנק"
+  description="איך בודקים מחזור משכנתא בכל אחד מהבנקים בישראל: מסמכים, שלבים ומחשבון חיסכון."
+  answer="התהליך דומה בכל הבנקים: דוח יתרות לסילוק, בדיקת חיסכון, והשוואת הצעות. בחרו את הבנק שלכם."
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחזור לפי בנק', path: '/banks/' }]}
+>
+  <ul class="link-list">
+    {BANKS.map((b) => (
+      <li><a href={`/banks/${b.slug}/`}><span class="link-list__title">מחזור משכנתא ב{b.name}</span></a></li>
+    ))}
+  </ul>
+</ProsePage>

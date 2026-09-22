@@ -1,0 +1,65 @@
+---
+/** Monthly rates page, generated from data/rates.json. */
+import ProsePage from '../layouts/ProsePage.astro';
+import Icon from '../components/Icon.astro';
+import { benchmarkRate, datasets } from '../../lib/data';
+import { formatPercent, payment, formatILS } from '../../lib/mortgage';
+import { datasetLd, faqLd } from '../seo/schema';
+import { hebrewDate, hebrewMonth } from '../ui/dates';
+
+const r = datasets.rates;
+const period = hebrewMonth(String(r.period.value));
+const tracks = Object.entries(r.tracks) as [string, { label: string; value: number; lastUpdated: string; source: string }][];
+const updated = tracks.reduce((m, [, t]) => (t.lastUpdated > m ? t.lastUpdated : m), '0000-00-00');
+const bench = benchmarkRate();
+const path = '/ribit-mashkanta-hayom/';
+const faq = [
+  { q: 'מה ריבית המשכנתא הממוצעת היום?', a: `לפי נתוני ${period}, הריבית הממוצעת לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. הריבית שתקבלו תלויה בפרופיל שלכם, בתמהיל ובבנק.` },
+  { q: 'מאיפה הנתונים?', a: 'מהפרסום החודשי של בנק ישראל על ריביות ממוצעות בהלוואות חדשות לדיור. אנחנו מעדכנים את הטבלה כשמתפרסם חודש חדש.' },
+  { q: 'למה הריבית שהציעו לי שונה?', a: 'הממוצע משקף את כל ההלוואות החדשות. הריבית האישית תלויה בשיעור המימון, ביחס ההחזר להכנסה, בתקופה ובתמהיל.' },
+];
+const jsonLd = [
+  datasetLd({
+    name: `ריביות משכנתא ממוצעות לפי מסלול, ${period}`,
+    description: 'ריביות ממוצעות בהלוואות חדשות לדיור בישראל, לפי מסלול, מתוך נתוני בנק ישראל.',
+    path,
+    dateModified: updated,
+    temporalCoverage: String(r.period.value),
+    sourceUrl: r.tracks.prime.source,
+    variables: tracks.map(([, t]) => t.label),
+  }),
+  faqLd(faq),
+];
+---
+<ProsePage
+  title="ריבית משכנתא היום"
+  metaTitle={`ריבית משכנתא היום: ממוצעים לפי מסלול (${period})`}
+  description={`ריבית משכנתא ממוצעת לפי מסלול: פריים, קבועה צמודה ולא צמודה, משתנה. נתוני בנק ישראל ל${period}.`}
+  answer={`לפי נתוני ${period}, ריבית ממוצעת לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. הטבלה מפרטת את הממוצע לכל מסלול.`}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'ריבית היום', path }]}
+  updated={updated}
+  jsonLd={jsonLd}
+  related={[{ href: '/', title: 'הריבית שלך גבוהה מהממוצע?', text: 'בדקו כמה תחסכו במחזור.' }]}
+>
+  <div class="table-wrap">
+    <table class="data-table">
+      <caption>ריבית שנתית נומינלית ממוצעת בהלוואות חדשות, {period}. מסלולים צמודים: ריבית ריאלית, לפני הצמדה.</caption>
+      <thead><tr><th scope="col">מסלול</th><th scope="col" class="num">ריבית ממוצעת</th><th scope="col" class="num">החזר ל־₪1M ל־25 שנה</th></tr></thead>
+      <tbody>
+        {tracks.map(([, t]) => (
+          <tr><th scope="row">{t.label}</th><td class="num">{formatPercent(t.value / 100)}</td><td class="num">{formatILS(payment(1_000_000, t.value / 100, 300))}</td></tr>
+        ))}
+        <tr class="is-total"><th scope="row">תמהיל טיפוסי לא צמוד</th><td class="num">{formatPercent(bench)}</td><td class="num">{formatILS(payment(1_000_000, bench, 300))}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>איך לקרוא את הטבלה</h2>
+  <p>כל שורה היא ממוצע של ההלוואות החדשות שניתנו באותו חודש במסלול הזה. התמהיל הטיפוסי משקלל פריים, קבועה לא צמודה ומשתנה לא צמודה, והוא הבסיס להשוואה במחשבון המחזור.</p>
+  <p>מקור: <a href={r.tracks.prime.source} rel="noopener">בנק ישראל</a>. עודכן ב־{hebrewDate(updated)}.</p>
+
+  <h2>שאלות נפוצות</h2>
+  <div class="faq">
+    {faq.map((f) => <details><summary>{f.q}<Icon name="chevron-down" /></summary><div><p>{f.a}</p></div></details>)}
+  </div>
+</ProsePage>

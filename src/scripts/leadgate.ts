@@ -55,7 +55,7 @@ function loadTurnstile(root: HTMLElement) {
   s.async = true;
   s.defer = true;
   s.dataset.turnstileScript = '';
-  document.head.append(s);
+  document.head.appendChild(s);
   slot.classList.add('cf-turnstile');
 }
 
@@ -170,7 +170,8 @@ export function initLeadGate(root: HTMLElement) {
     digits[0]!.focus();
   });
 
-  // OTP boxes: auto-advance, backspace to previous, paste / autofill of the whole code.
+  // OTP boxes: auto-advance, backspace to previous. A pasted or autofilled code arrives as one
+  // multi-digit input event (every box accepts 6 chars) and is spread across the boxes.
   const code = () => digits.map((d) => d.value).join('');
   const fill = (text: string, from = 0) => {
     const chars = text.replace(/\D/g, '').slice(0, 6 - from).split('');
@@ -200,10 +201,6 @@ export function initLeadGate(root: HTMLElement) {
       }
       if (e.key === 'ArrowLeft' && i < 5) digits[i + 1]!.focus();
       if (e.key === 'ArrowRight' && i > 0) digits[i - 1]!.focus();
-    });
-    d.addEventListener('paste', (e) => {
-      e.preventDefault();
-      fill(e.clipboardData?.getData('text') ?? '', i);
     });
     d.addEventListener('focus', () => d.select());
   });

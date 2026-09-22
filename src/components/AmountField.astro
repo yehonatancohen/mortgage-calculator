@@ -25,8 +25,10 @@ interface Props {
   scale?: [string, string];
   hint?: string;
   id?: string;
+  /** Decimal places shown (e.g. 2 for interest rates). */
+  decimals?: number;
 }
-const { name, label, value, min, max, step, textMin = min, textMax = max, unit = '₪', suffix, sliderOnly = false, shorthand, scale, hint = '', id = name } = Astro.props;
+const { name, label, value, min, max, step, textMin = min, textMax = max, unit = '₪', suffix, sliderOnly = false, shorthand, scale, hint = '', id = name, decimals = 0 } = Astro.props;
 const fill = `${(((Math.min(max, Math.max(min, value)) - min) / (max - min)) * 100).toFixed(2)}%`;
 const hintId = `${id}-hint`;
 ---
@@ -39,11 +41,12 @@ const hintId = `${id}-hint`;
   data-slider-max={max}
   data-shorthand={shorthand}
   data-suffix={suffix}
+  data-decimals={decimals}
 >
   {sliderOnly ? (
     <div class="field__row">
       <label class="field__label" for={`${id}-range`}>{label}</label>
-      <output class="field__value" for={`${id}-range`} data-value><bdi class="num">{formatNumber(value)}</bdi> {suffix}</output>
+      <output class="field__value" for={`${id}-range`} data-value><bdi class="num">{formatNumber(value, decimals)}</bdi> {suffix}</output>
     </div>
   ) : (
     <>
@@ -55,10 +58,10 @@ const hintId = `${id}-hint`;
           id={id}
           name={name}
           type="text"
-          inputmode="numeric"
+          inputmode={decimals ? 'decimal' : 'numeric'}
           autocomplete="off"
           enterkeyhint="next"
-          value={formatNumber(value)}
+          value={formatNumber(value, decimals)}
           aria-describedby={hintId}
           data-amount
         />
@@ -77,7 +80,7 @@ const hintId = `${id}-hint`;
       value={value}
       style={`--fill: ${fill}`}
       aria-label={sliderOnly ? undefined : `${label} (סרגל)`}
-      aria-valuetext={`${formatNumber(value)}${suffix ? ` ${suffix}` : ' ₪'}`}
+      aria-valuetext={`${formatNumber(value, decimals)}${suffix ? ` ${suffix}` : ' ₪'}`}
       tabindex={sliderOnly ? undefined : '-1'}
       data-range
     />

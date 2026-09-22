@@ -1,40 +1,142 @@
 # [BRAND]: Israeli mortgage refinance calculator
 
-Hebrew RTL site built with Astro (static) on Cloudflare (Workers static assets + D1). The brand name and domain are set once, in `src/config/site.ts`.
+A Hebrew RTL site with free mortgage calculators. The money page (`/`) is a refinance calculator that shows a result first and asks for contact details last. Visitors who opt in, and verify their phone by SMS, become exclusive leads for one mortgage advisor.
 
-## Commands
+Stack:
+- **Site:** Astro, with static pages and small vanilla-TS islands.
+- **Hosting:** Cloudflare Workers with static assets.
+- **Database:** Cloudflare D1.
+
+## Quick start
+
+```sh
+npm install
+cp .dev.vars.example .dev.vars                            # local secrets (mock SMS, admin password)
+npx wrangler d1 migrations apply mortgage-leads --local   # create the local DB
+npm run dev                                               # http://localhost:4321
+```
+
+In development, the SMS provider is a mock. The code is logged in the terminal and shown under the code boxes.
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Local dev server |
-| `npm run build` | Static build to `dist/client` (plus the worker in `dist/server`) |
-| `npm test` | Unit tests: math, formatting, data-file schema |
+| `npm run dev` / `npm run build` / `npm run preview` | Dev server / static build + worker / preview on workerd |
+| `npm test` | Unit tests: maths, formatting, data-file schema, scoring, lead validation, OTP tokens |
+| `npm run check` | Type check (Astro + TypeScript) |
 | `npm run todo-verify` | Lists every data value still marked `TODO_VERIFY` (`-- --md` prints a table) |
-| `npm run contrast` | Checks WCAG contrast for every token pair in both themes |
-| `npm run build:fonts` | Rebuilds the Heebo subsets in `public/fonts/` |
-| `npm run font-audit` | Tabular-digit and ₪ coverage check for candidate fonts |
+| `npm run contrast` | WCAG contrast of every colour token pair, both themes |
+| `npm run build:fonts` | Rebuilds the self-hosted Heebo subsets |
+| `npm run cf-typegen` | Regenerates Worker binding types after editing `wrangler.jsonc` |
 
-## Layout
+## Where things live
 
 ```
-lib/mortgage/     Pure math (no DOM/Node APIs): annuity, rate solver, savings range,
-                  prepayment-fee estimate, schedules, affordability, purchase tax, formatting, phone
-lib/data/         Loads data/*.json → typed inputs (percent → fraction happens here only)
-data/*.json       Market numbers and methodology parameters. Every value: source + lastUpdated
-src/styles/       tokens.css (design tokens), base.css, components.css
-src/pages/dev/    /dev/tokens/: noindex token specimen, both themes
+src/config/site.ts        [BRAND], [DOMAIN], origin, contact, editorial names, Clarity/GSC/Turnstile slots
+src/config/calculator.ts  Refinance defaults and input ranges
+src/config/consent.ts     Consent wording (versioned) and "what happens next" copy
+config/scoring.ts         Lead scoring thresholds, weights, tiers (server-only)
+lib/mortgage/             Pure maths: annuity, rate solver, savings range, prepayment fee,
+                          schedules, affordability, purchase tax, formatting, phone
+lib/scoring/              Pure lead scoring
+lib/data/                 Loads data/*.json into typed inputs
+data/*.json               Market numbers and methodology parameters (each with source + lastUpdated)
+src/ui/                   View models shared by the static HTML and the browser (no hydration drift)
+src/scripts/              Client islands: refinance flow, fields, chips, lead gate, analytics, motion
+src/server/               Worker code: OTP, SMS providers, lead intake, notifications, guards, admin auth
+src/pages/api/            POST /api/otp/send/, /api/otp/verify/, /api/lead/, /api/alert/
+src/pages/lead/[token]    Advisor's private status link (contacted / meeting / closed / not relevant)
+src/pages/admin/          Operator review of Tier B leads, outcomes per tier, CSV export (Basic auth)
+src/content/guides/       Guide outlines (draft, noindex until written)
+src/seo/                  JSON-LD builders and the page registry (sitemap, llms.txt, OG images)
+migrations/               D1 schema
 ```
 
-Rate convention: nominal annual rate, monthly compounding (monthly = annual / 12).
+## How a lead flows
 
-## Values to verify before launch
+1. The visitor sees a result without giving any details. Opting in asks for first name, mobile, timing and an unchecked contact consent (plus a separate optional marketing consent).
+2. `POST /api/otp/send/` sends a 6-digit SMS code:
+   - rate limited per IP (10/h) and per phone (3/10 min)
+   - Turnstile check when configured
+   - honeypot field
+3. `POST /api/otp/verify/` checks the code and returns a signed 30-minute token. Codes are hashed, expire after 10 min and allow 5 attempts.
+4. `POST /api/lead/`:
+   - Validates the payload and rejects unverified phones.
+   - Recomputes every number on the server, so client figures are never trusted, and scores the lead.
+   - Stores it with inputs, results, score breakdown, UTM and entry page.
+5. Routing:
+   - **Tier A:** delivered to the single advisor, with email plus a signed webhook and a private status link.
+   - **Tier B:** held for `/admin`, and the operator is emailed.
+   - **Tier C:** nurture list.
+   - A repeat phone within 30 days is marked as a duplicate and not redelivered.
+6. The visitor never sees the score or tier.
 
-Run `npm run todo-verify -- --md` for the current list. At the end of phase 1 there are 22:
+Rate alerts (`/api/alert/`) collect only an email or WhatsApp number, from visitors below the threshold.
 
-- **Bank of Israel:**
-  - track rates and their period (`rates.json`)
-  - fixed-rate ranges by origination period (`rates.json`)
-  - prepayment-fee operational fee, time discounts and notice discount (`prepayment-fee.json`)
-  - LTV limits, payment-to-income cap and max term (`regulation.json`)
-  - switching costs (`assumptions.json`)
-- **Israel Tax Authority:** purchase-tax brackets and their `validFrom` date (`purchase-tax.json`). The current brackets are round-number placeholders, not the real table.
+## Going live checklist
+
+1. **Brand:** set `SITE` in `src/config/site.ts` (brand, domain, `url`, contact, legal name, editorial names).
+2. **D1:**
+   - Run `npx wrangler d1 create mortgage-leads` and put the id in `wrangler.jsonc`.
+   - Run `npx wrangler d1 migrations apply mortgage-leads --remote`.
+3. **Secrets:** add each with `npx wrangler secret put <NAME>`:
+   - `OTP_SECRET`, `ADMIN_PASSWORD`, `ADMIN_EMAIL`
+   - `ADVISOR_NAME`, `ADVISOR_EMAIL`, `ADVISOR_WEBHOOK_URL`, `WEBHOOK_SECRET`
+   - `RESEND_API_KEY`, `EMAIL_FROM`
+   - `TURNSTILE_SECRET`, `PUBLIC_ORIGIN`
+4. **SMS:**
+   - Set `SMS_PROVIDER=http` with `SMS_HTTP_URL`, `SMS_HTTP_AUTH` and `SMS_SENDER`.
+   - Or implement `SmsProvider` in `src/server/sms.ts` for your Israeli provider.
+   - Never set `EXPOSE_DEV_OTP` in production.
+5. **Turnstile:** put the public site key in `INTEGRATIONS.turnstileSiteKey`.
+6. **Analytics:** put the Clarity id and the Search Console token in `INTEGRATIONS`. Funnel events are pushed to `window.dataLayer`:
+   - `step1_complete`, `result_view`
+   - `question_taken`, `question_fixed`, `question_goal`, `question_skipped`
+   - `lead_gate_view`, `otp_sent`, `otp_verified`, `lead_submitted`
+   - `rate_alert_view`, `rate_alert_submitted`, `calculator_used`
+   - Every event carries `entry_page`.
+7. **Verify data:** fill every value in the table below. Remove `TODO_VERIFY` and the `PLACEHOLDER` note and set `lastUpdated`. The tests enforce this.
+8. **Legal:** have a lawyer review `/privacy/` and `/terms/`, then remove `draft` and `noindex`. Fill in the accessibility coordinator in `/accessibility/`.
+9. **Content:** write the guides (`src/content/guides/*.md`) and the bank pages, then set `draft: false`. Drafts are noindex and kept out of the sitemap and `llms.txt`.
+10. **Deploy:** `npm run build && npx wrangler deploy`.
+
+## Values to verify before launch (`TODO_VERIFY`)
+
+There are 22 at the moment; regenerate this table with `npm run todo-verify -- --md`.
+
+| File | Path | Placeholder | Source to check |
+|---|---|---|---|
+| `assumptions.json` | `switchingCosts` | `[2000,6000]` | Bank of Israel / market quotes |
+| `prepayment-fee.json` | `operationalFee` | `60` | Bank of Israel (early-repayment fee rules) |
+| `prepayment-fee.json` | `timeDiscounts` | `0 / 20% after 1y / 30% after 3y` | Bank of Israel |
+| `prepayment-fee.json` | `noticeDiscount` | `0.1` | Bank of Israel |
+| `purchase-tax.json` | `validFrom` | `"2026-01-16"` | Israel Tax Authority |
+| `purchase-tax.json` | `singleHome.brackets` | round-number placeholders | Israel Tax Authority |
+| `purchase-tax.json` | `additionalHome.brackets` | round-number placeholders | Israel Tax Authority |
+| `rates.json` | `period` | `"2026-08"` | Bank of Israel |
+| `rates.json` | `tracks.prime` | `4.5` | Bank of Israel |
+| `rates.json` | `tracks.fixedUnlinked` | `5` | Bank of Israel |
+| `rates.json` | `tracks.fixedLinked` | `3.5` | Bank of Israel |
+| `rates.json` | `tracks.variableUnlinked5y` | `4.75` | Bank of Israel |
+| `rates.json` | `tracks.variableLinked5y` | `3.25` | Bank of Israel |
+| `rates.json` | `fixedRateByOriginBucket.before2015` | `[4,6]` | Bank of Israel (historical) |
+| `rates.json` | `fixedRateByOriginBucket.2015to2019` | `[2.5,4]` | Bank of Israel (historical) |
+| `rates.json` | `fixedRateByOriginBucket.2020to2022` | `[2,3.5]` | Bank of Israel (historical) |
+| `rates.json` | `fixedRateByOriginBucket.since2023` | `[4.5,6]` | Bank of Israel (historical) |
+| `regulation.json` | `maxLtv.firstHome` | `0.75` | Bank of Israel |
+| `regulation.json` | `maxLtv.replacementHome` | `0.7` | Bank of Israel |
+| `regulation.json` | `maxLtv.additionalHome` | `0.5` | Bank of Israel |
+| `regulation.json` | `maxPaymentToIncome` | `0.5` | Bank of Israel |
+| `regulation.json` | `maxTermYears` | `30` | Bank of Israel |
+
+The `source` fields currently point at the regulator's home page. Replace each with the exact publication URL when you verify it.
+
+## Modelling notes
+
+- **Rates:** nominal annual, monthly compounding.
+- **Savings range:**
+  - The low end uses a higher new rate and the highest fee and switching costs; the high end the reverse. The rate band narrows as the optional questions are answered.
+  - Both ends are rounded down to ₪1,000.
+  - When the low end is not a meaningful saving, the page shows "עד ₪Y" ("up to ₪Y").
+- **Prepayment fee:** estimated for fixed tracks only. The contract rate is capped by the loan's own solved rate.
+- **CPI:** linkage is not modelled, and the site says so.
+- Full details are on `/methodology/`, which renders live from the data files.

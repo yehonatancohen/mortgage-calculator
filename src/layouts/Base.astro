@@ -42,7 +42,8 @@ const ld = [organizationLd(), ...(path === '/' ? [websiteLd()] : []), ...(breadc
     <meta name="theme-color" content="#f3f6f8" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0c1114" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
     <meta property="og:type" content={ogType} />
     <meta property="og:locale" content="he_IL" />
     <meta property="og:site_name" content={SITE.brand} />

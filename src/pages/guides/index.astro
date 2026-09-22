@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+import ProsePage from '../../layouts/ProsePage.astro';
+
+const guides = (await getCollection('guides')).sort((a, b) => a.data.order - b.data.order);
+---
+<ProsePage
+  title="מדריכי משכנתא"
+  description="מדריכים קצרים וברורים על מחזור משכנתא, מסלולים, עמלות ויועצי משכנתאות."
+  answer="מדריכים קצרים שעונים על שאלה אחת כל אחד, עם מספרים מתוארכים וקישור למחשבון המתאים."
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מדריכים', path: '/guides/' }]}
+>
+  <ul class="link-list">
+    {guides.map((g) => (
+      <li>
+        <a href={`/guides/${g.id}/`}>
+          <span class="link-list__title">{g.data.title}</span>
+          <span class="link-list__text">{g.data.answer}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</ProsePage>

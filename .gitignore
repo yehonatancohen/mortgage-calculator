@@ -11,3 +11,4 @@ dist/
 .claude/settings.local.json
 .impeccable/questions/
 .astro-dev.log
+.astro-preview.log

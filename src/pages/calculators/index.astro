@@ -1,0 +1,24 @@
+---
+import ProsePage from '../../layouts/ProsePage.astro';
+
+const calcs = [
+  { href: '/', title: 'מחשבון מחזור משכנתא', text: 'כמה תחסכו אם תמחזרו, נטו אחרי עמלות. תוצאה מיידית.' },
+  { href: '/calculators/monthly-payment/', title: 'החזר חודשי', text: 'כמה תשלמו כל חודש, בשפיצר ובקרן שווה.' },
+  { href: '/calculators/how-much-mortgage/', title: 'כמה משכנתא אפשר לקבל', text: 'לפי הכנסה, הון עצמי ומגבלות המימון.' },
+  { href: '/calculators/prepayment-fee/', title: 'עמלת פירעון מוקדם', text: 'הערכת העמלה על מסלול בריבית קבועה.' },
+  { href: '/calculators/purchase-tax/', title: 'מס רכישה', text: 'לפי מדרגות רשות המסים, לדירה יחידה ונוספת.' },
+  { href: '/calculators/amortization/', title: 'לוח סילוקין', text: 'שפיצר מול קרן שווה, שנה אחר שנה.' },
+];
+---
+<ProsePage
+  title="מחשבוני משכנתא"
+  description="מחשבוני משכנתא חינמיים: מחזור, החזר חודשי, כמה משכנתא אפשר לקבל, עמלת פירעון מוקדם, מס רכישה ולוח סילוקין."
+  answer="כל המחשבונים חינמיים, מציגים תוצאה מיד ומפרטים את ההנחות שלהם."
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }]}
+>
+  <ul class="link-list">
+    {calcs.map((c) => (
+      <li><a href={c.href}><span class="link-list__title">{c.title}</span><span class="link-list__text">{c.text}</span></a></li>
+    ))}
+  </ul>
+</ProsePage>

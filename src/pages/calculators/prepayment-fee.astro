@@ -1,0 +1,93 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import { datasets, refinanceAssumptions, trackRates } from '../../../lib/data';
+import { formatILS, formatPercent } from '../../../lib/mortgage';
+import { feeView, type FeeState } from '../../ui/calcs';
+
+const params = refinanceAssumptions().fee;
+const market = Math.round(trackRates.fixedUnlinked * 100 * 20) / 20;
+const initial: FeeState = { balance: 400_000, contract: 5.5, market, years: 15, elapsed: 4, notice: false };
+const v = feeView(initial, params);
+const updated = datasets.prepaymentFee.operationalFee.lastUpdated;
+
+const scenarios = [
+  { label: 'ריבית בחוזה גבוהה מהשוק', s: { ...initial, contract: market + 1.5 } },
+  { label: 'ריבית בחוזה קרובה לשוק', s: { ...initial, contract: market + 0.25 } },
+  { label: 'ריבית בחוזה נמוכה מהשוק', s: { ...initial, contract: Math.max(0.5, market - 1.5) } },
+].map((x) => ({ ...x, v: feeView(x.s, params) }));
+
+const faq = [
+  { q: 'מה זו עמלת פירעון מוקדם?', a: 'עמלה שהבנק גובה כשמחזירים משכנתא לפני הזמן. החלק הגדול שלה, עמלת היוון, נגבה בעיקר במסלולים בריבית קבועה, כשהריבית בשוק היום נמוכה מהריבית שנקבעה בחוזה.' },
+  { q: 'על אילו מסלולים יש עמלה גבוהה?', a: 'בעיקר על מסלולים בריבית קבועה, צמודים ולא צמודים. במסלול פריים ובמסלולים משתנים במועד שינוי הריבית העמלה בדרך כלל נמוכה מאוד.' },
+  { q: 'איך מקטינים את העמלה?', a: 'הודעה מוקדמת לבנק מקנה הנחה, וככל שעבר יותר זמן מלקיחת ההלוואה ההנחה גדלה. לפעמים משתלם למחזר רק את המסלולים הזולים לפירעון ולהשאיר את הקבוע.' },
+  { q: 'עד כמה ההערכה מדויקת?', a: 'זו הערכה פשוטה של עמלת ההיוון וההנחות. הבנק מחשב לפי הריבית הממוצעת שהוא מפרסם ולפי לוח הסילוקין המדויק, ולכן כדאי לבקש ממנו מכתב כמויות (דוח יתרות לסילוק) לפני החלטה.' },
+];
+---
+<CalculatorPage
+  title="מחשבון עמלת פירעון מוקדם"
+  description="הערכת עמלת פירעון מוקדם למשכנתא במסלול קבוע: עמלת היוון, הנחת זמן, הנחת הודעה מוקדמת ועמלה תפעולית."
+  answer="עמלת פירעון מוקדם נגבית בעיקר על מסלולים בריבית קבועה, כשהריבית היום נמוכה מהריבית בחוזה. הזינו את נתוני המסלול וקבלו הערכה."
+  appName="מחשבון עמלת פירעון מוקדם"
+  updated={updated}
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'עמלת פירעון מוקדם', path: '/calculators/prepayment-fee/' }]}
+  sources={[{ label: 'בנק ישראל: עמלת פירעון מוקדם', url: 'https://www.boi.org.il/' }]}
+  next={{ href: '/', title: 'משתלם למחזר גם אחרי העמלה?', text: 'מחשבון המחזור מחסיר את העמלה ומציג חיסכון נטו.' }}
+>
+  <div class="card calc-card" data-calc="prepayment-fee">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial, params })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="balance" label="יתרה במסלול הקבוע" value={initial.balance} min={10_000} max={3_000_000} step={10_000} textMin={1_000} textMax={20_000_000} shorthand="balance" scale={['₪10K', '₪3M']} />
+      <AmountField name="contract" label="הריבית בחוזה" value={initial.contract} min={0.5} max={10} step={0.05} textMin={0.1} textMax={20} unit="none" suffix="%" decimals={2} scale={['0.5%', '10%']} />
+      <AmountField name="market" label="הריבית הממוצעת היום" value={initial.market} min={0.5} max={10} step={0.05} textMin={0.1} textMax={20} unit="none" suffix="%" decimals={2} scale={['0.5%', '10%']} hint="ממוצע לפי נתוני בנק ישראל. אפשר לשנות." />
+      <AmountField name="years" label="שנים שנותרו במסלול" value={initial.years} min={1} max={30} step={1} sliderOnly suffix="שנים" scale={['1', '30']} />
+      <AmountField name="elapsed" label="שנים מאז שנלקחה" value={initial.elapsed} min={0} max={30} step={1} sliderOnly suffix="שנים" scale={['0', '30']} />
+      <label class="check check--plain"><input type="checkbox" data-check="notice" /> <span>אתן לבנק הודעה מוקדמת</span></label>
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">עמלה משוערת</p>
+        <p class="result__figure result__figure--neutral" data-out="total" data-count style={`--chars: ${v.out.total!.length}`}>{v.out.total}</p>
+      </div>
+      <p class="calc-card__note" data-out="why">{v.out.why}</p>
+      <dl class="kv" data-summary>
+        <div><dt>עמלת היוון</dt><dd data-out="capitalization">{v.out.capitalization}</dd></div>
+        <div><dt>הנחה לפי ותק</dt><dd data-out="timeDiscount">{v.out.timeDiscount}</dd></div>
+        <div><dt>הנחת הודעה מוקדמת</dt><dd data-out="noticeDiscount">{v.out.noticeDiscount}</dd></div>
+        <div><dt>עמלה תפעולית</dt><dd data-out="operational">{v.out.operational}</dd></div>
+      </dl>
+      <p class="disclaimer">הערכה מפושטת, לא החישוב של הבנק. <a href="/methodology/">איך חישבנו</a></p>
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <p>מסלול קבוע עם יתרה של {formatILS(initial.balance)}, {initial.years} שנים שנותרו, {initial.elapsed} שנים מאז שנלקח, ריבית שוק {formatPercent(market / 100)}:</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">תרחיש</th><th scope="col" class="num">ריבית בחוזה</th><th scope="col" class="num">עמלה משוערת</th></tr></thead>
+        <tbody>
+          {scenarios.map((x) => <tr><th scope="row">{x.label}</th><td class="num">{formatPercent(x.s.contract / 100)}</td><td class="num">{x.v.out.total}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p><strong>עמלת היוון</strong> היא ההפרש בין הערך הנוכחי של התשלומים שנותרו, מהוונים בריבית של היום, לבין היתרה. אם הריבית היום נמוכה מהריבית בחוזה, הערך הזה גבוה מהיתרה, והבנק גובה את ההפרש.</p>
+    <p>מההפרש מנוכות הנחה לפי הזמן שעבר מלקיחת ההלוואה והנחה על הודעה מוקדמת, ומתווספת עמלה תפעולית קבועה. הפרמטרים לקוחים מקובץ נתונים שמתעדכן לפי הנחיות בנק ישראל.</p>
+    <p>המחשבון לא כולל עמלת הפרשי הצמדה ורכיבים ייחודיים לכל בנק. לחישוב המדויק בקשו מהבנק דוח יתרות לסילוק.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { feeView, type FeeState } from '../../ui/calcs';
+  import type { PrepaymentFeeParams } from '../../../lib/mortgage';
+  const root = document.querySelector<HTMLElement>('[data-calc="prepayment-fee"]');
+  if (root) {
+    const { initial, params } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: FeeState; params: PrepaymentFeeParams };
+    initCalc(root, initial, (s) => feeView(s, params));
+  }
+</script>
