@@ -1,0 +1,53 @@
+---
+import { SITE } from '../config/site';
+const year = 2026;
+const groups = [
+  {
+    title: 'מחשבונים',
+    links: [
+      ['/', 'מחזור משכנתא'],
+      ['/calculators/monthly-payment/', 'החזר חודשי'],
+      ['/calculators/prepayment-fee/', 'עמלת פירעון מוקדם'],
+      ['/calculators/how-much-mortgage/', 'כמה משכנתא אפשר לקבל'],
+      ['/calculators/purchase-tax/', 'מס רכישה'],
+      ['/calculators/amortization/', 'לוח סילוקין'],
+    ],
+  },
+  {
+    title: 'מידע',
+    links: [
+      ['/ribit-mashkanta-hayom/', 'ריבית משכנתא היום'],
+      ['/guides/', 'מדריכים'],
+      ['/banks/', 'מחזור לפי בנק'],
+      ['/methodology/', 'איך אנחנו מחשבים'],
+    ],
+  },
+  {
+    title: 'עלינו',
+    links: [
+      ['/about/', 'אודות'],
+      ['/privacy/', 'מדיניות פרטיות'],
+      ['/terms/', 'תנאי שימוש'],
+      ['/accessibility/', 'הצהרת נגישות'],
+    ],
+  },
+];
+---
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__about">
+      <p class="site-footer__brand">{SITE.brand}</p>
+      <p>{SITE.tagline}</p>
+    </div>
+    {groups.map((g) => (
+      <nav class="site-footer__group" aria-label={g.title}>
+        <h2>{g.title}</h2>
+        <ul>{g.links.map(([href, label]) => <li><a href={href}>{label}</a></li>)}</ul>
+      </nav>
+    ))}
+  </div>
+  <div class="site-footer__legal">
+    <p>המידע והמחשבונים באתר הם הערכה בלבד ואינם ייעוץ פיננסי. <a href="/methodology/">פרטים והנחות</a>.</p>
+    <p>© <bdi class="num">{year}</bdi> {SITE.brand}</p>
+  </div>
+</footer>

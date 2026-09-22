@@ -65,6 +65,7 @@ export function refinanceAssumptions(): RefinanceAssumptions {
     fixedShareIfYes: a.fixedShareIfYes.value as [number, number],
     fixedShareIfUnknown: a.fixedShareIfUnknown.value as [number, number],
     fixedRateByBucket,
+    fixedRateMaxAboveBlended: pct(a.fixedRateMaxAboveBlended.value),
     yearsElapsedByBucket,
     switchingCosts: a.switchingCosts.value as [number, number],
     meaningfulTotal: a.meaningfulTotal.value,

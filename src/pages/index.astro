@@ -1,0 +1,98 @@
+---
+import CalculatorPage from '../layouts/CalculatorPage.astro';
+import RefinanceCalculator from '../components/refinance/RefinanceCalculator.astro';
+import { datasets, refinanceAssumptions } from '../../lib/data';
+import { formatILS, formatILSRange, formatPercent, refinanceSavings, headline } from '../../lib/mortgage';
+import { REFI } from '../config/calculator';
+import { hebrewMonth } from '../ui/dates';
+
+const a = refinanceAssumptions();
+const updated = datasets.rates.tracks.prime.lastUpdated;
+const period = hebrewMonth(String(datasets.rates.period.value));
+
+const examples = [
+  { name: 'ברירת המחדל במחשבון', balance: REFI.defaults.balance, payment: REFI.defaults.payment, years: REFI.defaults.years },
+  { name: 'משכנתא יקרה יותר', balance: 1_200_000, payment: 8_300, years: 22 },
+].map((e) => {
+  const r = refinanceSavings({ balance: e.balance, monthlyPayment: e.payment, months: e.years * 12 }, a);
+  if (!r.ok) throw new Error(`Worked example is invalid: ${e.name}`);
+  const h = headline(r);
+  const result = h.kind === 'range' ? formatILSRange(h.low, h.high) : h.kind === 'upTo' ? `עד ${formatILS(h.high)}` : 'אין חיסכון משמעותי';
+  return { ...e, r, h, result };
+});
+const [ex1, ex2] = examples as [(typeof examples)[0], (typeof examples)[0]];
+const r10 = (n: number) => Math.floor(n / 10) * 10;
+
+const faq = [
+  {
+    q: 'מתי כדאי למחזר משכנתא?',
+    a: 'בדרך כלל כשהריבית שלך גבוהה במידה ניכרת מהריבית שהבנקים נותנים היום, ונשארו מספיק שנים כדי שהחיסכון יעלה על עמלת הפירעון המוקדם ועלויות המעבר. המחשבון מחשב את הפער הזה מהנתונים שלך.',
+  },
+  {
+    q: 'למה התוצאה מוצגת כטווח ולא כמספר אחד?',
+    a: 'הריבית שתקבל/י תלויה בפרופיל שלך ובתמהיל המסלולים, ועמלת הפירעון תלויה במסלולים הקיימים. לכן אנחנו מחשבים תרחיש שמרני ותרחיש אופטימי ומציגים את הטווח ביניהם. אם בתרחיש השמרני אין חיסכון, מוצג רק הסכום המרבי.',
+  },
+  {
+    q: 'האם החישוב כולל את עמלת הפירעון המוקדם?',
+    a: 'כן. החיסכון המוצג הוא נטו: אחרי הערכה של עמלת הפירעון המוקדם ושל עלויות מעבר כמו שמאות ופתיחת תיק. ההערכה פשוטה ביודעין; את העמלה המדויקת הבנק מחשב לפי המסלולים שלך.',
+  },
+  {
+    q: 'האם צריך להשאיר פרטים כדי לראות תוצאה?',
+    a: 'לא. התוצאה מוצגת מיד ובלי פרטים. רק אם תרצה/י שיועץ יבדוק את המשכנתא, נבקש שם וטלפון ונאמת את המספר ב־SMS.',
+  },
+  {
+    q: 'מה קורה עם הטלפון שלי אם אבקש בדיקה?',
+    a: 'הפרטים מועברים ליועץ משכנתאות עצמאי אחד בלבד, שיחזור אליך. המספר לא נמכר ולא מועבר לגורמים נוספים.',
+  },
+];
+---
+<CalculatorPage
+  title="מחשבון מחזור משכנתא"
+  metaTitle="מחשבון מחזור משכנתא: כמה תחסכו? תוצאה מיידית בלי פרטים"
+  description="מחשבון מחזור משכנתא: הזינו יתרה, החזר חודשי ושנים שנותרו, ותראו מיד טווח חיסכון נטו אחרי עמלת פירעון מוקדם. בלי להשאיר פרטים."
+  answer="הזינו יתרה, החזר חודשי ושנים שנותרו, ותראו מיד כמה אפשר לחסוך במחזור. בלי להשאיר פרטים."
+  appName="מחשבון מחזור משכנתא"
+  updated={updated}
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }]}
+  sources={[
+    { label: 'בנק ישראל: ריביות ממוצעות על משכנתאות', url: 'https://www.boi.org.il/' },
+    { label: 'בנק ישראל: עמלת פירעון מוקדם', url: 'https://www.boi.org.il/' },
+  ]}
+  next={{ href: '/calculators/prepayment-fee/', title: 'כמה תעלה עמלת הפירעון המוקדם?', text: 'חשבו את העמלה על מסלול קבוע לפני שמחליטים.' }}
+>
+  <RefinanceCalculator />
+
+  <Fragment slot="example">
+    <p>שתי דוגמאות לפי ריביות ממוצעות מ{period}. חיסכון נטו לאורך התקופה, אחרי עמלות ועלויות מעבר.</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption>עיגול כלפי מטה לאלף שקלים. הערכה בלבד.</caption>
+        <thead>
+          <tr><th scope="col"></th><th scope="col">{ex1.name}</th><th scope="col">{ex2.name}</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">יתרת המשכנתא</th><td class="num">{formatILS(ex1.balance)}</td><td class="num">{formatILS(ex2.balance)}</td></tr>
+          <tr><th scope="row">החזר חודשי נוכחי</th><td class="num">{formatILS(ex1.payment)}</td><td class="num">{formatILS(ex2.payment)}</td></tr>
+          <tr><th scope="row">שנים שנותרו</th><td class="num">{ex1.years}</td><td class="num">{ex2.years}</td></tr>
+          <tr><th scope="row">ריבית אפקטיבית נוכחית</th><td class="num">{formatPercent(ex1.r.currentRate)}</td><td class="num">{formatPercent(ex2.r.currentRate)}</td></tr>
+          <tr><th scope="row">ריבית במחזור (טווח)</th><td class="num">{formatPercent(ex1.r.newRate.low)}–{formatPercent(ex1.r.newRate.high)}</td><td class="num">{formatPercent(ex2.r.newRate.low)}–{formatPercent(ex2.r.newRate.high)}</td></tr>
+          <tr><th scope="row">החזר חודשי אחרי מחזור</th><td class="num">{formatILSRange(r10(ex1.r.newPayment.low), r10(ex1.r.newPayment.high))}</td><td class="num">{formatILSRange(r10(ex2.r.newPayment.low), r10(ex2.r.newPayment.high))}</td></tr>
+          <tr><th scope="row">עמלת פירעון ועלויות מעבר</th><td class="num">{formatILSRange(r10(ex1.r.fee.low + ex1.r.switchingCosts.low), r10(ex1.r.fee.high + ex1.r.switchingCosts.high))}</td><td class="num">{formatILSRange(r10(ex2.r.fee.low + ex2.r.switchingCosts.low), r10(ex2.r.fee.high + ex2.r.switchingCosts.high))}</td></tr>
+          <tr class="is-total"><th scope="row">חיסכון נטו אפשרי</th><td class="num">{ex1.result}</td><td class="num">{ex2.result}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p><strong>מחזור משכנתא</strong> הוא החלפת המשכנתא הקיימת בהלוואה חדשה, באותו בנק או בבנק אחר, בתנאים טובים יותר. הוא משתלם כשהחיסכון בריבית גדול מהעלויות: עמלת הפירעון המוקדם ועלויות פתיחת ההלוואה החדשה.</p>
+    <p>המחשבון עושה שלושה דברים:</p>
+    <ol>
+      <li>מחשב את הריבית האפקטיבית שלך מתוך היתרה, ההחזר החודשי ומספר החודשים שנותרו.</li>
+      <li>משווה אותה לטווח סביב הריבית הממוצעת למשכנתא חדשה, לפי נתוני בנק ישראל.</li>
+      <li>מחשב את ההחזר החדש ואת החיסכון לאורך התקופה, ומחסיר הערכה של עמלת הפירעון ועלויות המעבר.</li>
+    </ol>
+    <p>שלוש שאלות אופציונליות (מתי נלקחה המשכנתא, האם יש מסלול קבוע ומה המטרה) מצמצמות את הטווח. החישוב לא כולל הצמדה למדד, ולכן ההחזר בפועל במסלולים צמודים ישתנה עם המדד.</p>
+  </Fragment>
+</CalculatorPage>

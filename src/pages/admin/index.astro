@@ -1,0 +1,143 @@
+---
+/**
+ * Operator admin: review Tier B leads, deliver or move to nurture, see outcomes per tier
+ * (the data used to recalibrate config/scoring.ts). Protected by Basic auth.
+ */
+import Base from '../../layouts/Base.astro';
+import { adminAuthorized, unauthorized } from '../../server/auth';
+import { getEnv } from '../../server/env';
+import { sameOrigin } from '../../server/guard';
+import { deliverHeldLead, logEvent, timingLabel } from '../../server/leads';
+
+export const prerender = false;
+
+const env = getEnv();
+if (!(await adminAuthorized(env, Astro.request))) return unauthorized();
+Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
+Astro.response.headers.set('cache-control', 'no-store');
+
+const origin = env.PUBLIC_ORIGIN ?? Astro.url.origin;
+let message = '';
+if (Astro.request.method === 'POST' && sameOrigin(Astro.request)) {
+  const form = await Astro.request.formData();
+  const id = String(form.get('id') ?? '');
+  const action = String(form.get('action') ?? '');
+  if (action === 'deliver') {
+    message = (await deliverHeldLead(env, origin, id)) ? 'הליד נשלח ליועץ.' : 'לא ניתן לשלוח את הליד הזה.';
+  } else if (action === 'nurture') {
+    await env.DB.prepare(`UPDATE leads SET status = 'nurture', tier = 'C' WHERE id = ?1 AND status = 'held'`).bind(id).run();
+    await logEvent(env, id, 'tier_changed', { to: 'C', by: 'admin' });
+    message = 'הליד הועבר לרשימת טיפוח.';
+  }
+}
+
+const filter = Astro.url.searchParams.get('status') ?? 'held';
+const STATUSES = ['held', 'delivered', 'nurture', 'duplicate', 'all'] as const;
+const where = filter === 'all' ? '' : 'WHERE status = ?1';
+const stmt = env.DB.prepare(`SELECT id, created_at, kind, first_name, phone, timing, tier, score, score_json, status, outcome, entry_page, inputs_json FROM leads ${where} ORDER BY created_at DESC LIMIT 200`);
+const { results: leads } = await (filter === 'all' ? stmt : stmt.bind(filter)).all<Record<string, string | number | null>>();
+
+const { results: outcomes } = await env.DB.prepare(
+  `SELECT tier, COUNT(*) AS n,
+     SUM(outcome = 'contacted') AS contacted, SUM(outcome = 'meeting') AS meeting,
+     SUM(outcome = 'closed') AS closed, SUM(outcome = 'not_relevant') AS not_relevant,
+     ROUND(AVG(score), 1) AS avg_score
+   FROM leads WHERE status != 'duplicate' GROUP BY tier ORDER BY tier`,
+).all<Record<string, number | string>>();
+const alerts = await env.DB.prepare('SELECT COUNT(*) AS n FROM rate_alerts WHERE unsubscribed_at IS NULL').first<{ n: number }>();
+
+const STATUS_LABEL: Record<string, string> = { held: 'לבדיקה', delivered: 'נשלחו', nurture: 'טיפוח', duplicate: 'כפולים', all: 'הכול' };
+const groups = (json: unknown) => {
+  try {
+    const s = JSON.parse(String(json));
+    return s.groups ? `ערך ${s.groups.value} · התאמה ${s.groups.fit} · כוונה ${s.groups.intent}` : (s.reasons ?? []).join(', ');
+  } catch {
+    return '';
+  }
+};
+---
+<Base title="ניהול לידים" description="ניהול" noindex bare>
+  <main id="main" class="page admin">
+    <header class="admin__head">
+      <h1>לידים</h1>
+      <nav class="chips" aria-label="סינון">
+        {STATUSES.map((s) => <a class="chip" href={`?status=${s}`} aria-pressed={filter === s ? 'true' : 'false'}>{STATUS_LABEL[s]}</a>)}
+      </nav>
+      <a href="/admin/export.csv">ייצוא CSV</a>
+    </header>
+    {message && <p class="notice" role="status">{message}</p>}
+
+    <section>
+      <h2>תוצאות לפי דרגה</h2>
+      <p class="meta-line">בסיס לכיול המשקלים ב־<code>config/scoring.ts</code>. התראות ריבית פעילות: <bdi class="num">{alerts?.n ?? 0}</bdi>.</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>דרגה</th><th class="num">לידים</th><th class="num">ציון ממוצע</th><th class="num">קשר</th><th class="num">פגישה</th><th class="num">נסגר</th><th class="num">לא רלוונטי</th></tr></thead>
+          <tbody>
+            {outcomes.map((o) => (
+              <tr><th scope="row">{o.tier}</th><td class="num">{o.n}</td><td class="num">{o.avg_score ?? '—'}</td><td class="num">{o.contacted ?? 0}</td><td class="num">{o.meeting ?? 0}</td><td class="num">{o.closed ?? 0}</td><td class="num">{o.not_relevant ?? 0}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>{STATUS_LABEL[filter] ?? filter} (<bdi class="num">{leads.length}</bdi>)</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>נוצר</th><th>שם</th><th>טלפון</th><th>סוג</th><th>מתי</th><th>דרגה</th><th class="num">ציון</th><th>פירוט</th><th>כניסה</th><th>תוצאה</th><th>פעולה</th></tr></thead>
+          <tbody>
+            {leads.map((l) => (
+              <tr>
+                <td class="num">{String(l.created_at).slice(0, 16)}</td>
+                <td>{l.first_name}</td>
+                <td class="num"><a href={`tel:${l.phone}`}>{String(l.phone).replace('+972', '0')}</a></td>
+                <td>{l.kind === 'refinance' ? 'מחזור' : 'רכישה'}</td>
+                <td>{timingLabel(String(l.timing))}</td>
+                <td>{l.tier}</td>
+                <td class="num">{l.score ?? '—'}</td>
+                <td>{groups(l.score_json)}</td>
+                <td class="num">{l.entry_page}</td>
+                <td>{l.outcome ?? '—'}</td>
+                <td>
+                  {l.status === 'held' && (
+                    <form method="post" class="admin__actions">
+                      <input type="hidden" name="id" value={String(l.id)} />
+                      <button class="btn btn--secondary" name="action" value="deliver">שליחה ליועץ</button>
+                      <button class="btn btn--quiet" name="action" value="nurture">לטיפוח</button>
+                    </form>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .admin {
+    display: grid;
+    gap: var(--space-10);
+    padding-block: var(--space-8);
+  }
+  .admin__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+  }
+  .admin h2 {
+    margin-block-end: var(--space-3);
+  }
+  .admin__actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .admin .chip {
+    text-decoration: none;
+  }
+</style>

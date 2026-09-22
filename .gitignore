@@ -5,8 +5,9 @@ dist/
 .dev.vars
 .env*
 !.env.example
+!.dev.vars.example
 .impeccable/config.local.json
 .impeccable/review/
-worker-configuration.d.ts
 .claude/settings.local.json
 .impeccable/questions/
+.astro-dev.log

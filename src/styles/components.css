@@ -31,6 +31,7 @@
   font-size: var(--text-sm);
   color: var(--c-text-2);
   min-block-size: 1.5em; /* reserved: hints never push the layout */
+  line-height: 1.5;
 }
 .field__hint--attention {
   color: var(--c-attention);

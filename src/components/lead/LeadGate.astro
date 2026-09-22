@@ -1,0 +1,115 @@
+---
+/**
+ * Lead gate: first name + Israeli mobile → SMS code → confirmation.
+ * Shared by the refinance flow and the buyer (how-much-mortgage) path.
+ * Behavior: src/scripts/leadgate.ts.
+ */
+import Icon from '../Icon.astro';
+import { CONSENT, NEXT_STEPS } from '../../config/consent';
+import { INTEGRATIONS } from '../../config/site';
+
+interface Props {
+  kind: 'refinance' | 'buyer';
+}
+const { kind } = Astro.props;
+const id = `lead-${kind}`;
+const title = kind === 'refinance' ? 'בדיקה חינם מול יועץ משכנתאות' : 'בדיקת משכנתא חינם מול יועץ';
+const promises =
+  kind === 'refinance'
+    ? ['דוח מפורט על המשכנתא שלך', 'שיחה עם יועץ משכנתאות עצמאי אחד', 'המספר שלך לא נמכר לאף גורם אחר']
+    : ['בדיקה של כמה משכנתא תוכל/י לקבל בפועל', 'שיחה עם יועץ משכנתאות עצמאי אחד', 'המספר שלך לא נמכר לאף גורם אחר'];
+---
+<div class="lead" data-lead data-kind={kind}>
+  <!-- Stage: details -->
+  <div class="lead__stage" data-stage="form">
+    <h2 class="lead__title" id={kind === 'refinance' ? 'lead-title' : `${id}-title`} tabindex="-1">{title}</h2>
+    <ul class="promise">
+      {promises.map((p) => <li><Icon name="check" class="promise__icon" />{p}</li>)}
+    </ul>
+    <form class="lead__form" data-lead-form novalidate>
+      <div class="field">
+        <label class="field__label" for={`${id}-name`}>שם פרטי</label>
+        <input class="input" id={`${id}-name`} name="firstName" type="text" autocomplete="given-name" enterkeyhint="next" maxlength="40" required aria-describedby={`${id}-name-hint`} />
+        <p class="field__hint" id={`${id}-name-hint`} data-hint-for="firstName"></p>
+      </div>
+      <div class="field">
+        <label class="field__label" for={`${id}-phone`}>טלפון נייד</label>
+        <input class="input input--ltr" id={`${id}-phone`} name="phone" type="tel" inputmode="tel" autocomplete="tel-national" enterkeyhint="next" placeholder="05X-XXX-XXXX" maxlength="12" required aria-describedby={`${id}-phone-hint`} />
+        <p class="field__hint" id={`${id}-phone-hint`} data-hint-for="phone">נשלח קוד אימות ב־SMS.</p>
+      </div>
+      <fieldset class="field question question--inline">
+        <legend class="field__label" id={`${id}-timing`}>מתי תרצה/י לפעול?</legend>
+        <div class="chips" role="radiogroup" aria-labelledby={`${id}-timing`} data-timing>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="now"><Icon name="check" class="chip__check" />עכשיו</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="months"><Icon name="check" class="chip__check" />בחודשים הקרובים</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="checking"><Icon name="check" class="chip__check" />רק בודק/ת</button>
+        </div>
+        <p class="field__hint" data-hint-for="timing"></p>
+      </fieldset>
+      <div class="consents">
+        <label class="check">
+          <input type="checkbox" name="consentContact" required />
+          <span>{CONSENT.contact}</span>
+        </label>
+        <p class="field__hint" data-hint-for="consentContact"></p>
+        <label class="check">
+          <input type="checkbox" name="consentMarketing" />
+          <span>{CONSENT.marketing}</span>
+        </label>
+        <p class="consents__note">פרטים ב<a href="/privacy/">מדיניות הפרטיות</a>.</p>
+      </div>
+      <div class="hp" aria-hidden="true">
+        <label>אל תמלאו שדה זה <input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      {INTEGRATIONS.turnstileSiteKey && <div class="turnstile" data-turnstile data-sitekey={INTEGRATIONS.turnstileSiteKey}></div>}
+      <p class="form-error" role="alert" data-form-error></p>
+      <div class="lead__footer">
+        <button type="submit" class="btn btn--primary" data-submit>שליחת קוד אימות</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Stage: one-time code -->
+  <div class="lead__stage" data-stage="otp" hidden>
+    <h2 class="lead__title" tabindex="-1" data-otp-title>הזנת קוד אימות</h2>
+    <p class="lead__text">שלחנו קוד בן 6 ספרות ל־<bdi class="num" data-otp-phone></bdi>. <button type="button" class="link-btn" data-change-phone>שינוי מספר</button></p>
+    <form class="lead__form" data-otp-form novalidate>
+      <div class="otp" data-otp dir="ltr" role="group" aria-label="קוד אימות">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <input
+            class="otp__digit"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength={i === 0 ? 6 : 1}
+            autocomplete={i === 0 ? 'one-time-code' : 'off'}
+            aria-label={`ספרה ${i + 1}`}
+            data-digit={i}
+          />
+        ))}
+      </div>
+      <p class="field__hint" data-dev-code hidden></p>
+      <p class="form-error" role="alert" data-otp-error></p>
+      <div class="lead__footer">
+        <button type="submit" class="btn btn--primary" data-verify>אימות ושליחה</button>
+        <button type="button" class="btn btn--quiet" data-resend disabled>שליחה חוזרת</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Stage: done -->
+  <div class="lead__stage lead__done" data-stage="done" hidden>
+    <div class="done-mark" aria-hidden="true"><Icon name="check" /></div>
+    <h2 class="lead__title" tabindex="-1" data-done-title>הבקשה התקבלה</h2>
+    <p class="lead__text">יועץ משכנתאות יחזור אליך {NEXT_STEPS.callWithin}.</p>
+    <ol class="next-steps">
+      {NEXT_STEPS.steps.map((s) => <li>{s}</li>)}
+    </ol>
+    <p class="consents__note">המספר שלך מועבר ליועץ אחד בלבד.</p>
+  </div>
+</div>
+
+<script>
+  import { initLeadGate } from '../../scripts/leadgate';
+  document.querySelectorAll<HTMLElement>('[data-lead]').forEach((el) => initLeadGate(el));
+</script>

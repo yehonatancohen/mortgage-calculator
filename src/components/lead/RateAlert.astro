@@ -1,0 +1,43 @@
+---
+/** Rate alert for visitors below the threshold: email or WhatsApp only. Behavior: src/scripts/leadgate.ts. */
+import Icon from '../Icon.astro';
+import { CONSENT } from '../../config/consent';
+---
+<div class="lead" data-alert>
+  <div class="lead__stage" data-stage="form">
+    <h2 class="lead__title" id="alert-title" tabindex="-1">נעדכן אותך כשמחזור יהיה משתלם לך</h2>
+    <p class="lead__text">כשהריביות ישתנו מספיק כדי שמחזור ישתלם לך, נשלח הודעה קצרה.</p>
+    <form class="lead__form" data-alert-form novalidate>
+      <fieldset class="field question question--inline">
+        <legend class="field__label" id="alert-channel">איך לעדכן?</legend>
+        <div class="chips" role="radiogroup" aria-labelledby="alert-channel" data-channel>
+          <button type="button" class="chip" role="radio" aria-checked="true" data-answer="email"><Icon name="check" class="chip__check" />אימייל</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="whatsapp"><Icon name="check" class="chip__check" />וואטסאפ</button>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label class="field__label" for="alert-contact" data-contact-label>אימייל</label>
+        <input class="input input--ltr" id="alert-contact" name="contact" type="email" inputmode="email" autocomplete="email" enterkeyhint="send" aria-describedby="alert-contact-hint" />
+        <p class="field__hint" id="alert-contact-hint" data-hint-for="contact"></p>
+      </div>
+      <div class="hp" aria-hidden="true">
+        <label>אל תמלאו שדה זה <input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <p class="consents__note">{CONSENT.alert} <a href="/privacy/">מדיניות הפרטיות</a>.</p>
+      <p class="form-error" role="alert" data-form-error></p>
+      <div class="lead__footer">
+        <button type="submit" class="btn btn--primary">עדכנו אותי</button>
+      </div>
+    </form>
+  </div>
+  <div class="lead__stage lead__done" data-stage="done" hidden>
+    <div class="done-mark" aria-hidden="true"><Icon name="check" /></div>
+    <h2 class="lead__title" tabindex="-1">נרשמת לעדכונים</h2>
+    <p class="lead__text">נשלח הודעה רק כשמחזור יהיה משתלם לך. אפשר לבטל בכל הודעה.</p>
+  </div>
+</div>
+
+<script>
+  import { initRateAlert } from '../../scripts/leadgate';
+  document.querySelectorAll<HTMLElement>('[data-alert]').forEach((el) => initRateAlert(el));
+</script>

@@ -1,0 +1,532 @@
+/* Calculator card, steps, questions, lead gate and OTP. Imported by components.css. */
+
+.calc {
+  position: relative;
+  display: grid;
+  gap: var(--space-6);
+  padding-block-end: 0;
+}
+.step {
+  display: grid;
+  gap: var(--space-6);
+  view-transition-name: calc-step;
+}
+.step[hidden] {
+  display: none;
+}
+.step__body {
+  display: grid;
+  gap: var(--space-3);
+}
+.step__body .field + .field {
+  margin-block-start: 0;
+}
+.step__back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--target-min);
+  margin-block: calc(-1 * var(--space-3)) calc(-1 * var(--space-2));
+  padding-inline: 0 var(--space-2);
+  border: 0;
+  background: none;
+  color: var(--c-text-2);
+  font-size: var(--text-sm);
+}
+.step__back:hover {
+  color: var(--c-text);
+}
+.step__back-icon {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  transform: scaleX(-1); /* arrow points to the start side (right) in RTL */
+}
+
+/* Slider-only field: value shown beside the label */
+.field__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.field__value {
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+}
+.field--slider-only .slider-wrap {
+  margin-block-start: calc(-1 * var(--space-1));
+}
+
+/* Slider value bubble (visible while dragging) */
+.slider-wrap {
+  position: relative;
+}
+.slider-bubble {
+  --pos: 0.5;
+  position: absolute;
+  inset-block-end: calc(100% - var(--space-1));
+  /* RTL range: min is at the right edge */
+  inset-inline-start: calc(var(--pos) * (100% - 1.5rem) + 0.75rem);
+  translate: 50% 4px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--c-text);
+  color: var(--c-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+  direction: ltr;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out), translate var(--dur-fast) var(--ease-out);
+}
+.is-dragging .slider-bubble {
+  opacity: 1;
+  translate: 50% 0;
+}
+.field--slider-only .slider-bubble {
+  display: none; /* the value is already shown beside the label */
+}
+
+/* Result */
+.result {
+  display: grid;
+  gap: var(--space-1);
+}
+.result__label {
+  font-size: var(--text-md);
+  font-weight: var(--fw-regular);
+  color: var(--c-text-2);
+  letter-spacing: 0;
+}
+.result__sentence {
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-heading);
+  text-wrap: balance;
+}
+.result[data-kind='invalid'] .result__sentence {
+  color: var(--c-attention);
+}
+.result__sub:empty {
+  display: none;
+}
+.assumptions {
+  padding-inline-start: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Question steps */
+.q-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.q-head .step__back {
+  margin: 0;
+}
+.q-count {
+  font-size: var(--text-sm);
+  color: var(--c-text-3);
+}
+.q-result {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--c-surface-2);
+}
+.q-result__label {
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.q-result__figure {
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+  color: var(--c-savings);
+}
+[data-kind='none'] .q-result__figure,
+[data-kind='invalid'] .q-result__figure {
+  color: var(--c-text-3);
+}
+.meter--compact {
+  grid-column: 1 / -1;
+}
+.question {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+.question__title {
+  padding: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-heading);
+}
+.question__hint {
+  margin-block-start: calc(-1 * var(--space-2));
+  color: var(--c-text-2);
+  font-size: var(--text-sm);
+}
+.question--inline {
+  gap: var(--space-2);
+}
+.chips--stack {
+  display: grid;
+  gap: var(--space-2);
+}
+.chips--stack .chip {
+  justify-content: flex-start;
+  min-block-size: var(--control-h);
+  border-radius: var(--radius-md);
+  padding-inline: var(--space-4);
+  font-size: var(--text-md);
+}
+.chip.is-picked {
+  transform: scale(0.98);
+}
+
+/* Footer: the single primary action; sticks to the viewport bottom on small screens */
+.calc__footer {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: var(--z-sticky);
+  display: grid;
+  gap: var(--space-3);
+  margin-inline: calc(-1 * var(--space-5));
+  padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom));
+  background: var(--c-surface);
+  border-block-start: var(--border-w) solid var(--c-border);
+  border-end-start-radius: var(--radius-lg);
+  border-end-end-radius: var(--radius-lg);
+}
+.calc__footer[hidden] {
+  display: none;
+}
+@media (min-width: 40rem) {
+  .calc__footer {
+    position: static;
+    margin-inline: calc(-1 * var(--space-8));
+    padding: var(--space-5) var(--space-8) var(--space-6);
+    background: none;
+  }
+}
+.calc__footer .disclaimer {
+  text-align: center;
+}
+.calc__footer .disclaimer a {
+  color: inherit;
+}
+.calc__footer .btn--quiet {
+  justify-self: center;
+  margin-block-start: calc(-1 * var(--space-2));
+}
+.calc__preview {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.calc__preview[hidden] {
+  display: none;
+}
+.calc__preview-label {
+  color: var(--c-text-2);
+  font-size: var(--text-sm);
+}
+.calc__preview-value {
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  color: var(--c-savings);
+  white-space: nowrap;
+}
+.calc__preview[data-kind='none'] .calc__preview-value,
+.calc__preview[data-kind='invalid'] .calc__preview-value {
+  font-size: var(--text-md);
+  font-weight: var(--fw-medium);
+  color: var(--c-text-2);
+}
+
+/* Recap line on the lead step */
+.recap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--c-savings-soft);
+}
+.recap__label {
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.recap__figure {
+  font-weight: var(--fw-bold);
+  color: var(--c-savings);
+}
+.recap__acc {
+  margin-inline-start: auto;
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+
+/* ---------- Lead gate ---------- */
+.lead,
+.lead__stage,
+.lead__form {
+  display: grid;
+  gap: var(--space-5);
+}
+.lead__stage[hidden] {
+  display: none;
+}
+.lead__form .field + .field {
+  margin-block-start: 0;
+}
+.lead__title {
+  font-size: var(--text-xl);
+}
+.lead__text {
+  color: var(--c-text-2);
+}
+.promise {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+  margin-block-start: calc(-1 * var(--space-2));
+}
+.promise li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+.promise__icon {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  margin-block-start: 0.2em;
+  color: var(--c-savings);
+}
+.input {
+  inline-size: 100%;
+  block-size: var(--control-h);
+  padding-inline: var(--space-4);
+  border: var(--border-w) solid var(--c-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  font-size: var(--text-lg);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.input:hover {
+  border-color: var(--c-text-3);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--c-focus) 25%, transparent);
+}
+.input[aria-invalid='true'] {
+  border-color: var(--c-attention);
+}
+.input--ltr {
+  direction: ltr;
+  text-align: right;
+}
+.input--ltr::placeholder {
+  color: var(--c-text-3);
+}
+.consents {
+  display: grid;
+  gap: var(--space-2);
+}
+.check {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: var(--space-3);
+  min-block-size: var(--target-min);
+  padding-block: var(--space-2);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.check input {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  margin-block-start: 0.1em;
+}
+.consents__note {
+  font-size: var(--text-xs);
+  color: var(--c-text-3);
+}
+.consents .field__hint {
+  min-block-size: 0;
+}
+.consents .field__hint:empty {
+  display: none;
+}
+.hp {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.form-error {
+  color: var(--c-attention);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+}
+.form-error:empty {
+  display: none;
+}
+.lead__footer {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: var(--z-sticky);
+  display: grid;
+  gap: var(--space-2);
+  margin-inline: calc(-1 * var(--space-5));
+  padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom));
+  background: var(--c-surface);
+  border-block-start: var(--border-w) solid var(--c-border);
+}
+@media (min-width: 40rem) {
+  .lead__footer {
+    position: static;
+    margin-inline: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+}
+.lead__footer .btn--quiet {
+  justify-self: center;
+}
+.link-btn {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--c-accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  font-size: inherit;
+}
+.btn[aria-busy='true'] {
+  cursor: progress;
+}
+
+/* OTP: six boxes, left-to-right like the code itself */
+.otp {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-2);
+  max-inline-size: 22rem;
+}
+.otp__digit {
+  inline-size: 100%;
+  block-size: 3.5rem;
+  border: var(--border-w) solid var(--c-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  text-align: center;
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  caret-color: var(--c-accent);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.otp__digit:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--c-focus) 25%, transparent);
+}
+
+/* Done */
+.lead__done {
+  justify-items: start;
+}
+.done-mark {
+  display: grid;
+  place-items: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  border-radius: 50%;
+  background: var(--c-savings-soft);
+  color: var(--c-savings);
+}
+.done-mark svg {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lead__done:not([hidden]) .done-mark {
+    animation: done-pop var(--dur-slow) var(--ease-out);
+  }
+}
+@keyframes done-pop {
+  from {
+    scale: 0.6;
+    opacity: 0;
+  }
+}
+.next-steps {
+  padding-inline-start: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* ---------- Step transitions (View Transitions API) ---------- */
+::view-transition-old(calc-step),
+::view-transition-new(calc-step) {
+  animation-duration: var(--dur-base);
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-old(calc-step) {
+  animation-name: step-out;
+}
+::view-transition-new(calc-step) {
+  animation-name: step-in;
+}
+[data-vt-dir='back']::view-transition-old(calc-step) {
+  animation-name: step-out-back;
+}
+[data-vt-dir='back']::view-transition-new(calc-step) {
+  animation-name: step-in-back;
+}
+/* RTL: forward moves content toward the left */
+@keyframes step-out {
+  to {
+    opacity: 0;
+    translate: -16px 0;
+  }
+}
+@keyframes step-in {
+  from {
+    opacity: 0;
+    translate: 16px 0;
+  }
+}
+@keyframes step-out-back {
+  to {
+    opacity: 0;
+    translate: 16px 0;
+  }
+}
+@keyframes step-in-back {
+  from {
+    opacity: 0;
+    translate: -16px 0;
+  }
+}
+::view-transition-group(root) {
+  animation-duration: var(--dur-base);
+}

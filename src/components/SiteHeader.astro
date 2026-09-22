@@ -1,0 +1,19 @@
+---
+import { NAV, SITE } from '../config/site';
+const path = Astro.url.pathname;
+---
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="/" aria-label={`${SITE.brand}: לעמוד הבית`}>
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor" /><path d="M9 17.5l4.5 4.5L23 11" fill="none" stroke="var(--c-on-accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      <span>{SITE.brand}</span>
+    </a>
+    <nav class="site-nav" aria-label="ראשי">
+      <ul>
+        {NAV.map((item) => (
+          <li><a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>

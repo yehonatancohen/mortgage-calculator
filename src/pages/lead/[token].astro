@@ -1,0 +1,116 @@
+---
+/**
+ * Advisor's private status link. The unguessable token is the credential (sent only to the
+ * assigned advisor). Shows the lead and lets the advisor record the outcome.
+ */
+import Base from '../../layouts/Base.astro';
+import { getEnv } from '../../server/env';
+import { sameOrigin } from '../../server/guard';
+import { logEvent, timingLabel } from '../../server/leads';
+import { formatILS } from '../../../lib/mortgage';
+
+export const prerender = false;
+
+const OUTCOMES = [
+  ['contacted', 'נוצר קשר'],
+  ['meeting', 'נקבעה פגישה'],
+  ['closed', 'נסגר (לקוח)'],
+  ['not_relevant', 'לא רלוונטי'],
+] as const;
+
+const env = getEnv();
+const token = Astro.params.token ?? '';
+Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
+Astro.response.headers.set('cache-control', 'no-store');
+Astro.response.headers.set('referrer-policy', 'no-referrer');
+
+type Row = { id: string; first_name: string; phone: string; timing: string; kind: string; inputs_json: string; results_json: string; outcome: string | null; created_at: string; status: string };
+const lead = /^[A-Za-z0-9_-]{30,64}$/.test(token)
+  ? await env.DB.prepare('SELECT id, first_name, phone, timing, kind, inputs_json, results_json, outcome, created_at, status FROM leads WHERE status_token = ?1').bind(token).first<Row>()
+  : null;
+
+let saved = false;
+if (lead && Astro.request.method === 'POST' && sameOrigin(Astro.request)) {
+  const form = await Astro.request.formData();
+  const outcome = String(form.get('outcome') ?? '');
+  if (OUTCOMES.some(([k]) => k === outcome)) {
+    await env.DB.prepare(`UPDATE leads SET outcome = ?2, outcome_at = datetime('now') WHERE id = ?1`).bind(lead.id, outcome).run();
+    await logEvent(env, lead.id, 'outcome', { outcome, by: 'advisor' });
+    lead.outcome = outcome;
+    saved = true;
+  }
+}
+if (!lead) Astro.response.status = 404;
+
+const inputs = lead ? (JSON.parse(lead.inputs_json) as Record<string, number | string>) : {};
+const results = lead ? (JSON.parse(lead.results_json) as Record<string, any>) : {};
+const phoneLocal = lead ? lead.phone.replace('+972', '0') : '';
+const rows: [string, string][] = !lead
+  ? []
+  : lead.kind === 'refinance'
+    ? [
+        ['יתרה', formatILS(Number(inputs.balance))],
+        ['החזר חודשי', formatILS(Number(inputs.payment))],
+        ['שנים שנותרו', String(inputs.years)],
+        ['חיסכון נטו משוער', results.ok ? `${formatILS(Math.max(0, results.netTotal.low))}–${formatILS(results.netTotal.high)}` : '—'],
+        ['מטרה', String(inputs.goal ?? '—')],
+        ['מסלול קבוע', String(inputs.hasFixed ?? '—')],
+        ['נלקחה', String(inputs.taken ?? '—')],
+      ]
+    : [
+        ['הכנסה נטו', formatILS(Number(inputs.netIncome))],
+        ['הון עצמי', formatILS(Number(inputs.equity))],
+        ['משכנתא משוערת', formatILS(Number(results.loanAtMaxPrice ?? 0))],
+        ['מחיר דירה משוער', formatILS(Number(results.maxPrice ?? 0))],
+      ];
+---
+<Base title="סטטוס ליד" description="סטטוס ליד" noindex bare>
+  <main id="main" class="page">
+    <div class="page-intro">
+      {lead ? (
+        <>
+          <h1>{lead.first_name}</h1>
+          <p class="page-intro__answer">
+            <a href={`tel:${lead.phone}`}><bdi class="num">{phoneLocal}</bdi></a> · {timingLabel(lead.timing)} · {lead.kind === 'refinance' ? 'מחזור' : 'רכישה'}
+          </p>
+        </>
+      ) : (
+        <>
+          <h1>הקישור לא תקף</h1>
+          <p class="page-intro__answer">בדקו שהעתקתם את הקישור המלא מהמייל.</p>
+        </>
+      )}
+    </div>
+    {lead && (
+      <div class="calc-slot card admin-card">
+        <div class="table-wrap">
+          <table class="data-table">
+            <tbody>{rows.map(([k, v]) => <tr><th scope="row">{k}</th><td class="num">{v}</td></tr>)}</tbody>
+          </table>
+        </div>
+        <form method="post" class="outcome">
+          <fieldset class="question">
+            <legend class="field__label">מה הסטטוס?</legend>
+            <div class="chips">
+              {OUTCOMES.map(([k, label]) => (
+                <button class="chip" type="submit" name="outcome" value={k} aria-pressed={lead.outcome === k ? 'true' : 'false'}>{label}</button>
+              ))}
+            </div>
+          </fieldset>
+        </form>
+        {saved && <p class="notice" role="status">נשמר. תודה.</p>}
+        <p class="disclaimer">הליד בלעדי לך. המספר לא הועבר לאף גורם אחר.</p>
+      </div>
+    )}
+  </main>
+</Base>
+
+<style>
+  .admin-card {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .outcome .chips {
+    margin-block-start: var(--space-2);
+  }
+</style>

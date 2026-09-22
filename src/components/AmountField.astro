@@ -1,0 +1,88 @@
+---
+/**
+ * Number field with a synced slider. Enhanced by src/scripts/fields.ts:
+ * live thousands separators, shorthand hints, gentle after-blur validation, slider bubble.
+ * Without JS it is a plain labeled input (the form still renders the worked example).
+ */
+import { formatNumber } from '../../lib/mortgage';
+
+interface Props {
+  name: string;
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  /** Accepted typed range (may exceed the slider range). */
+  textMin?: number;
+  textMax?: number;
+  /** '₪' prefix or a word suffix like 'שנים'. */
+  unit?: '₪' | 'none';
+  suffix?: string;
+  /** Slider-only field (e.g. years): shows the value next to the label. */
+  sliderOnly?: boolean;
+  shorthand?: 'balance' | 'payment';
+  scale?: [string, string];
+  hint?: string;
+  id?: string;
+}
+const { name, label, value, min, max, step, textMin = min, textMax = max, unit = '₪', suffix, sliderOnly = false, shorthand, scale, hint = '', id = name } = Astro.props;
+const fill = `${(((Math.min(max, Math.max(min, value)) - min) / (max - min)) * 100).toFixed(2)}%`;
+const hintId = `${id}-hint`;
+---
+<div
+  class:list={['field', { 'field--slider-only': sliderOnly }]}
+  data-field={name}
+  data-min={textMin}
+  data-max={textMax}
+  data-slider-min={min}
+  data-slider-max={max}
+  data-shorthand={shorthand}
+  data-suffix={suffix}
+>
+  {sliderOnly ? (
+    <div class="field__row">
+      <label class="field__label" for={`${id}-range`}>{label}</label>
+      <output class="field__value" for={`${id}-range`} data-value><bdi class="num">{formatNumber(value)}</bdi> {suffix}</output>
+    </div>
+  ) : (
+    <>
+      <label class="field__label" for={id}>{label}</label>
+      <div class="amount">
+        {unit === '₪' && <span class="amount__unit" aria-hidden="true">₪</span>}
+        <input
+          class="amount__input"
+          id={id}
+          name={name}
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          enterkeyhint="next"
+          value={formatNumber(value)}
+          aria-describedby={hintId}
+          data-amount
+        />
+        {suffix && <span class="amount__suffix" aria-hidden="true">{suffix}</span>}
+      </div>
+    </>
+  )}
+  <div class="slider-wrap">
+    <input
+      class="slider"
+      id={`${id}-range`}
+      type="range"
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      style={`--fill: ${fill}`}
+      aria-label={sliderOnly ? undefined : `${label} (סרגל)`}
+      aria-valuetext={`${formatNumber(value)}${suffix ? ` ${suffix}` : ' ₪'}`}
+      tabindex={sliderOnly ? undefined : '-1'}
+      data-range
+    />
+    <span class="slider-bubble" aria-hidden="true" data-bubble></span>
+  </div>
+  {scale && <div class="slider-scale" aria-hidden="true"><span class="num">{scale[0]}</span><span class="num">{scale[1]}</span></div>}
+  <p class="field__hint" id={hintId} data-hint>{hint}</p>
+</div>

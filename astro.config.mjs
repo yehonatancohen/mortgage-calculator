@@ -7,6 +7,7 @@ import { SITE } from './src/config/site.ts';
 export default defineConfig({
   site: SITE.url,
   trailingSlash: 'always',
+  devToolbar: { enabled: false },
   // Images are optimized at build time; no Cloudflare Images binding needed.
   adapter: cloudflare({ imageService: 'compile' }),
   build: { inlineStylesheets: 'auto' },

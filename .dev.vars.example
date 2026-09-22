@@ -1,0 +1,17 @@
+# Copy to .dev.vars for local development. In production use: npx wrangler secret put <NAME>
+OTP_SECRET=change-me-long-random-string
+SMS_PROVIDER=mock            # mock | http
+EXPOSE_DEV_OTP=1             # dev only: shows the mock code in the form
+# SMS_HTTP_URL=https://your-sms-provider.example/send
+# SMS_HTTP_AUTH=Bearer xxx
+# SMS_SENDER=YourBrand
+ADMIN_PASSWORD=change-me
+ADMIN_EMAIL=you@example.com
+ADVISOR_NAME=Advisor name
+ADVISOR_EMAIL=advisor@example.com
+# ADVISOR_WEBHOOK_URL=https://hooks.example.com/leads
+# WEBHOOK_SECRET=change-me
+# RESEND_API_KEY=re_xxx
+# EMAIL_FROM=Leads <leads@your-domain>
+# TURNSTILE_SECRET=0x...
+# PUBLIC_ORIGIN=https://your-domain

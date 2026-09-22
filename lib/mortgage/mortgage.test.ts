@@ -163,6 +163,7 @@ const A: RefinanceAssumptions = {
   fixedShareIfYes: [0.2, 0.5],
   fixedShareIfUnknown: [0, 0.5],
   fixedRateByBucket: { before2015: [0.04, 0.06], '2015to2019': [0.025, 0.04], '2020to2022': [0.02, 0.035], since2023: [0.045, 0.06] },
+  fixedRateMaxAboveBlended: 0.015,
   yearsElapsedByBucket: { before2015: [12, 21], '2015to2019': [7, 11], '2020to2022': [4, 6], since2023: [0, 3] },
   switchingCosts: [2000, 6000],
   meaningfulTotal: 10_000,

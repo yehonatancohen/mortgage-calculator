@@ -44,6 +44,12 @@ export interface RefinanceAssumptions {
   fixedShareIfUnknown: [number, number];
   /** Contract fixed-rate range by origination bucket (fractions). */
   fixedRateByBucket: Record<Exclude<TakenBucket, 'unknown'>, [number, number]>;
+  /**
+   * A fixed track's contract rate cannot sit far above the loan's blended rate: capped at
+   * min(blended / fixedShare, blended + this margin). Keeps the fee estimate consistent with
+   * the rate we solved from the user's own numbers.
+   */
+  fixedRateMaxAboveBlended: number;
   /** Years elapsed range by bucket (for the time discount). */
   yearsElapsedByBucket: Record<Exclude<TakenBucket, 'unknown'>, [number, number]>;
   /** One-off switching costs (appraisal, file fees, etc.), ₪ range. */
@@ -96,7 +102,7 @@ export function refinanceSavings(input: RefinanceInput, a: RefinanceAssumptions)
   const monthlyLow = input.monthlyPayment - pAtHigh;
   const monthlyHigh = input.monthlyPayment - pAtLow;
 
-  const fee = feeRange(input, a);
+  const fee = feeRange(input, a, solved.annualRate);
   const grossLow = monthlyLow * input.months;
   const grossHigh = monthlyHigh * input.months;
   const netLow = grossLow - fee.high - a.switchingCosts[1];
@@ -130,7 +136,7 @@ export function refinanceSavings(input: RefinanceInput, a: RefinanceAssumptions)
   };
 }
 
-function feeRange(input: RefinanceInput, a: RefinanceAssumptions): { low: number; high: number } {
+function feeRange(input: RefinanceInput, a: RefinanceAssumptions, blendedRate: number): { low: number; high: number } {
   const share: [number, number] =
     input.hasFixed === 'no' ? [0, 0] : input.hasFixed === 'yes' ? a.fixedShareIfYes : a.fixedShareIfUnknown;
 
@@ -145,10 +151,12 @@ function feeRange(input: RefinanceInput, a: RefinanceAssumptions): { low: number
   for (const s of share) {
     for (const sc of scenarios) {
       const bal = input.balance * s;
+      const cap = s > 0 ? Math.min(blendedRate / s, blendedRate + a.fixedRateMaxAboveBlended) : 0;
+      const contractRate = Math.min(sc.rate, cap);
       const f =
         bal > 0
           ? estimateFixedTrackFee(
-              { balance: bal, contractRate: sc.rate, marketRate: a.marketFixedRate, monthsRemaining: input.months, yearsElapsed: sc.years },
+              { balance: bal, contractRate, marketRate: a.marketFixedRate, monthsRemaining: input.months, yearsElapsed: sc.years },
               a.fee,
             ).total
           : a.fee.operationalFee;
@@ -165,3 +173,23 @@ const cross = ([r1, r2]: [number, number], [y1, y2]: [number, number]) => [
   { rate: r2, years: y1 },
   { rate: r2, years: y2 },
 ];
+
+export type Headline =
+  | { kind: 'range'; low: number; high: number; monthlyLow: number; monthlyHigh: number }
+  | { kind: 'upTo'; high: number; monthlyHigh: number }
+  | { kind: 'none' };
+
+/**
+ * What the UI may honestly say. Totals are rounded DOWN to ₪1,000 and monthly figures to ₪10,
+ * so we never overstate. A range whose low end is not a meaningful saving becomes "up to ₪Y".
+ */
+export function headline(r: Extract<RefinanceResult, { ok: true }>): Headline {
+  const down = (n: number, step: number) => Math.floor(n / step) * step;
+  if (r.verdict === 'none') return { kind: 'none' };
+  const high = down(r.netTotal.high, 1000);
+  const monthlyHigh = down(r.monthlySaving.high, 10);
+  if (r.verdict === 'maybe') return { kind: 'upTo', high, monthlyHigh };
+  const low = down(r.netTotal.low, 1000);
+  const monthlyLow = down(r.monthlySaving.low, 10);
+  return low >= high ? { kind: 'upTo', high, monthlyHigh } : { kind: 'range', low, high, monthlyLow, monthlyHigh };
+}

@@ -1,0 +1,177 @@
+---
+/**
+ * Refinance calculator island. Every step is rendered at build time with the default
+ * inputs (so crawlers see real numbers); src/scripts/refinance.ts takes over in the browser.
+ */
+import AmountField from '../AmountField.astro';
+import Icon from '../Icon.astro';
+import LeadGate from '../lead/LeadGate.astro';
+import RateAlert from '../lead/RateAlert.astro';
+import { scoring } from '../../../config/scoring';
+import { refinanceAssumptions, datasets } from '../../../lib/data';
+import { REFI } from '../../config/calculator';
+import { refinanceView, type RefiData } from '../../ui/refinanceView';
+import { hebrewMonth } from '../../ui/dates';
+
+const data: RefiData = {
+  assumptions: refinanceAssumptions(),
+  // Only the public eligibility threshold ships to the browser; weights and tiers stay server-side.
+  minBalance: scoring.hardFilters.minBalance,
+  ratesPeriod: hebrewMonth(String(datasets.rates.period.value)),
+};
+const d = REFI.defaults;
+const v = refinanceView({ balance: d.balance, payment: d.payment, years: d.years }, data);
+
+const questions = [
+  {
+    id: 'q-taken',
+    key: 'taken',
+    title: 'מתי לקחת את המשכנתא?',
+    hint: 'עוזר להעריך את הריבית במסלולים הקבועים.',
+    options: [
+      ['before2015', 'לפני 2015'],
+      ['2015to2019', '2015–2019'],
+      ['2020to2022', '2020–2022'],
+      ['since2023', '2023 ואילך'],
+      ['unknown', 'לא יודע/ת'],
+    ],
+  },
+  {
+    id: 'q-fixed',
+    key: 'hasFixed',
+    title: 'יש במשכנתא מסלול בריבית קבועה?',
+    hint: 'משפיע על עמלת הפירעון המוקדם.',
+    options: [
+      ['yes', 'כן'],
+      ['no', 'לא'],
+      ['unknown', 'לא יודע/ת'],
+    ],
+  },
+  {
+    id: 'q-goal',
+    key: 'goal',
+    title: 'מה המטרה העיקרית?',
+    hint: 'כדי שהחישוב והבדיקה יתמקדו במה שחשוב לך.',
+    options: [
+      ['lower', 'להוריד את ההחזר'],
+      ['shorten', 'לקצר את התקופה'],
+      ['consolidate', 'לאחד הלוואות'],
+      ['cashout', 'למשוך כסף'],
+      ['unknown', 'לא בטוח/ה'],
+    ],
+  },
+] as const;
+
+const figureStyle = (text: string) => `--chars: ${text.length}`;
+---
+<div class="calc card" data-refi data-step="inputs">
+  <script type="application/json" data-refi-data set:html={JSON.stringify({ ...data, defaults: REFI.defaults, bounds: { balance: [REFI.balance.min, 20_000_000], payment: [300, 200_000], years: [REFI.years.min, REFI.years.max] } })} />
+  <p class="visually-hidden" aria-live="polite" data-announce></p>
+
+  <!-- Step 1: inputs -->
+  <section class="step" data-step-id="inputs" aria-labelledby="refi-inputs-title">
+    <h2 class="visually-hidden" id="refi-inputs-title" tabindex="-1">הנתונים שלך</h2>
+    <div class="step__body">
+      <AmountField name="balance" label="יתרת המשכנתא" value={d.balance} min={REFI.balance.min} max={REFI.balance.max} step={REFI.balance.step} textMax={20_000_000} shorthand="balance" scale={['₪100K', '₪3M']} />
+      <AmountField name="payment" label="החזר חודשי נוכחי" value={d.payment} min={REFI.payment.min} max={REFI.payment.max} step={REFI.payment.step} textMin={300} textMax={200_000} shorthand="payment" scale={['₪1,000', '₪25,000']} />
+      <AmountField name="years" label="כמה שנים נשארו" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" scale={['1', '30']} />
+    </div>
+  </section>
+
+  <!-- Step 2: result -->
+  <section class="step" data-step-id="result" aria-labelledby="refi-result-title" hidden>
+    <button type="button" class="step__back" data-back><Icon name="arrow-left" class="step__back-icon" />חזרה לנתונים</button>
+    <div class="result" data-kind={v.kind}>
+      <h2 class="result__label" id="refi-result-title" tabindex="-1" data-out="label">{v.label}</h2>
+      <p class="result__figure" data-out="figure" style={figureStyle(v.figure)} hidden={v.kind === 'none' || v.kind === 'invalid'}>{v.figure}</p>
+      <p class="result__sentence" data-out="sentence" hidden={!(v.kind === 'none' || v.kind === 'invalid')}>{v.sentence}</p>
+      <p class="result__sub" data-out="sub">{v.sub}</p>
+    </div>
+
+    <div class="compare" aria-label="החזר חודשי">
+      <div class="compare__row">
+        <span class="compare__label">היום</span>
+        <span class="compare__track"><span class="compare__bar" style="--w: 100%"></span><bdi class="compare__value num" data-out="today">{v.todayText}</bdi></span>
+      </div>
+      <div class="compare__row compare__row--after">
+        <span class="compare__label">אחרי מחזור</span>
+        <span class="compare__track"><span class="compare__bar" data-out="after-bar" style={`--w: ${v.afterPct}%`}></span><bdi class="compare__value num" data-out="after">{v.afterText}</bdi></span>
+      </div>
+    </div>
+
+    <details class="disclosure" data-disclosure>
+      <summary>איך חישבנו <Icon name="chevron-down" /></summary>
+      <ul class="disclosure__body assumptions" data-out="assumptions">
+        {v.assumptions.map((line) => <li>{line}</li>)}
+      </ul>
+      <p class="disclosure__body"><a href="/methodology/">המתודולוגיה המלאה</a></p>
+    </details>
+
+    <div class="meter" data-meter>
+      <div class="meter__head"><span id="refi-acc-label">דיוק החישוב</span><bdi class="num" data-out="accuracy">{v.accuracy}%</bdi></div>
+      <div class="meter__track" role="meter" aria-labelledby="refi-acc-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow={v.accuracy}><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${v.accuracy}%`}></div></div>
+    </div>
+  </section>
+
+  <!-- Step 3: optional accuracy questions -->
+  {questions.map((q, i) => (
+    <section class="step step--question" data-step-id={q.id} data-question={q.key} aria-labelledby={`${q.id}-title`} hidden>
+      <div class="q-head">
+        <button type="button" class="step__back" data-back><Icon name="arrow-left" class="step__back-icon" />חזרה</button>
+        <span class="q-count"><bdi class="num">{i + 1}</bdi> מתוך <bdi class="num">3</bdi></span>
+      </div>
+      <div class="q-result">
+        <span class="q-result__label" data-out="q-label">{v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'}</span>
+        <bdi class="q-result__figure num" data-out="q-figure">{v.kind === 'none' || v.kind === 'invalid' ? '—' : v.figure}</bdi>
+        <div class="meter meter--compact">
+          <div class="meter__head"><span>דיוק החישוב</span><bdi class="num" data-out="accuracy">{v.accuracy}%</bdi></div>
+          <div class="meter__track" aria-hidden="true"><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${v.accuracy}%`}></div></div>
+        </div>
+      </div>
+      <fieldset class="question">
+        <legend class="question__title" id={`${q.id}-title`} tabindex="-1">{q.title}</legend>
+        <p class="question__hint">{q.hint}</p>
+        <div class="chips chips--stack" role="radiogroup" aria-labelledby={`${q.id}-title`}>
+          {q.options.map(([value, label]) => (
+            <button type="button" class="chip" role="radio" aria-checked="false" data-answer={value}>
+              <Icon name="check" class="chip__check" />{label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+    </section>
+  ))}
+
+  <!-- Step 4: lead gate (or rate alert below threshold) -->
+  <section class="step" data-step-id="lead" aria-labelledby="lead-title" hidden>
+    <button type="button" class="step__back" data-back><Icon name="arrow-left" class="step__back-icon" />חזרה</button>
+    <div class="recap">
+      <span class="recap__label" data-out="recap-label">{v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'}</span>
+      <bdi class="recap__figure num" data-out="recap-figure">{v.kind === 'none' || v.kind === 'invalid' ? '—' : v.figure}</bdi>
+      <span class="recap__acc">דיוק <bdi class="num" data-out="accuracy">{v.accuracy}%</bdi></span>
+    </div>
+    <LeadGate kind="refinance" />
+  </section>
+
+  <section class="step" data-step-id="alert" aria-labelledby="alert-title" hidden>
+    <button type="button" class="step__back" data-back><Icon name="arrow-left" class="step__back-icon" />חזרה</button>
+    <RateAlert />
+  </section>
+
+  <!-- Card footer: the one primary action for the current step (sticky on small screens) -->
+  <div class="calc__footer" data-footer>
+    <div class="calc__preview" data-preview>
+      <span class="calc__preview-label" data-out="preview-label">{v.previewLabel}</span>
+      <bdi class="calc__preview-value num" data-out="preview">{v.preview}</bdi>
+    </div>
+    <button type="button" class="btn btn--primary" data-primary>הצגת התוצאה</button>
+    <button type="button" class="btn btn--quiet" data-secondary hidden></button>
+    <p class="disclaimer">הערכה בלבד, לא ייעוץ פיננסי. <a href="/methodology/">איך חישבנו</a></p>
+  </div>
+</div>
+
+<script>
+  import { initRefinance } from '../../scripts/refinance';
+  const root = document.querySelector<HTMLElement>('[data-refi]');
+  if (root) initRefinance(root);
+</script>

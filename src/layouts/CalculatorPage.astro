@@ -1,0 +1,81 @@
+---
+/**
+ * Every calculator page has the same anatomy:
+ * H1 + direct answer → calculator → worked example → explanation → FAQ → updated → sources → next link.
+ */
+import Base from './Base.astro';
+import Icon from '../components/Icon.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { faqLd, webApplicationLd, type Crumb } from '../seo/schema';
+import { hebrewDate } from '../ui/dates';
+
+interface Props {
+  title: string;
+  metaTitle?: string;
+  description: string;
+  answer: string;
+  updated: string;
+  faq: { q: string; a: string }[];
+  sources: { label: string; url: string }[];
+  next: { href: string; title: string; text: string };
+  crumbs: Crumb[];
+  appName: string;
+}
+const { title, metaTitle = title, description, answer, updated, faq, sources, next, crumbs, appName } = Astro.props;
+const path = Astro.url.pathname;
+const jsonLd = [webApplicationLd({ name: appName, description, path, dateModified: updated }), faqLd(faq)];
+---
+<Base title={metaTitle} description={description} jsonLd={jsonLd} breadcrumbs={crumbs}>
+  <main id="main" class="page">
+    {crumbs.length > 1 && <Breadcrumbs crumbs={crumbs} />}
+    <header class="page-intro">
+      <h1>{title}</h1>
+      <p class="page-intro__answer">{answer}</p>
+    </header>
+
+    <div class="calc-slot">
+      <slot />
+    </div>
+
+    <div class="content">
+      <section aria-labelledby="example-title">
+        <h2 id="example-title">דוגמה מחושבת</h2>
+        <slot name="example" />
+      </section>
+
+      <section class="prose" aria-labelledby="explain-title">
+        <h2 id="explain-title">איך זה עובד</h2>
+        <slot name="explanation" />
+      </section>
+
+      <section aria-labelledby="faq-title">
+        <h2 id="faq-title">שאלות נפוצות</h2>
+        <div class="faq">
+          {faq.map((item) => (
+            <details>
+              <summary>{item.q}<Icon name="chevron-down" /></summary>
+              <div><p>{item.a}</p></div>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="sources-title">
+        <h2 id="sources-title">מקורות</h2>
+        <p class="meta-line">עודכן לאחרונה: <time datetime={updated}>{hebrewDate(updated)}</time></p>
+        <ul class="sources">
+          {sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a></li>)}
+          <li><a href="/methodology/">המתודולוגיה וההנחות שלנו</a></li>
+        </ul>
+      </section>
+
+      <a class="next-link" href={next.href}>
+        <span>
+          <span class="next-link__title">{next.title}</span><br />
+          <span class="next-link__text">{next.text}</span>
+        </span>
+        <Icon name="arrow-left" />
+      </a>
+    </div>
+  </main>
+</Base>
