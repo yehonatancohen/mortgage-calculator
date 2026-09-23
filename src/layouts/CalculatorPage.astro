@@ -20,8 +20,10 @@ interface Props {
   next: { href: string; title: string; text: string };
   crumbs: Crumb[];
   appName: string;
+  /** Put "how it works" before the worked example (short, icon-led explanations). */
+  explainFirst?: boolean;
 }
-const { title, metaTitle = title, description, answer, updated, faq, sources, next, crumbs, appName } = Astro.props;
+const { title, metaTitle = title, description, answer, updated, faq, sources, next, crumbs, appName, explainFirst = false } = Astro.props;
 const path = Astro.url.pathname;
 const jsonLd = [webApplicationLd({ name: appName, description, path, dateModified: updated }), faqLd(faq)];
 ---
@@ -38,15 +40,24 @@ const jsonLd = [webApplicationLd({ name: appName, description, path, dateModifie
     </div>
 
     <div class="content">
+      {explainFirst && (
+        <section class="prose" aria-labelledby="explain-title">
+          <h2 id="explain-title">איך זה עובד</h2>
+          <slot name="explanation" />
+        </section>
+      )}
+
       <section aria-labelledby="example-title">
         <h2 id="example-title">דוגמה מחושבת</h2>
         <slot name="example" />
       </section>
 
-      <section class="prose" aria-labelledby="explain-title">
-        <h2 id="explain-title">איך זה עובד</h2>
-        <slot name="explanation" />
-      </section>
+      {!explainFirst && (
+        <section class="prose" aria-labelledby="explain-title">
+          <h2 id="explain-title">איך זה עובד</h2>
+          <slot name="explanation" />
+        </section>
+      )}
 
       <section aria-labelledby="faq-title">
         <h2 id="faq-title">שאלות נפוצות</h2>

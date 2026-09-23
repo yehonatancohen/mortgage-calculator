@@ -295,13 +295,20 @@ Sober and full-weight; one per step does the work.
 - **Internal Padding:** 24px by 20px, 32px from 40rem. Secondary calculators split fields and output with a hairline and 24px of air.
 
 ### Inputs / Fields
-- **Style:** 52px tall, 10px radius, Card White, 1px Steel Edge stroke. Amount inputs carry the ₪ unit inside the box and type left-to-right at 20px/500, aligned to the label's edge. Each amount pairs with a slider directly below it.
+- **Style:** 52px tall, 10px radius, Card White, 1px Steel Edge stroke. Amount inputs carry the ₪ unit inside the box and type left-to-right at 20px/500, aligned to the label's edge. Each amount pairs with a slider directly below it. The reserved hint line tucks into the air below the slider's 44px target, so it costs no extra height.
 - **Focus:** the stroke turns petrol and a 3px Clear Petrol halo at 25% appears (150ms).
 - **Error / Disabled:** Amber Caution stroke and hint, applied only after blur. Hints reserve one line so nothing shifts.
 
 ### Sliders
-- **Track:** a 4px pill. The filled part (the start side in RTL) is Deep Petrol; the rest is Hairline.
+- **Direction:** sliders run left to right even inside RTL: min on the left, fill growing rightward, the same way as the numerals typed above them. An RTL track made the thumb move against the digits. The slider, its value bubble and its scale share one LTR axis on `.slider-wrap`.
+- **Track:** a 4px pill. The filled part (from the left) is Deep Petrol; the rest is Hairline.
 - **Thumb:** 24px Card White circle with a 2px petrol ring and contact shadow; it scales to 1.12 while pressed and shows a 4px focus halo. A value bubble in ink appears above the thumb while dragging, except on slider-only fields, where the value already sits beside the label.
+
+### Icons
+One authored set in `Icon.astro`: a 24px grid, 2px stroke, round caps and joins, drawn in `currentColor`. Icons are always ink (Slate Ink on labels and step tiles), never petrol or green, and they sit at the start edge beside a word; they never replace one.
+- **Field labels:** a 20px icon before the label names the number's kind (home = balance, calendar = monthly payment, clock = years). The worked-example summaries reuse the same three at 16px, so an example's inputs map visibly onto the calculator's fields.
+- **Step lists:** "how it works" is a single-column list. Each step pairs a 40px Pale Slate tile holding a 20px icon with a bold title and one short line. It is never a card grid.
+- **Quiet notice:** a caveat that is not a warning (for example, no CPI linkage) sits on Pale Slate in Slate Ink, led by the info icon. The Amber notice stays reserved for problems.
 
 ### Navigation
 - **Style:** a quiet header on Cool Paper with a hairline base. Links are 15px Slate Ink with 44px targets and darken to ink on hover. The current page is ink with a 2px petrol underline. Breadcrumbs are 15px with a Faint Slate "/" separator.

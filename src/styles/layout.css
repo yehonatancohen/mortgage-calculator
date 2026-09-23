@@ -278,6 +278,142 @@
   white-space: nowrap;
 }
 
+/* Worked example summary: the three inputs, the answer, and the full table one tap away */
+.example {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+}
+.example__title {
+  font-size: var(--text-md);
+  font-weight: var(--fw-bold);
+}
+.example__inputs {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.example__inputs li {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+}
+.example__inputs bdi {
+  justify-self: start;
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+.example__key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.example__key svg {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+.example__result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding-block-start: var(--space-3);
+  border-block-start: var(--border-w) solid var(--c-border);
+}
+.example__result-label {
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.example__figure {
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+  color: var(--c-savings);
+  white-space: nowrap;
+}
+.example__figure--none {
+  color: var(--c-text);
+}
+.example__more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--target-min);
+  color: var(--c-accent-ink);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  list-style: none;
+}
+.example__more summary::-webkit-details-marker {
+  display: none;
+}
+.example__more summary svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.example__more[open] summary svg {
+  transform: rotate(180deg);
+}
+.example__more {
+  margin-block-start: calc(-1 * var(--space-3));
+}
+.example__more .table-wrap {
+  margin-block: var(--space-1) var(--space-3);
+}
+
+/* "How it works": three short steps, each led by an ink icon */
+.prose .how {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-5);
+}
+.prose .how li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  margin: 0;
+}
+.how__icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: var(--radius-md);
+  background: var(--c-surface-2);
+  color: var(--c-text-2);
+}
+.how__icon svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+.prose .how__title {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.5;
+}
+.prose .how p {
+  margin: 0;
+  color: var(--c-text-2);
+  line-height: 1.5;
+}
+.how__icon + div {
+  display: grid;
+  gap: var(--space-1);
+  padding-block-start: var(--space-2); /* first line centres on the 40px icon tile */
+}
+
 /* FAQ */
 .faq {
   display: grid;

@@ -24,14 +24,27 @@
   margin-block-start: var(--space-6);
 }
 .field__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: var(--fw-medium);
   font-size: var(--text-md);
+}
+.field__icon {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  color: var(--c-text-2);
 }
 .field__hint {
   font-size: var(--text-sm);
   color: var(--c-text-2);
   min-block-size: 1.5em; /* reserved: hints never push the layout */
   line-height: 1.5;
+}
+/* The slider's 44px target leaves air under the track; the reserved hint line sits in it. */
+.slider-wrap + .field__hint {
+  margin-block-start: calc(-1 * var(--space-2));
 }
 .field__hint--attention {
   color: var(--c-attention);
@@ -80,9 +93,13 @@
   color: var(--c-text-2);
 }
 
-/* ---------- Slider ---------- */
+/* ---------- Slider ----------
+   Sliders run left to right, like the numerals they control: min on the left, fill from the left.
+   (An RTL track made the thumb move against the digits typed above it.) */
 .slider {
+  direction: ltr;
   --fill: 50%;
+  display: block; /* no inline baseline slack under the track */
   position: relative;
   inline-size: 100%;
   block-size: var(--target-min);
@@ -94,7 +111,7 @@
 .slider::-webkit-slider-runnable-track {
   block-size: 4px;
   border-radius: var(--radius-pill);
-  background: linear-gradient(to left, var(--c-accent) var(--fill), var(--c-border) var(--fill));
+  background: linear-gradient(to right, var(--c-accent) var(--fill), var(--c-border) var(--fill));
 }
 .slider::-moz-range-track {
   block-size: 4px;
@@ -138,6 +155,7 @@
   box-shadow: 0 0 0 4px color-mix(in oklch, var(--c-focus) 35%, transparent);
 }
 .slider-scale {
+  direction: ltr;
   display: flex;
   justify-content: space-between;
   font-size: var(--text-xs);
@@ -384,4 +402,17 @@
   background: var(--c-attention-soft);
   color: var(--c-text);
   font-size: var(--text-sm);
+}
+.notice--quiet {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  background: var(--c-surface-2);
+  color: var(--c-text-2);
+}
+.notice__icon {
+  flex: none;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin-block-start: 0.2em;
 }

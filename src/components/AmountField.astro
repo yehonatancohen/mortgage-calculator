@@ -5,6 +5,7 @@
  * Without JS it is a plain labeled input (the form still renders the worked example).
  */
 import { formatNumber } from '../../lib/mortgage';
+import Icon from './Icon.astro';
 
 interface Props {
   name: string;
@@ -27,8 +28,10 @@ interface Props {
   id?: string;
   /** Decimal places shown (e.g. 2 for interest rates). */
   decimals?: number;
+  /** Optional icon drawn before the label (Slate Ink, decorative). */
+  icon?: 'home' | 'calendar' | 'clock' | 'percent';
 }
-const { name, label, value, min, max, step, textMin = min, textMax = max, unit = '₪', suffix, sliderOnly = false, shorthand, scale, hint = '', id = name, decimals = 0 } = Astro.props;
+const { name, label, value, min, max, step, textMin = min, textMax = max, unit = '₪', suffix, sliderOnly = false, shorthand, scale, hint = '', id = name, decimals = 0, icon } = Astro.props;
 const fill = `${(((Math.min(max, Math.max(min, value)) - min) / (max - min)) * 100).toFixed(2)}%`;
 const hintId = `${id}-hint`;
 ---
@@ -45,12 +48,12 @@ const hintId = `${id}-hint`;
 >
   {sliderOnly ? (
     <div class="field__row">
-      <label class="field__label" for={`${id}-range`}>{label}</label>
+      <label class="field__label" for={`${id}-range`}>{icon && <Icon name={icon} class="field__icon" />}{label}</label>
       <output class="field__value" for={`${id}-range`} data-value><bdi class="num">{formatNumber(value, decimals)}</bdi> {suffix}</output>
     </div>
   ) : (
     <>
-      <label class="field__label" for={id}>{label}</label>
+      <label class="field__label" for={id}>{icon && <Icon name={icon} class="field__icon" />}{label}</label>
       <div class="amount">
         {unit === '₪' && <span class="amount__unit" aria-hidden="true">₪</span>}
         <input

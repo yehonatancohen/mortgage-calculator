@@ -1,6 +1,7 @@
 ---
 import CalculatorPage from '../layouts/CalculatorPage.astro';
 import RefinanceCalculator from '../components/refinance/RefinanceCalculator.astro';
+import Icon from '../components/Icon.astro';
 import { datasets, refinanceAssumptions } from '../../lib/data';
 import { formatILS, formatILSRange, formatPercent, refinanceSavings, headline } from '../../lib/mortgage';
 import { REFI } from '../config/calculator';
@@ -18,8 +19,12 @@ const examples = [
   const r = refinanceSavings({ balance: e.balance, monthlyPayment: e.payment, months: e.years * 12 }, a);
   if (!r.ok) throw new Error(`Worked example is invalid: ${e.name}`);
   const h = headline(r);
-  const result = h.kind === 'range' ? formatILSRange(h.low, h.high) : h.kind === 'upTo' ? `עד ${formatILS(h.high)}` : 'אין חיסכון משמעותי';
-  return { ...e, r, h, result };
+  // The Hebrew prefix stays outside the LTR-isolated figure so "עד" lands on the right.
+  const result =
+    h.kind === 'range' ? { prefix: '', figure: formatILSRange(h.low, h.high) }
+    : h.kind === 'upTo' ? { prefix: 'עד ', figure: formatILS(h.high) }
+    : { prefix: 'אין חיסכון משמעותי', figure: '' };
+  return { ...e, r, h, result, saves: h.kind === 'range' || h.kind === 'upTo' };
 });
 const r10 = (n: number) => Math.floor(n / 10) * 10;
 
@@ -55,6 +60,7 @@ const faq = [
   updated={updated}
   faq={faq}
   crumbs={[{ name: 'ראשי', path: '/' }]}
+  explainFirst
   sources={[
     { label: 'בנק ישראל: ריביות ממוצעות על משכנתאות', url: 'https://www.boi.org.il/' },
     { label: 'בנק ישראל: עמלת פירעון מוקדם', url: 'https://www.boi.org.il/' },
@@ -64,37 +70,66 @@ const faq = [
   <RefinanceCalculator />
 
   <Fragment slot="example">
-    <p>שתי דוגמאות לפי ריביות ממוצעות מ{period}. חיסכון נטו לאורך התקופה, אחרי עמלות ועלויות מעבר.</p>
+    <p>לפי ריביות ממוצעות מ{period}, אחרי עמלות ועלויות מעבר.</p>
     <div class="examples">
       {examples.map((ex) => (
-        <div class="table-wrap">
-          <table class="data-table">
-            <caption>{ex.name}</caption>
-            <tbody>
-              <tr><th scope="row">יתרת המשכנתא</th><td class="num">{formatILS(ex.balance)}</td></tr>
-              <tr><th scope="row">החזר חודשי נוכחי</th><td class="num">{formatILS(ex.payment)}</td></tr>
-              <tr><th scope="row">שנים שנותרו</th><td class="num">{ex.years}</td></tr>
-              <tr><th scope="row">ריבית אפקטיבית נוכחית</th><td class="num">{formatPercent(ex.r.currentRate)}</td></tr>
-              <tr><th scope="row">ריבית במחזור (טווח)</th><td class="num">{formatPercent(ex.r.newRate.low)}–{formatPercent(ex.r.newRate.high)}</td></tr>
-              <tr><th scope="row">החזר חודשי אחרי מחזור</th><td class="num">{formatILSRange(r10(ex.r.newPayment.low), r10(ex.r.newPayment.high))}</td></tr>
-              <tr><th scope="row">עמלת פירעון ועלויות מעבר</th><td class="num">{costsRange(ex.r)}</td></tr>
-              <tr class="is-total"><th scope="row">חיסכון נטו אפשרי</th><td class="num">{ex.result}</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <article class="example">
+          <h3 class="example__title">{ex.name}</h3>
+          <ul class="example__inputs">
+            <li><span class="example__key"><Icon name="home" />יתרה</span><bdi class="num">{formatILS(ex.balance)}</bdi></li>
+            <li><span class="example__key"><Icon name="calendar" />החזר חודשי</span><bdi class="num">{formatILS(ex.payment)}</bdi></li>
+            <li><span class="example__key"><Icon name="clock" />שנים</span><bdi class="num">{ex.years}</bdi></li>
+          </ul>
+          <p class="example__result">
+            <span class="example__result-label">חיסכון נטו אפשרי</span>
+            <span class:list={['example__figure', { 'example__figure--none': !ex.saves }]}>{ex.result.prefix}{ex.result.figure && <bdi class="num">{ex.result.figure}</bdi>}</span>
+          </p>
+          <details class="example__more">
+            <summary>כל החישוב<Icon name="chevron-down" /></summary>
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption class="visually-hidden">{ex.name}: פירוט החישוב</caption>
+                <tbody>
+                  <tr><th scope="row">ריבית אפקטיבית נוכחית</th><td class="num">{formatPercent(ex.r.currentRate)}</td></tr>
+                  <tr><th scope="row">ריבית במחזור (טווח)</th><td class="num">{formatPercent(ex.r.newRate.low)}–{formatPercent(ex.r.newRate.high)}</td></tr>
+                  <tr><th scope="row">החזר חודשי אחרי מחזור</th><td class="num">{formatILSRange(r10(ex.r.newPayment.low), r10(ex.r.newPayment.high))}</td></tr>
+                  <tr><th scope="row">עמלת פירעון ועלויות מעבר</th><td class="num">{costsRange(ex.r)}</td></tr>
+                  <tr class="is-total"><th scope="row">חיסכון נטו אפשרי</th><td>{ex.result.prefix}{ex.result.figure && <bdi class="num">{ex.result.figure}</bdi>}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </article>
       ))}
     </div>
     <p class="meta-line">עיגול כלפי מטה לאלף שקלים. הערכה בלבד.</p>
   </Fragment>
 
   <Fragment slot="explanation">
-    <p><strong>מחזור משכנתא</strong> הוא החלפת המשכנתא הקיימת בהלוואה חדשה, באותו בנק או בבנק אחר, בתנאים טובים יותר. הוא משתלם כשהחיסכון בריבית גדול מהעלויות: עמלת הפירעון המוקדם ועלויות פתיחת ההלוואה החדשה.</p>
-    <p>המחשבון עושה שלושה דברים:</p>
-    <ol>
-      <li>מחשב את הריבית האפקטיבית שלך מתוך היתרה, ההחזר החודשי ומספר החודשים שנותרו.</li>
-      <li>משווה אותה לטווח סביב הריבית הממוצעת למשכנתא חדשה, לפי נתוני בנק ישראל.</li>
-      <li>מחשב את ההחזר החדש ואת החיסכון לאורך התקופה, ומחסיר הערכה של עמלת הפירעון ועלויות המעבר.</li>
+    <p><strong>מחזור משכנתא</strong> הוא החלפת המשכנתא בהלוואה חדשה, באותו בנק או בבנק אחר. הוא משתלם רק כשהחיסכון בריבית גדול מהעלויות.</p>
+    <ol class="how">
+      <li>
+        <span class="how__icon"><Icon name="percent" /></span>
+        <div>
+          <h3 class="how__title">מחשבים את הריבית שלך</h3>
+          <p>מתוך היתרה, ההחזר החודשי והשנים שנותרו.</p>
+        </div>
+      </li>
+      <li>
+        <span class="how__icon"><Icon name="compare" /></span>
+        <div>
+          <h3 class="how__title">משווים לריבית של היום</h3>
+          <p>טווח סביב הריבית הממוצעת למשכנתא חדשה, לפי בנק ישראל.</p>
+        </div>
+      </li>
+      <li>
+        <span class="how__icon"><Icon name="receipt" /></span>
+        <div>
+          <h3 class="how__title">מחסירים את העלויות</h3>
+          <p>עמלת פירעון מוקדם ועלויות מעבר. מה שנשאר הוא החיסכון נטו.</p>
+        </div>
+      </li>
     </ol>
-    <p>שלוש שאלות אופציונליות (מתי נלקחה המשכנתא, האם יש מסלול קבוע ומה המטרה) מצמצמות את הטווח. החישוב לא כולל הצמדה למדד, ולכן ההחזר בפועל במסלולים צמודים ישתנה עם המדד.</p>
+    <p class="notice notice--quiet"><Icon name="info" class="notice__icon" />החישוב לא כולל הצמדה למדד. במסלולים צמודים ההחזר בפועל ישתנה עם המדד.</p>
   </Fragment>
 </CalculatorPage>

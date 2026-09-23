@@ -70,11 +70,11 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
 
   <!-- Step 1: inputs -->
   <section class="step" data-step-id="inputs" aria-labelledby="refi-inputs-title">
-    <h2 class="visually-hidden" id="refi-inputs-title" tabindex="-1">הנתונים שלך</h2>
+    <h2 class="step__title" id="refi-inputs-title" tabindex="-1">הנתונים מדוח המשכנתא</h2>
     <div class="step__body">
-      <AmountField name="balance" label="יתרת המשכנתא" value={d.balance} min={REFI.balance.min} max={REFI.balance.max} step={REFI.balance.step} textMax={20_000_000} shorthand="balance" />
-      <AmountField name="payment" label="החזר חודשי נוכחי" value={d.payment} min={REFI.payment.min} max={REFI.payment.max} step={REFI.payment.step} textMin={300} textMax={200_000} shorthand="payment" />
-      <AmountField name="years" label="כמה שנים נשארו" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" />
+      <AmountField name="balance" label="יתרת המשכנתא" icon="home" value={d.balance} min={REFI.balance.min} max={REFI.balance.max} step={REFI.balance.step} textMax={20_000_000} shorthand="balance" />
+      <AmountField name="payment" label="החזר חודשי נוכחי" icon="calendar" value={d.payment} min={REFI.payment.min} max={REFI.payment.max} step={REFI.payment.step} textMin={300} textMax={200_000} shorthand="payment" />
+      <AmountField name="years" label="כמה שנים נשארו" icon="clock" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" />
     </div>
   </section>
 
