@@ -72,8 +72,9 @@
   --pos: 0.5;
   position: absolute;
   inset-block-end: calc(100% - var(--space-1));
-  /* RTL range: min is at the right edge; centre the bubble over the thumb */
-  inset-inline-start: calc(var(--pos) * (100% - 1.5rem) + 0.75rem);
+  /* RTL range: min is at the right edge. Physical `right`, not inset-inline-start: the bubble's own
+     direction is ltr (so digits read correctly), which would flip a logical offset to the left side. */
+  right: calc(var(--pos) * (100% - 1.5rem) + 0.75rem);
   translate: 50% 4px;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
