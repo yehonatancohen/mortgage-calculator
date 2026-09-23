@@ -77,10 +77,10 @@ const faq = [
   <Fragment slot="example">
     <p>דירה ראשונה, 25 שנה, בלי התחייבויות אחרות, בריבית {formatPercent(opts.rate)}:</p>
     <div class="table-wrap">
-      <table class="data-table">
+      <table class="data-table data-table--stack">
         <thead><tr><th scope="col" class="num">הכנסה נטו</th><th scope="col" class="num">הון עצמי</th><th scope="col" class="num">מחיר דירה</th><th scope="col" class="num">משכנתא</th></tr></thead>
         <tbody>
-          {examples.map((e) => <tr><td class="num">{formatILS(e.income)}</td><td class="num">{formatILS(e.equity)}</td><td class="num">{e.v.out.maxPrice}</td><td class="num">{e.v.out.loan}</td></tr>)}
+          {examples.map((e) => <tr><th scope="row">הכנסה <bdi class="num">{formatILS(e.income)}</bdi></th><td class="num" data-label="הון עצמי"><bdi>{formatILS(e.equity)}</bdi></td><td class="num" data-label="מחיר דירה"><bdi>{e.v.out.maxPrice}</bdi></td><td class="num" data-label="משכנתא"><bdi>{e.v.out.loan}</bdi></td></tr>)}
         </tbody>
       </table>
     </div>

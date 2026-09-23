@@ -73,12 +73,12 @@ const faq = [
   <Fragment slot="example">
     <p>משכנתא של ₪1,000,000 ל־25 שנה בריבית {formatPercent(rate / 100)}:</p>
     <div class="table-wrap">
-      <table class="data-table">
+      <table class="data-table data-table--stack">
         <thead><tr><th scope="col"></th><th scope="col" class="num">שפיצר</th><th scope="col" class="num">קרן שווה</th></tr></thead>
         <tbody>
-          <tr><th scope="row">החזר ראשון</th><td class="num">{v.out.spFirst}</td><td class="num">{v.out.ksFirst}</td></tr>
-          <tr><th scope="row">החזר אחרון</th><td class="num">{v.out.spLast}</td><td class="num">{v.out.ksLast}</td></tr>
-          <tr class="is-total"><th scope="row">סך הריבית</th><td class="num">{v.out.spInterest}</td><td class="num">{v.out.ksInterest}</td></tr>
+          <tr><th scope="row">החזר ראשון</th><td class="num" data-label="שפיצר"><bdi>{v.out.spFirst}</bdi></td><td class="num" data-label="קרן שווה"><bdi>{v.out.ksFirst}</bdi></td></tr>
+          <tr><th scope="row">החזר אחרון</th><td class="num" data-label="שפיצר"><bdi>{v.out.spLast}</bdi></td><td class="num" data-label="קרן שווה"><bdi>{v.out.ksLast}</bdi></td></tr>
+          <tr class="is-total"><th scope="row">סך הריבית</th><td class="num" data-label="שפיצר"><bdi>{v.out.spInterest}</bdi></td><td class="num" data-label="קרן שווה"><bdi>{v.out.ksInterest}</bdi></td></tr>
         </tbody>
       </table>
     </div>

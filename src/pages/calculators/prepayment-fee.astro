@@ -65,10 +65,10 @@ const faq = [
   <Fragment slot="example">
     <p>מסלול קבוע עם יתרה של {formatILS(initial.balance)}, {initial.years} שנים שנותרו, {initial.elapsed} שנים מאז שנלקח, ריבית שוק {formatPercent(market / 100)}:</p>
     <div class="table-wrap">
-      <table class="data-table">
+      <table class="data-table data-table--stack">
         <thead><tr><th scope="col">תרחיש</th><th scope="col" class="num">ריבית בחוזה</th><th scope="col" class="num">עמלה משוערת</th></tr></thead>
         <tbody>
-          {scenarios.map((x) => <tr><th scope="row">{x.label}</th><td class="num">{formatPercent(x.s.contract / 100)}</td><td class="num">{x.v.out.total}</td></tr>)}
+          {scenarios.map((x) => <tr><th scope="row">{x.label}</th><td class="num" data-label="ריבית בחוזה"><bdi>{formatPercent(x.s.contract / 100)}</bdi></td><td class="num" data-label="עמלה משוערת"><bdi>{x.v.out.total}</bdi></td></tr>)}
         </tbody>
       </table>
     </div>

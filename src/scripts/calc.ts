@@ -39,14 +39,21 @@ export function initCalc<S extends object>(root: HTMLElement, initial: S, comput
     for (const [key, rows] of Object.entries(v.rows ?? {})) {
       const body = root.querySelector<HTMLElement>(`[data-rows="${key}"]`);
       if (!body) continue;
+      const labels = [...(body.closest('table')?.querySelectorAll('thead th') ?? [])].map((th) => th.textContent ?? '');
       body.replaceChildren(
         ...rows.map((cells) => {
           const tr = document.createElement('tr');
           cells.forEach((c, i) => {
             const td = document.createElement(i === 0 ? 'th' : 'td');
             if (i === 0) td.setAttribute('scope', 'row');
-            else td.className = 'num';
-            td.textContent = c;
+            else {
+              td.className = 'num';
+              if (labels[i]) td.dataset.label = labels[i];
+            }
+            const v = document.createElement('bdi');
+            if (i === 0) v.className = 'num';
+            v.textContent = c;
+            td.appendChild(v);
             tr.appendChild(td);
           });
           return tr;

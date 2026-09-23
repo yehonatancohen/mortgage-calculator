@@ -72,9 +72,9 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
   <section class="step" data-step-id="inputs" aria-labelledby="refi-inputs-title">
     <h2 class="visually-hidden" id="refi-inputs-title" tabindex="-1">הנתונים שלך</h2>
     <div class="step__body">
-      <AmountField name="balance" label="יתרת המשכנתא" value={d.balance} min={REFI.balance.min} max={REFI.balance.max} step={REFI.balance.step} textMax={20_000_000} shorthand="balance" scale={['₪100K', '₪3M']} />
-      <AmountField name="payment" label="החזר חודשי נוכחי" value={d.payment} min={REFI.payment.min} max={REFI.payment.max} step={REFI.payment.step} textMin={300} textMax={200_000} shorthand="payment" scale={['₪1,000', '₪25,000']} />
-      <AmountField name="years" label="כמה שנים נשארו" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" scale={['1', '30']} />
+      <AmountField name="balance" label="יתרת המשכנתא" value={d.balance} min={REFI.balance.min} max={REFI.balance.max} step={REFI.balance.step} textMax={20_000_000} shorthand="balance" />
+      <AmountField name="payment" label="החזר חודשי נוכחי" value={d.payment} min={REFI.payment.min} max={REFI.payment.max} step={REFI.payment.step} textMin={300} textMax={200_000} shorthand="payment" />
+      <AmountField name="years" label="כמה שנים נשארו" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" />
     </div>
   </section>
 
@@ -95,9 +95,10 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
       </div>
       <div class="compare__row compare__row--after">
         <span class="compare__label">אחרי מחזור</span>
-        <span class="compare__track"><span class="compare__bar" data-out="after-bar" style={`--w: ${v.afterPct}%`}></span><bdi class="compare__value num" data-out="after">{v.afterText}</bdi></span>
+        <span class="compare__track"><span class="compare__bar compare__bar--range" data-out="after-bar" style={`--w: ${v.afterHiPct}%; --lo: ${((v.afterLoPct / v.afterHiPct) * 100).toFixed(1)}%`}><span class="compare__solid"></span></span><bdi class="compare__value num" data-out="after">{v.afterText}</bdi></span>
       </div>
     </div>
+    <p class="result__costs" data-out="costs">{v.costs}</p>
 
     <details class="disclosure" data-disclosure>
       <summary>איך חישבנו <Icon name="chevron-down" /></summary>
@@ -108,8 +109,8 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
     </details>
 
     <div class="meter" data-meter>
-      <div class="meter__head"><span id="refi-acc-label">דיוק החישוב</span><bdi class="num" data-out="accuracy">{v.accuracy}%</bdi></div>
-      <div class="meter__track" role="meter" aria-labelledby="refi-acc-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow={v.accuracy}><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${v.accuracy}%`}></div></div>
+      <div class="meter__head"><span id="refi-acc-label">דיוק החישוב</span><span data-out="accuracy">{v.answeredText}</span></div>
+      <div class="meter__track" role="meter" aria-labelledby="refi-acc-label" aria-valuemin="0" aria-valuemax="3" aria-valuenow={v.answered} aria-valuetext={v.answeredText}><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${(v.answered / 3) * 100}%`}></div></div>
     </div>
   </section>
 
@@ -124,8 +125,8 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
         <span class="q-result__label" data-out="q-label">{v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'}</span>
         <bdi class="q-result__figure num" data-out="q-figure">{v.kind === 'none' || v.kind === 'invalid' ? '—' : v.figure}</bdi>
         <div class="meter meter--compact">
-          <div class="meter__head"><span>דיוק החישוב</span><bdi class="num" data-out="accuracy">{v.accuracy}%</bdi></div>
-          <div class="meter__track" aria-hidden="true"><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${v.accuracy}%`}></div></div>
+          <div class="meter__head"><span>דיוק החישוב</span><span data-out="accuracy">{v.answeredText}</span></div>
+          <div class="meter__track" aria-hidden="true"><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${(v.answered / 3) * 100}%`}></div></div>
         </div>
       </div>
       <fieldset class="question">
@@ -148,7 +149,6 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
     <div class="recap">
       <span class="recap__label" data-out="recap-label">{v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'}</span>
       <bdi class="recap__figure num" data-out="recap-figure">{v.kind === 'none' || v.kind === 'invalid' ? '—' : v.figure}</bdi>
-      <span class="recap__acc">דיוק <bdi class="num" data-out="accuracy">{v.accuracy}%</bdi></span>
     </div>
     <LeadGate kind="refinance" />
   </section>

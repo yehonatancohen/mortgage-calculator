@@ -8,7 +8,7 @@
 }
 .step {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-5);
   view-transition-name: calc-step;
 }
 .step[hidden] {
@@ -108,6 +108,17 @@
 }
 .result[data-kind='invalid'] .result__sentence {
   color: var(--c-attention);
+}
+.result__costs {
+  margin-block-start: calc(-1 * var(--space-2));
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.result__costs:empty {
+  display: none;
+}
+.disclosure {
+  margin-block: calc(-1 * var(--space-2));
 }
 .result__sub:empty {
   display: none;
@@ -314,7 +325,7 @@
   inline-size: 1.25rem;
   block-size: 1.25rem;
   margin-block-start: 0.2em;
-  color: var(--c-savings);
+  color: var(--c-text);
 }
 .input {
   inline-size: 100%;

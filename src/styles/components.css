@@ -272,45 +272,50 @@
   font-size: var(--text-lg);
 }
 
-/* Before/after bars: the figure is pinned to its bar; no legend. */
+/* Before/after bars: one shared grid so both bars are drawn zero-based on the same track length;
+   values sit in their own column and never shorten a track. */
 .compare {
   display: grid;
-  gap: var(--space-3);
-}
-.compare__row {
-  display: grid;
-  grid-template-columns: 6.5rem 1fr;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
   align-items: center;
   gap: var(--space-3);
   font-size: var(--text-sm);
 }
+.compare__row,
+.compare__track {
+  display: contents;
+}
 .compare__label {
   color: var(--c-text-2);
 }
-.compare__track {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: var(--space-3);
-}
 .compare__bar {
+  justify-self: start;
   block-size: 0.625rem;
   inline-size: var(--w, 100%);
   border-radius: var(--radius-pill);
-  justify-self: start;
-  background: var(--c-border-strong);
+  background: var(--c-text-3);
   transition: inline-size var(--dur-slow) var(--ease-out);
 }
-.compare__row--after .compare__bar {
-  background: var(--c-accent);
-}
 .compare__value {
-  min-inline-size: 4.5rem;
-  text-align: end;
   font-weight: var(--fw-medium);
   color: var(--c-text);
+  text-align: end;
 }
 
+/* Colour is reserved: accent for actions, green for money saved. Bars are ink. */
+.compare__row--after .compare__bar {
+  background: color-mix(in oklch, var(--c-text) 22%, transparent);
+  overflow: hidden;
+}
+.compare__solid {
+  display: block;
+  block-size: 100%;
+  /* An open range always shows at least 3px of band. */
+  inline-size: min(var(--lo, 100%), calc(100% - 3px));
+  border-radius: inherit;
+  background: var(--c-text);
+  transition: inline-size var(--dur-slow) var(--ease-out);
+}
 /* Accuracy meter */
 .meter {
   display: grid;
@@ -323,7 +328,7 @@
   color: var(--c-text-2);
 }
 .meter__track {
-  block-size: 6px;
+  block-size: 2px;
   border-radius: var(--radius-pill);
   background: var(--c-surface-2);
   overflow: hidden;
@@ -331,7 +336,7 @@
 .meter__fill {
   block-size: 100%;
   inline-size: var(--value, 0%);
-  background: var(--c-accent);
+  background: var(--c-text-2);
   border-radius: inherit;
   transition: inline-size var(--dur-slow) var(--ease-out);
 }

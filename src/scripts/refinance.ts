@@ -123,14 +123,21 @@ export function initRefinance(root: HTMLElement) {
 
     out('today').forEach((el) => (el.textContent = v.todayText));
     out('after').forEach((el) => (el.textContent = v.afterText));
-    out('after-bar').forEach((el) => el.style.setProperty('--w', `${v.afterPct}%`));
+    out('after-bar').forEach((el) => {
+      el.style.setProperty('--w', `${v.afterHiPct}%`);
+      el.style.setProperty('--lo', `${((v.afterLoPct / v.afterHiPct) * 100).toFixed(1)}%`);
+    });
+    out('costs').forEach((el) => (el.textContent = v.costs));
 
     const list = out('assumptions')[0]!;
     list.replaceChildren(...v.assumptions.map((line) => Object.assign(document.createElement('li'), { textContent: line })));
 
-    out('accuracy').forEach((el) => (el.textContent = `${v.accuracy}%`));
-    out('accuracy-bar').forEach((el) => el.style.setProperty('--value', `${v.accuracy}%`));
-    $$('[role="meter"]').forEach((m) => m.setAttribute('aria-valuenow', String(v.accuracy)));
+    out('accuracy').forEach((el) => (el.textContent = v.answeredText));
+    out('accuracy-bar').forEach((el) => el.style.setProperty('--value', `${(v.answered / 3) * 100}%`));
+    $$('[role="meter"]').forEach((m) => {
+      m.setAttribute('aria-valuenow', String(v.answered));
+      m.setAttribute('aria-valuetext', v.answeredText);
+    });
 
     clearTimeout(announceTimer);
     announceTimer = window.setTimeout(() => (announce.textContent = v.announce), 800);

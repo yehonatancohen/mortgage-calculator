@@ -5,6 +5,7 @@ import { datasets, refinanceAssumptions } from '../../lib/data';
 import { formatILS, formatILSRange, formatPercent, refinanceSavings, headline } from '../../lib/mortgage';
 import { REFI } from '../config/calculator';
 import { hebrewMonth } from '../ui/dates';
+import { costsRange } from '../ui/refinanceView';
 
 const a = refinanceAssumptions();
 const updated = datasets.rates.tracks.prime.lastUpdated;
@@ -20,7 +21,6 @@ const examples = [
   const result = h.kind === 'range' ? formatILSRange(h.low, h.high) : h.kind === 'upTo' ? `עד ${formatILS(h.high)}` : 'אין חיסכון משמעותי';
   return { ...e, r, h, result };
 });
-const [ex1, ex2] = examples as [(typeof examples)[0], (typeof examples)[0]];
 const r10 = (n: number) => Math.floor(n / 10) * 10;
 
 const faq = [
@@ -50,7 +50,7 @@ const faq = [
   title="מחשבון מחזור משכנתא"
   metaTitle="מחשבון מחזור משכנתא: כמה תחסכו? תוצאה מיידית בלי פרטים"
   description="מחשבון מחזור משכנתא: הזינו יתרה, החזר חודשי ושנים שנותרו, ותראו מיד טווח חיסכון נטו אחרי עמלת פירעון מוקדם. בלי להשאיר פרטים."
-  answer="הזינו יתרה, החזר חודשי ושנים שנותרו, ותראו מיד כמה אפשר לחסוך במחזור. בלי להשאיר פרטים."
+  answer="האם מחזור יחסוך לכם, וכמה. בלי להשאיר פרטים."
   appName="מחשבון מחזור משכנתא"
   updated={updated}
   faq={faq}
@@ -65,24 +65,26 @@ const faq = [
 
   <Fragment slot="example">
     <p>שתי דוגמאות לפי ריביות ממוצעות מ{period}. חיסכון נטו לאורך התקופה, אחרי עמלות ועלויות מעבר.</p>
-    <div class="table-wrap">
-      <table class="data-table">
-        <caption>עיגול כלפי מטה לאלף שקלים. הערכה בלבד.</caption>
-        <thead>
-          <tr><th scope="col"></th><th scope="col">{ex1.name}</th><th scope="col">{ex2.name}</th></tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">יתרת המשכנתא</th><td class="num">{formatILS(ex1.balance)}</td><td class="num">{formatILS(ex2.balance)}</td></tr>
-          <tr><th scope="row">החזר חודשי נוכחי</th><td class="num">{formatILS(ex1.payment)}</td><td class="num">{formatILS(ex2.payment)}</td></tr>
-          <tr><th scope="row">שנים שנותרו</th><td class="num">{ex1.years}</td><td class="num">{ex2.years}</td></tr>
-          <tr><th scope="row">ריבית אפקטיבית נוכחית</th><td class="num">{formatPercent(ex1.r.currentRate)}</td><td class="num">{formatPercent(ex2.r.currentRate)}</td></tr>
-          <tr><th scope="row">ריבית במחזור (טווח)</th><td class="num">{formatPercent(ex1.r.newRate.low)}–{formatPercent(ex1.r.newRate.high)}</td><td class="num">{formatPercent(ex2.r.newRate.low)}–{formatPercent(ex2.r.newRate.high)}</td></tr>
-          <tr><th scope="row">החזר חודשי אחרי מחזור</th><td class="num">{formatILSRange(r10(ex1.r.newPayment.low), r10(ex1.r.newPayment.high))}</td><td class="num">{formatILSRange(r10(ex2.r.newPayment.low), r10(ex2.r.newPayment.high))}</td></tr>
-          <tr><th scope="row">עמלת פירעון ועלויות מעבר</th><td class="num">{formatILSRange(r10(ex1.r.fee.low + ex1.r.switchingCosts.low), r10(ex1.r.fee.high + ex1.r.switchingCosts.high))}</td><td class="num">{formatILSRange(r10(ex2.r.fee.low + ex2.r.switchingCosts.low), r10(ex2.r.fee.high + ex2.r.switchingCosts.high))}</td></tr>
-          <tr class="is-total"><th scope="row">חיסכון נטו אפשרי</th><td class="num">{ex1.result}</td><td class="num">{ex2.result}</td></tr>
-        </tbody>
-      </table>
+    <div class="examples">
+      {examples.map((ex) => (
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption>{ex.name}</caption>
+            <tbody>
+              <tr><th scope="row">יתרת המשכנתא</th><td class="num">{formatILS(ex.balance)}</td></tr>
+              <tr><th scope="row">החזר חודשי נוכחי</th><td class="num">{formatILS(ex.payment)}</td></tr>
+              <tr><th scope="row">שנים שנותרו</th><td class="num">{ex.years}</td></tr>
+              <tr><th scope="row">ריבית אפקטיבית נוכחית</th><td class="num">{formatPercent(ex.r.currentRate)}</td></tr>
+              <tr><th scope="row">ריבית במחזור (טווח)</th><td class="num">{formatPercent(ex.r.newRate.low)}–{formatPercent(ex.r.newRate.high)}</td></tr>
+              <tr><th scope="row">החזר חודשי אחרי מחזור</th><td class="num">{formatILSRange(r10(ex.r.newPayment.low), r10(ex.r.newPayment.high))}</td></tr>
+              <tr><th scope="row">עמלת פירעון ועלויות מעבר</th><td class="num">{costsRange(ex.r)}</td></tr>
+              <tr class="is-total"><th scope="row">חיסכון נטו אפשרי</th><td class="num">{ex.result}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      ))}
     </div>
+    <p class="meta-line">עיגול כלפי מטה לאלף שקלים. הערכה בלבד.</p>
   </Fragment>
 
   <Fragment slot="explanation">

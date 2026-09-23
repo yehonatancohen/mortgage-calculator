@@ -58,11 +58,11 @@ const faq = [
         <div><dt>מחיר כולל מס</dt><dd data-out="net">{v.out.net}</dd></div>
       </dl>
       <div class="table-wrap">
-        <table class="data-table">
+        <table class="data-table data-table--stack">
           <caption>מדרגות בתוקף מ־{hebrewDate(String(purchaseTaxBrackets.validFrom))}</caption>
           <thead><tr><th scope="col">מדרגה</th><th scope="col" class="num">שיעור</th><th scope="col" class="num">חייב במס</th><th scope="col" class="num">מס</th></tr></thead>
           <tbody data-rows="lines">
-            {v.rows!.lines!.map((cells) => <tr>{cells.map((c, i) => (i === 0 ? <th scope="row">{c}</th> : <td class="num">{c}</td>))}</tr>)}
+            {v.rows!.lines!.map((cells) => <tr>{cells.map((c, i) => (i === 0 ? <th scope="row"><bdi class="num">{c}</bdi></th> : <td class="num" data-label={['', 'שיעור', 'חייב במס', 'מס'][i]}><bdi>{c}</bdi></td>))}</tr>)}
           </tbody>
         </table>
       </div>
@@ -72,10 +72,10 @@ const faq = [
 
   <Fragment slot="example">
     <div class="table-wrap">
-      <table class="data-table">
+      <table class="data-table data-table--stack">
         <thead><tr><th scope="col">מחיר הדירה</th><th scope="col" class="num">דירה יחידה</th><th scope="col" class="num">דירה נוספת</th></tr></thead>
         <tbody>
-          {examples.map((e) => <tr><th scope="row" class="num">{formatILS(e.p)}</th><td class="num">{formatILS(Math.round(e.single))}</td><td class="num">{formatILS(Math.round(e.additional))}</td></tr>)}
+          {examples.map((e) => <tr><th scope="row" class="num">{formatILS(e.p)}</th><td class="num" data-label="דירה יחידה"><bdi>{formatILS(Math.round(e.single))}</bdi></td><td class="num" data-label="דירה נוספת"><bdi>{formatILS(Math.round(e.additional))}</bdi></td></tr>)}
         </tbody>
       </table>
     </div>

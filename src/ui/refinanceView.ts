@@ -52,6 +52,13 @@ export interface RefiView {
   todayText: string;
   afterText: string;
   afterPct: number;
+  /** After-payment band as % of today's payment: solid to lo, lighter band from lo to hi. */
+  afterLoPct: number;
+  afterHiPct: number;
+  /** Always-visible cost line under the bars (fee + switching costs, included in the result). */
+  costs: string;
+  /** "2 מתוך 3": how many optional questions are answered (the meter measures this, not accuracy). */
+  answeredText: string;
   assumptions: string[];
   accuracy: number;
   answered: number;
@@ -77,6 +84,10 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
     todayText: formatILS(s.payment),
     afterText: '—',
     afterPct: 100,
+    afterLoPct: 100,
+    afterHiPct: 100,
+    costs: '',
+    answeredText: '0 מתוך 3',
     accuracy: a.accuracy.base,
     answered: 0,
   };
@@ -114,6 +125,10 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
     todayText: formatILS(s.payment),
     afterText: formatILSRange(roundDown(r.newPayment.low, 10), roundDown(r.newPayment.high, 10)),
     afterPct: pctRound(afterPct / 100),
+    afterLoPct: pctRound(Math.max(0.04, Math.min(1, r.newPayment.low / s.payment))),
+    afterHiPct: pctRound(Math.max(0.04, Math.min(1, r.newPayment.high / s.payment))),
+    costs: `עמלת פירעון ועלויות מעבר, כלולות בחישוב: ${ltr(costsRange(r))}`,
+    answeredText: `${r.answered} מתוך 3`,
     assumptions,
     accuracy: r.accuracy,
     answered: r.answered,
@@ -162,6 +177,11 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
     qualifies,
     announce: `חיסכון אפשרי של ${figure} לאורך התקופה.`,
   };
+}
+
+/** Fee + switching costs, rounded outward to ₪10. One helper for the result line and the worked example. */
+export function costsRange(r: { fee: { low: number; high: number }; switchingCosts: { low: number; high: number } }): string {
+  return formatILSRange(roundDown(r.fee.low + r.switchingCosts.low, 10), roundUp(r.fee.high + r.switchingCosts.high, 10));
 }
 
 const roundDown = (n: number, step: number) => Math.floor(n / step) * step;

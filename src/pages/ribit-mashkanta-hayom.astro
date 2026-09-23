@@ -42,14 +42,14 @@ const jsonLd = [
   related={[{ href: '/', title: 'הריבית שלך גבוהה מהממוצע?', text: 'בדקו כמה תחסכו במחזור.' }]}
 >
   <div class="table-wrap">
-    <table class="data-table">
+    <table class="data-table data-table--stack">
       <caption>ריבית שנתית נומינלית ממוצעת בהלוואות חדשות, {period}. מסלולים צמודים: ריבית ריאלית, לפני הצמדה.</caption>
       <thead><tr><th scope="col">מסלול</th><th scope="col" class="num">ריבית ממוצעת</th><th scope="col" class="num">החזר ל־₪1M ל־25 שנה</th></tr></thead>
       <tbody>
         {tracks.map(([, t]) => (
-          <tr><th scope="row">{t.label}</th><td class="num">{formatPercent(t.value / 100)}</td><td class="num">{formatILS(payment(1_000_000, t.value / 100, 300))}</td></tr>
+          <tr><th scope="row">{t.label}</th><td class="num" data-label="ריבית ממוצעת"><bdi>{formatPercent(t.value / 100)}</bdi></td><td class="num" data-label="החזר ל־₪1M ל־25 שנה"><bdi>{formatILS(payment(1_000_000, t.value / 100, 300))}</bdi></td></tr>
         ))}
-        <tr class="is-total"><th scope="row">תמהיל טיפוסי לא צמוד</th><td class="num">{formatPercent(bench)}</td><td class="num">{formatILS(payment(1_000_000, bench, 300))}</td></tr>
+        <tr class="is-total"><th scope="row">תמהיל טיפוסי לא צמוד</th><td class="num" data-label="ריבית ממוצעת"><bdi>{formatPercent(bench)}</bdi></td><td class="num" data-label="החזר ל־₪1M ל־25 שנה"><bdi>{formatILS(payment(1_000_000, bench, 300))}</bdi></td></tr>
       </tbody>
     </table>
   </div>

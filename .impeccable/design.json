@@ -1,0 +1,576 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-22T20:58:36.053Z",
+  "title": "Design System: [BRAND] mortgage calculators",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(0.972 0.004 222)",
+        "dark": "oklch(0.175 0.01 228)",
+        "cssVar": "--c-bg",
+        "tonalRamp": [
+          "oklch(0.15 0.004 222)",
+          "oklch(0.26 0.004 222)",
+          "oklch(0.37 0.004 222)",
+          "oklch(0.48 0.004 222)",
+          "oklch(0.6 0.004 222)",
+          "oklch(0.72 0.004 222)",
+          "oklch(0.84 0.004 222)",
+          "oklch(0.95 0.004 222)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "canonical": "oklch(1 0 0)",
+        "dark": "oklch(0.215 0.012 228)",
+        "cssVar": "--c-surface",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.26 0 0)",
+          "oklch(0.37 0 0)",
+          "oklch(0.48 0 0)",
+          "oklch(0.6 0 0)",
+          "oklch(0.72 0 0)",
+          "oklch(0.84 0 0)",
+          "oklch(0.95 0 0)"
+        ]
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Pale Slate",
+        "canonical": "oklch(0.955 0.006 222)",
+        "dark": "oklch(0.25 0.013 228)",
+        "cssVar": "--c-surface-2",
+        "tonalRamp": [
+          "oklch(0.15 0.006 222)",
+          "oklch(0.26 0.006 222)",
+          "oklch(0.37 0.006 222)",
+          "oklch(0.48 0.006 222)",
+          "oklch(0.6 0.006 222)",
+          "oklch(0.72 0.006 222)",
+          "oklch(0.84 0.006 222)",
+          "oklch(0.95 0.006 222)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.885 0.008 222)",
+        "dark": "oklch(0.32 0.013 228)",
+        "cssVar": "--c-border",
+        "tonalRamp": [
+          "oklch(0.15 0.008 222)",
+          "oklch(0.26 0.008 222)",
+          "oklch(0.37 0.008 222)",
+          "oklch(0.48 0.008 222)",
+          "oklch(0.6 0.008 222)",
+          "oklch(0.72 0.008 222)",
+          "oklch(0.84 0.008 222)",
+          "oklch(0.95 0.008 222)"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Steel Edge",
+        "canonical": "oklch(0.6 0.012 222)",
+        "dark": "oklch(0.56 0.014 228)",
+        "cssVar": "--c-border-strong",
+        "tonalRamp": [
+          "oklch(0.15 0.012 222)",
+          "oklch(0.26 0.012 222)",
+          "oklch(0.37 0.012 222)",
+          "oklch(0.48 0.012 222)",
+          "oklch(0.6 0.012 222)",
+          "oklch(0.72 0.012 222)",
+          "oklch(0.84 0.012 222)",
+          "oklch(0.95 0.012 222)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Statement Ink",
+        "canonical": "oklch(0.235 0.016 235)",
+        "dark": "oklch(0.955 0.004 222)",
+        "cssVar": "--c-text",
+        "tonalRamp": [
+          "oklch(0.15 0.016 235)",
+          "oklch(0.26 0.016 235)",
+          "oklch(0.37 0.016 235)",
+          "oklch(0.48 0.016 235)",
+          "oklch(0.6 0.016 235)",
+          "oklch(0.72 0.016 235)",
+          "oklch(0.84 0.016 235)",
+          "oklch(0.95 0.016 235)"
+        ]
+      },
+      "text-2": {
+        "role": "neutral",
+        "displayName": "Slate Ink",
+        "canonical": "oklch(0.44 0.016 235)",
+        "dark": "oklch(0.79 0.01 222)",
+        "cssVar": "--c-text-2",
+        "tonalRamp": [
+          "oklch(0.15 0.016 235)",
+          "oklch(0.26 0.016 235)",
+          "oklch(0.37 0.016 235)",
+          "oklch(0.48 0.016 235)",
+          "oklch(0.6 0.016 235)",
+          "oklch(0.72 0.016 235)",
+          "oklch(0.84 0.016 235)",
+          "oklch(0.95 0.016 235)"
+        ]
+      },
+      "text-3": {
+        "role": "neutral",
+        "displayName": "Faint Slate",
+        "canonical": "oklch(0.51 0.014 235)",
+        "dark": "oklch(0.72 0.012 222)",
+        "cssVar": "--c-text-3",
+        "tonalRamp": [
+          "oklch(0.15 0.014 235)",
+          "oklch(0.26 0.014 235)",
+          "oklch(0.37 0.014 235)",
+          "oklch(0.48 0.014 235)",
+          "oklch(0.6 0.014 235)",
+          "oklch(0.72 0.014 235)",
+          "oklch(0.84 0.014 235)",
+          "oklch(0.95 0.014 235)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Deep Petrol",
+        "canonical": "oklch(0.43 0.085 222)",
+        "dark": "oklch(0.76 0.09 215)",
+        "cssVar": "--c-accent",
+        "tonalRamp": [
+          "oklch(0.15 0.085 222)",
+          "oklch(0.26 0.085 222)",
+          "oklch(0.37 0.085 222)",
+          "oklch(0.48 0.085 222)",
+          "oklch(0.6 0.085 222)",
+          "oklch(0.72 0.085 222)",
+          "oklch(0.84 0.085 222)",
+          "oklch(0.95 0.085 222)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Deep Petrol Pressed",
+        "canonical": "oklch(0.37 0.08 222)",
+        "dark": "oklch(0.82 0.08 215)",
+        "cssVar": "--c-accent-hover",
+        "tonalRamp": [
+          "oklch(0.15 0.08 222)",
+          "oklch(0.26 0.08 222)",
+          "oklch(0.37 0.08 222)",
+          "oklch(0.48 0.08 222)",
+          "oklch(0.6 0.08 222)",
+          "oklch(0.72 0.08 222)",
+          "oklch(0.84 0.08 222)",
+          "oklch(0.95 0.08 222)"
+        ]
+      },
+      "accent-ink": {
+        "role": "primary",
+        "displayName": "Petrol Ink",
+        "canonical": "oklch(0.41 0.085 222)",
+        "dark": "oklch(0.8 0.085 215)",
+        "cssVar": "--c-accent-ink",
+        "tonalRamp": [
+          "oklch(0.15 0.085 222)",
+          "oklch(0.26 0.085 222)",
+          "oklch(0.37 0.085 222)",
+          "oklch(0.48 0.085 222)",
+          "oklch(0.6 0.085 222)",
+          "oklch(0.72 0.085 222)",
+          "oklch(0.84 0.085 222)",
+          "oklch(0.95 0.085 222)"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Petrol Mist",
+        "canonical": "oklch(0.95 0.018 222)",
+        "dark": "oklch(0.29 0.035 220)",
+        "cssVar": "--c-accent-soft",
+        "tonalRamp": [
+          "oklch(0.15 0.018 222)",
+          "oklch(0.26 0.018 222)",
+          "oklch(0.37 0.018 222)",
+          "oklch(0.48 0.018 222)",
+          "oklch(0.6 0.018 222)",
+          "oklch(0.72 0.018 222)",
+          "oklch(0.84 0.018 222)",
+          "oklch(0.95 0.018 222)"
+        ]
+      },
+      "on-accent": {
+        "role": "primary",
+        "displayName": "On Petrol",
+        "canonical": "oklch(1 0 0)",
+        "dark": "oklch(0.18 0.02 228)",
+        "cssVar": "--c-on-accent",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.26 0 0)",
+          "oklch(0.37 0 0)",
+          "oklch(0.48 0 0)",
+          "oklch(0.6 0 0)",
+          "oklch(0.72 0 0)",
+          "oklch(0.84 0 0)",
+          "oklch(0.95 0 0)"
+        ]
+      },
+      "focus": {
+        "role": "primary",
+        "displayName": "Clear Petrol",
+        "canonical": "oklch(0.52 0.12 222)",
+        "dark": "oklch(0.8 0.1 215)",
+        "cssVar": "--c-focus",
+        "tonalRamp": [
+          "oklch(0.15 0.12 222)",
+          "oklch(0.26 0.12 222)",
+          "oklch(0.37 0.12 222)",
+          "oklch(0.48 0.12 222)",
+          "oklch(0.6 0.12 222)",
+          "oklch(0.72 0.12 222)",
+          "oklch(0.84 0.12 222)",
+          "oklch(0.95 0.12 222)"
+        ]
+      },
+      "savings": {
+        "role": "secondary",
+        "displayName": "Kept-Money Green",
+        "canonical": "oklch(0.47 0.12 155)",
+        "dark": "oklch(0.8 0.14 155)",
+        "cssVar": "--c-savings",
+        "tonalRamp": [
+          "oklch(0.15 0.12 155)",
+          "oklch(0.26 0.12 155)",
+          "oklch(0.37 0.12 155)",
+          "oklch(0.48 0.12 155)",
+          "oklch(0.6 0.12 155)",
+          "oklch(0.72 0.12 155)",
+          "oklch(0.84 0.12 155)",
+          "oklch(0.95 0.12 155)"
+        ]
+      },
+      "savings-soft": {
+        "role": "secondary",
+        "displayName": "Kept-Money Wash",
+        "canonical": "oklch(0.955 0.03 155)",
+        "dark": "oklch(0.28 0.04 155)",
+        "cssVar": "--c-savings-soft",
+        "tonalRamp": [
+          "oklch(0.15 0.03 155)",
+          "oklch(0.26 0.03 155)",
+          "oklch(0.37 0.03 155)",
+          "oklch(0.48 0.03 155)",
+          "oklch(0.6 0.03 155)",
+          "oklch(0.72 0.03 155)",
+          "oklch(0.84 0.03 155)",
+          "oklch(0.95 0.03 155)"
+        ]
+      },
+      "attention": {
+        "role": "tertiary",
+        "displayName": "Amber Caution",
+        "canonical": "oklch(0.49 0.11 65)",
+        "dark": "oklch(0.82 0.11 75)",
+        "cssVar": "--c-attention",
+        "tonalRamp": [
+          "oklch(0.15 0.11 65)",
+          "oklch(0.26 0.11 65)",
+          "oklch(0.37 0.11 65)",
+          "oklch(0.48 0.11 65)",
+          "oklch(0.6 0.11 65)",
+          "oklch(0.72 0.11 65)",
+          "oklch(0.84 0.11 65)",
+          "oklch(0.95 0.11 65)"
+        ]
+      },
+      "attention-soft": {
+        "role": "tertiary",
+        "displayName": "Amber Wash",
+        "canonical": "oklch(0.96 0.03 80)",
+        "dark": "oklch(0.3 0.04 75)",
+        "cssVar": "--c-attention-soft",
+        "tonalRamp": [
+          "oklch(0.15 0.03 80)",
+          "oklch(0.26 0.03 80)",
+          "oklch(0.37 0.03 80)",
+          "oklch(0.48 0.03 80)",
+          "oklch(0.6 0.03 80)",
+          "oklch(0.72 0.03 80)",
+          "oklch(0.84 0.03 80)",
+          "oklch(0.95 0.03 80)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Result Figure",
+        "purpose": "The result range only; sized to the card and string length so it never wraps."
+      },
+      "headline": {
+        "displayName": "Page Title",
+        "purpose": "The h1, one per page."
+      },
+      "title": {
+        "displayName": "Section Title",
+        "purpose": "h2, result sentence, question titles, live preview figure."
+      },
+      "title-small": {
+        "displayName": "Card Title",
+        "purpose": "h3, link titles, slider values; amount inputs at 500 and the intro answer line at 400."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text and inputs; 68ch on prose pages."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, buttons, chips, FAQ questions."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Hints, tables, captions, navigation, breadcrumbs."
+      },
+      "legal": {
+        "displayName": "Legal",
+        "purpose": "Disclaimer, consent notes, slider scale, footer legal line."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 1px 2px var(--c-shadow), 0 12px 32px -16px var(--c-shadow)",
+        "purpose": "The single lifted surface: the calculator card (and the skip link)."
+      },
+      {
+        "name": "thumb",
+        "value": "0 1px 3px var(--c-shadow)",
+        "purpose": "Contact shadow under slider thumbs."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 3px color-mix(in oklch, var(--c-focus) 25%, transparent)",
+        "purpose": "Inputs and OTP digits on focus (sliders: 4px at 35%)."
+      }
+    ],
+    "shadowColor": {
+      "light": "oklch(0.25 0.03 235 / 0.1)",
+      "dark": "oklch(0 0 0 / 0.4)",
+      "cssVar": "--c-shadow"
+    },
+    "motion": [
+      {
+        "name": "dur-fast",
+        "value": "150ms",
+        "purpose": "Hover, focus, press, slider bubble."
+      },
+      {
+        "name": "dur-base",
+        "value": "220ms",
+        "purpose": "Step View Transitions, chevron rotation."
+      },
+      {
+        "name": "dur-slow",
+        "value": "350ms",
+        "purpose": "Bar and meter width morphs, done-mark entrance."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Expo-like: fast start, calm settle. Default for everything."
+      },
+      {
+        "name": "chip-advance-delay",
+        "value": "250ms",
+        "purpose": "Lets the chip check register before the step advances (150ms under reduced motion)."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "durations 0ms; count-up and View Transitions skipped via reducedMotion()",
+        "purpose": "All motion collapses under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "40rem",
+        "purpose": "Gutter 16 to 24px, card padding 20 to 32px, card footer un-sticks, tables unstack."
+      }
+    ],
+    "layout": {
+      "cardMax": "34rem",
+      "pageMax": "72rem",
+      "measure": "68ch",
+      "controlHeight": "3.25rem",
+      "targetMin": "2.75rem"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action per step; full width in the card footer.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">הצגת התוצאה</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; inline-size:100%; min-block-size:var(--control-h); padding:var(--space-2) var(--space-5); border:1px solid transparent; border-radius:var(--radius-md); background:var(--c-accent); color:var(--c-on-accent); font-family:var(--font-sans); font-size:var(--text-md); font-weight:var(--fw-bold); cursor:pointer; transition:background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); } .ds-btn-primary:hover { background:var(--c-accent-hover); } .ds-btn-primary:active { transform:translateY(1px); } .ds-btn-primary:focus-visible { outline:2px solid var(--c-focus); outline-offset:2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined petrol-ink action for non-primary choices.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">לחישוב נוסף</button>",
+      "css": ".ds-btn-secondary { display:inline-flex; align-items:center; justify-content:center; min-block-size:var(--target-min); padding:var(--space-2) var(--space-5); border:1px solid var(--c-border-strong); border-radius:var(--radius-md); background:transparent; color:var(--c-accent-ink); font-family:var(--font-sans); font-size:var(--text-md); font-weight:var(--fw-medium); cursor:pointer; transition:background-color var(--dur-fast) var(--ease-out); } .ds-btn-secondary:hover { background:var(--c-accent-soft); } .ds-btn-secondary:focus-visible { outline:2px solid var(--c-focus); outline-offset:2px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Underlined slate link-button under the primary action (skip ahead).",
+      "html": "<button class=\"ds-btn-quiet\" type=\"button\">ישר לבדיקה מול יועץ</button>",
+      "css": ".ds-btn-quiet { min-block-size:var(--target-min); padding:var(--space-2); border:0; background:transparent; color:var(--c-text-2); font-family:var(--font-sans); font-size:var(--text-md); font-weight:var(--fw-medium); text-decoration:underline; text-decoration-color:color-mix(in oklch, currentColor 40%, transparent); text-underline-offset:0.2em; cursor:pointer; } .ds-btn-quiet:hover { color:var(--c-text); } .ds-btn-quiet:focus-visible { outline:2px solid var(--c-focus); outline-offset:2px; border-radius:var(--radius-sm); }"
+    },
+    {
+      "name": "Amount Input with Slider",
+      "kind": "input",
+      "refersTo": "input-amount",
+      "description": "Labelled ₪ amount field paired with a petrol-filled range slider.",
+      "html": "<div class=\"ds-field\" dir=\"rtl\"><label class=\"ds-field__label\" for=\"ds-amt\">יתרת המשכנתא</label><div class=\"ds-amount\"><span class=\"ds-amount__unit\">₪</span><input id=\"ds-amt\" class=\"ds-amount__input\" inputmode=\"numeric\" value=\"800,000\"></div><input class=\"ds-slider\" type=\"range\" min=\"0\" max=\"100\" value=\"60\" style=\"--fill:60%\" aria-label=\"יתרת המשכנתא\"></div>",
+      "css": ".ds-field { display:grid; gap:var(--space-2); font-family:var(--font-sans); color:var(--c-text); } .ds-field__label { font-size:var(--text-md); font-weight:var(--fw-medium); } .ds-amount { display:flex; align-items:center; block-size:var(--control-h); background:var(--c-surface); border:1px solid var(--c-border-strong); border-radius:var(--radius-md); transition:border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); } .ds-amount:hover { border-color:var(--c-text-3); } .ds-amount:focus-within { border-color:var(--c-accent); box-shadow:0 0 0 3px color-mix(in oklch, var(--c-focus) 25%, transparent); } .ds-amount__input { flex:1; min-inline-size:0; block-size:100%; padding-inline:var(--space-4); border:0; background:transparent; font:inherit; font-size:var(--text-lg); font-weight:var(--fw-medium); color:inherit; direction:ltr; text-align:end; outline:none; font-variant-numeric:tabular-nums lining-nums; } .ds-amount__unit { padding-inline:var(--space-4) 0; color:var(--c-text-2); font-size:var(--text-lg); } .ds-slider { inline-size:100%; block-size:var(--target-min); appearance:none; background:transparent; cursor:pointer; } .ds-slider::-webkit-slider-runnable-track { block-size:4px; border-radius:999px; background:linear-gradient(to left, var(--c-accent) var(--fill), var(--c-border) var(--fill)); } .ds-slider::-webkit-slider-thumb { appearance:none; inline-size:1.5rem; block-size:1.5rem; margin-block-start:calc(2px - 0.75rem); border-radius:50%; background:var(--c-surface); border:2px solid var(--c-accent); box-shadow:0 1px 3px var(--c-shadow); transition:transform var(--dur-fast) var(--ease-out); } .ds-slider:active::-webkit-slider-thumb { transform:scale(1.12); } .ds-slider:focus-visible { outline:none; } .ds-slider:focus-visible::-webkit-slider-thumb { box-shadow:0 0 0 4px color-mix(in oklch, var(--c-focus) 35%, transparent); }"
+    },
+    {
+      "name": "Answer Chips",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pill tap-to-answer chips; selected shows Petrol Mist and a check.",
+      "html": "<div class=\"ds-chips\" dir=\"rtl\" role=\"radiogroup\"><button class=\"ds-chip\" role=\"radio\" aria-checked=\"true\"><svg class=\"ds-chip__check\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3.5 8.5l3 3 6-7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>עכשיו</button><button class=\"ds-chip\" role=\"radio\" aria-checked=\"false\"><svg class=\"ds-chip__check\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3.5 8.5l3 3 6-7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>בחודשים הקרובים</button><button class=\"ds-chip\" role=\"radio\" aria-checked=\"false\"><svg class=\"ds-chip__check\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3.5 8.5l3 3 6-7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>רק בודק/ת</button></div>",
+      "css": ".ds-chips { display:flex; flex-wrap:wrap; gap:var(--space-2); font-family:var(--font-sans); } .ds-chip { display:inline-flex; align-items:center; gap:var(--space-2); min-block-size:var(--target-min); padding:var(--space-2) var(--space-4); border-radius:999px; border:1px solid var(--c-border-strong); background:var(--c-surface); color:var(--c-text); font:inherit; font-size:var(--text-md); font-weight:var(--fw-medium); cursor:pointer; transition:background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform 90ms var(--ease-out); } .ds-chip:hover { border-color:var(--c-accent); } .ds-chip:active { transform:scale(0.97); } .ds-chip:focus-visible { outline:2px solid var(--c-focus); outline-offset:2px; } .ds-chip__check { display:none; inline-size:1rem; block-size:1rem; margin-inline-start:calc(-1 * var(--space-1)); } .ds-chip[aria-checked=\"true\"] { background:var(--c-accent-soft); border-color:var(--c-accent); color:var(--c-accent-ink); } .ds-chip[aria-checked=\"true\"] .ds-chip__check { display:block; }"
+    },
+    {
+      "name": "Calculator Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The single lifted surface: white, hairline, one soft shadow, 34rem max.",
+      "html": "<section class=\"ds-card\" dir=\"rtl\"><h2 class=\"ds-card__title\">כמה תחסכו?</h2><p class=\"ds-card__text\">שלושה מספרים מדף הבנק, ותשובה מיד.</p></section>",
+      "css": ".ds-card { max-inline-size:var(--card-max); background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:var(--space-6) var(--space-5); font-family:var(--font-sans); color:var(--c-text); } .ds-card__title { margin:0 0 var(--space-2); font-size:var(--text-xl); font-weight:var(--fw-bold); line-height:var(--lh-heading); letter-spacing:-0.01em; } .ds-card__text { margin:0; color:var(--c-text-2); font-size:var(--text-md); line-height:var(--lh-body); }"
+    },
+    {
+      "name": "Live Result with Before/After Bars",
+      "kind": "custom",
+      "refersTo": "result-figure",
+      "description": "Savings range at display scale in green, then ink bars on one shared zero-based grid.",
+      "html": "<div class=\"ds-result\" dir=\"rtl\"><p class=\"ds-result__label\">חיסכון אפשרי לאורך התקופה</p><p class=\"ds-result__figure\">₪86,000–₪357,000</p><div class=\"ds-compare\"><span class=\"ds-compare__label\">היום</span><span class=\"ds-compare__bar\" style=\"--w:100%\"></span><span class=\"ds-compare__value\">₪8,300</span><span class=\"ds-compare__label\">אחרי מחזור</span><span class=\"ds-compare__bar ds-compare__bar--after\" style=\"--w:93%\"><span class=\"ds-compare__solid\" style=\"--lo:90%\"></span></span><span class=\"ds-compare__value\">₪6,930–₪7,740</span></div></div>",
+      "css": ".ds-result { display:grid; gap:var(--space-3); font-family:var(--font-sans); color:var(--c-text); font-variant-numeric:tabular-nums lining-nums; } .ds-result__label { margin:0; color:var(--c-text-2); font-size:var(--text-md); } .ds-result__figure { margin:0; direction:ltr; unicode-bidi:isolate; text-align:right; white-space:nowrap; font-size:clamp(1.75rem, 7vw, var(--text-hero)); font-weight:var(--fw-bold); line-height:var(--lh-tight); letter-spacing:-0.02em; color:var(--c-savings); } .ds-compare { display:grid; grid-template-columns:max-content minmax(0,1fr) max-content; align-items:center; gap:var(--space-3); font-size:var(--text-sm); } .ds-compare__label { color:var(--c-text-2); } .ds-compare__bar { justify-self:start; block-size:0.625rem; inline-size:var(--w,100%); border-radius:999px; background:var(--c-text-3); transition:inline-size var(--dur-slow) var(--ease-out); } .ds-compare__bar--after { background:color-mix(in oklch, var(--c-text) 22%, transparent); overflow:hidden; } .ds-compare__solid { display:block; block-size:100%; inline-size:min(var(--lo,100%), calc(100% - 3px)); border-radius:inherit; background:var(--c-text); transition:inline-size var(--dur-slow) var(--ease-out); } .ds-compare__value { direction:ltr; unicode-bidi:isolate; text-align:end; font-weight:var(--fw-medium); }"
+    },
+    {
+      "name": "Accuracy Meter",
+      "kind": "custom",
+      "refersTo": "live-result-panel",
+      "description": "A 2px ink hairline that fills as optional questions are answered.",
+      "html": "<div class=\"ds-meter\" dir=\"rtl\"><div class=\"ds-meter__head\"><span>דיוק החישוב</span><span>1 מתוך 3</span></div><div class=\"ds-meter__track\"><div class=\"ds-meter__fill\" style=\"--value:33%\"></div></div></div>",
+      "css": ".ds-meter { display:grid; gap:var(--space-2); font-family:var(--font-sans); } .ds-meter__head { display:flex; justify-content:space-between; font-size:var(--text-sm); color:var(--c-text-2); font-variant-numeric:tabular-nums lining-nums; } .ds-meter__track { block-size:2px; border-radius:999px; background:var(--c-surface-2); overflow:hidden; } .ds-meter__fill { block-size:100%; inline-size:var(--value,0%); background:var(--c-text-2); border-radius:inherit; transition:inline-size var(--dur-slow) var(--ease-out); }"
+    },
+    {
+      "name": "Site Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Quiet header links; current page is ink with a 2px petrol underline.",
+      "html": "<nav class=\"ds-nav\" dir=\"rtl\" aria-label=\"ראשי\"><a href=\"#\" aria-current=\"page\">מחשבונים</a><a href=\"#\">ריבית היום</a><a href=\"#\">מדריכים</a></nav>",
+      "css": ".ds-nav { display:flex; gap:var(--space-1); font-family:var(--font-sans); } .ds-nav a { display:inline-flex; align-items:center; min-block-size:var(--target-min); padding-inline:var(--space-2); color:var(--c-text-2); font-size:var(--text-sm); text-decoration:none; border-radius:var(--radius-sm); } .ds-nav a:hover, .ds-nav a[aria-current=\"page\"] { color:var(--c-text); } .ds-nav a[aria-current=\"page\"] { text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:0.45em; text-decoration-color:var(--c-accent); } .ds-nav a:focus-visible { outline:2px solid var(--c-focus); outline-offset:2px; }"
+    },
+    {
+      "name": "FAQ Disclosure",
+      "kind": "custom",
+      "refersTo": "faq",
+      "description": "Hairline-separated questions with a rotating chevron.",
+      "html": "<div class=\"ds-faq\" dir=\"rtl\"><details open><summary>למה התוצאה מוצגת כטווח?<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M4 6l4 4 4-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></summary><div>כי הריבית שתקבל/י תלויה בפרופיל שלך ובתמהיל המסלולים.</div></details><details><summary>האם צריך להשאיר פרטים?<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M4 6l4 4 4-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></summary><div>לא. התוצאה מוצגת מיד.</div></details></div>",
+      "css": ".ds-faq { border-block-start:1px solid var(--c-border); font-family:var(--font-sans); color:var(--c-text); } .ds-faq details { border-block-end:1px solid var(--c-border); } .ds-faq summary { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); min-block-size:3.5rem; padding-block:var(--space-3); font-weight:var(--fw-medium); cursor:pointer; list-style:none; } .ds-faq summary::-webkit-details-marker { display:none; } .ds-faq summary svg { flex:none; inline-size:1.25rem; block-size:1.25rem; color:var(--c-text-3); transition:transform var(--dur-base) var(--ease-out); } .ds-faq details[open] summary svg { transform:rotate(180deg); } .ds-faq details > div { padding-block-end:var(--space-5); color:var(--c-text-2); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Honest Statement",
+    "overview": "The system reads like a well-set bank statement written for the account holder rather than the bank. A cool, near-neutral grey ground holds one white card with a hairline border and a single soft shadow. Near-black ink carries the text, and the only colours are the ones that mean something: a deep petrol for what you can press, and a savings green that appears only on money you would keep. It is the category standard executed at Wise / GOV.UK / Monzo craft, in right-to-left Hebrew. It answers before it asks.\n\nDensity is calm and single-minded. Every surface is one 34rem column with one shared start edge. Within it, each step has one primary action pinned to the card's footer. Figures are the heroes: tabular, isolated left-to-right inside Hebrew, rounded down honestly, and they count in place instead of jumping. Motion is short and settles quickly (150/220/350ms on an expo-like ease-out), and all of it collapses to instant under reduced motion. Light and dark themes share every role; dark follows the system preference unless the visitor forces a theme.\n\nThe system rejects the lead-gen arrangement: no hero image, no form above the answer, no pop-up, no badges or testimonial counts standing in for proof. The result and its assumptions are the proof.",
+    "keyCharacteristics": [
+      "One white card on a cool grey ground, hairline border, one soft shadow.",
+      "Petrol accent on interactive affordances only; savings green on money saved only; data graphics in ink.",
+      "One Heebo variable family at three weights (400/500/700), tabular numerals everywhere.",
+      "One 34rem column with a shared start edge; one primary action per step.",
+      "Short, calm motion that tells state (count-up, step transitions, bar morphs) and disappears under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The Petrol Means Press Rule",
+        "body": "Petrol marks interactive affordances only: primary buttons, focus rings, the active slider fill and thumb, links, the secondary button, selected chips, hover borders on chips and the next-step card, the current-page underline in the navigation, the disclosure toggle, caret and text selection. It never colours a figure, a data graphic, a surface or a decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Green Is Money Rule",
+        "body": "Savings green appears only on money saved: the result range, the live preview, the per-question figure and the recap. When there is no saving, the figure turns to ink (or Slate Ink in the preview), never green.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Graphics Rule",
+        "body": "Data graphics are ink. The before/after bars and the accuracy meter use the text greys, never petrol or green. Colour stays reserved for the two meanings above.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Everywhere Rule",
+        "body": "Every figure uses tabular lining numerals (set on the body and restated on every figure), so digits never shift as values count or change.",
+        "section": "typography"
+      },
+      {
+        "name": "The Low-to-High Rule",
+        "body": "Every figure or range inside Hebrew text is isolated as left-to-right (LRI/PDI in generated strings, or `<bdi class=\"num\">` / `.num` in markup), so ₪ and the en dash land correctly and a range always reads low to high.",
+        "section": "typography"
+      },
+      {
+        "name": "The Round Down Rule",
+        "body": "Result totals are rounded down to ₪1,000; monthly payments and fees go to ₪10, with fee ranges widening outward. Never display false precision, and never round a saving up.",
+        "section": "typography"
+      },
+      {
+        "name": "The Shared Edge Rule",
+        "body": "Everything in the reading column (the h1, its answer line, the card, section headings, tables, FAQ) aligns to one start edge at 34rem. Centring is reserved for small in-card details: the footer disclaimer, the quiet secondary link under the primary button, and OTP digits.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Action Rule",
+        "body": "Each step has exactly one primary action, full width in the card footer, sticky below 40rem and static above it.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Lift Rule",
+        "body": "Only the card casts a shadow. Everything inside it is flat and separated by tone or hairline.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep every surface to one 34rem column with a shared start edge; intros and headings start at that edge.",
+      "**Do** give each step exactly one primary button, full width in the card footer, sticky below 40rem.",
+      "**Do** set every figure in tabular numerals and isolate figures and ranges as LTR (LRI/PDI or `<bdi class=\"num\">`) so ranges read low to high.",
+      "**Do** round result totals down to ₪1,000, and payments and fees to ₪10.",
+      "**Do** draw the before/after bars on one shared zero-based grid, with the after range as a light ink band of at least 3px.",
+      "**Do** stack tables below 40rem with `.data-table--stack` and `data-label`, or render one label/value table per example.",
+      "**Do** use the motion tokens (150/220/350ms, `cubic-bezier(0.22, 1, 0.36, 1)`) for count-ups, step View Transitions and bar/meter width changes, and make every one instant under `prefers-reduced-motion` (CSS tokens and the JS `reducedMotion()` guard).",
+      "**Do** reserve hint space so validation never shifts the layout, and show Amber Caution only after blur."
+    ],
+    "donts": [
+      "**Don't** use petrol on figures, bars, meters, surfaces or decoration; it marks what can be pressed or focused.",
+      "**Don't** use savings green on anything but money saved; a zero or negative result is ink.",
+      "**Don't** colour data graphics; bars and the meter are ink greys.",
+      "**Don't** centre intros, headings or section text; centring is limited to the footer disclaimer, the quiet link under the primary button and OTP digits.",
+      "**Don't** add a second lifted surface or a shadow inside the card.",
+      "**Don't** put a form, hero image, pop-up, badge row or testimonial ahead of the result.",
+      "**Don't** let a figure wrap or reflow; the display figure sizes itself to fit one line."
+    ]
+  }
+}
