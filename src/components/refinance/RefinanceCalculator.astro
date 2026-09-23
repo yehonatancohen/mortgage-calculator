@@ -162,7 +162,7 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
   <div class="calc__footer" data-footer>
     <div class="calc__preview" data-preview>
       <span class="calc__preview-label" data-out="preview-label">{v.previewLabel}</span>
-      <bdi class="calc__preview-value num" data-out="preview">{v.preview}</bdi>
+      <bdi class="calc__preview-value num" data-out="preview" style={`--chars: ${v.preview.length}`}>{v.preview}</bdi>
     </div>
     <button type="button" class="btn btn--primary" data-primary>הצגת התוצאה</button>
     <button type="button" class="btn btn--quiet" data-secondary hidden></button>

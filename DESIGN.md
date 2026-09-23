@@ -20,6 +20,9 @@ colors:
   savings-soft: "oklch(0.955 0.03 155)"
   attention: "oklch(0.49 0.11 65)"
   attention-soft: "oklch(0.96 0.03 80)"
+  hero: "oklch(0.36 0.07 222)"
+  on-hero: "oklch(0.99 0.003 222)"
+  on-hero-2: "oklch(0.88 0.028 222)"
 typography:
   display:
     fontFamily: "Heebo, 'Heebo Fallback', system-ui, sans-serif"
@@ -183,7 +186,8 @@ Density is calm and single-minded. Every surface is one 34rem column with one sh
 The system rejects the lead-gen arrangement: no hero image, no form above the answer, no pop-up, no badges or testimonial counts standing in for proof. The result and its assumptions are the proof.
 
 **Key Characteristics:**
-- One white card on a cool grey ground, hairline border, one soft shadow.
+- One deep petrol hero band (header, crumbs, title) that the white card rises out of, overlapping its lower edge; below it, a cool grey ground.
+- One white card with a hairline border and one soft shadow.
 - Petrol accent on interactive affordances only; savings green on money saved only; data graphics in ink.
 - One Heebo variable family at three weights (400/500/700), tabular numerals everywhere.
 - One 34rem column with a shared start edge; one primary action per step.
@@ -213,7 +217,9 @@ A cool, low-chroma neutral set tinted toward petrol (hue ≈222), with exactly t
 - **Faint Slate** (text-3): legal lines, slider scale, question counter and the "today" bar in the before/after comparison (still 5.7:1 on white).
 
 ### Named Rules
-**The Petrol Means Press Rule.** Petrol marks interactive affordances only: primary buttons, focus rings, the active slider fill and thumb, links, the secondary button, selected chips, hover borders on chips and the next-step card, the current-page underline in the navigation, the disclosure toggle, caret and text selection. It never colours a figure, a data graphic, a surface or a decoration.
+**The Petrol Means Press Rule.** Petrol marks interactive affordances only: primary buttons, focus rings, the active slider fill and thumb, links, the secondary button, selected chips, hover borders on chips and the next-step card, the current-page underline in the navigation, the disclosure toggle, caret and text selection. It never colours a figure, a data graphic, a surface or a decoration, with one exception: the hero band.
+
+**The One Band Rule.** On calculator pages, the header, breadcrumbs, h1 and answer line sit on one continuous Deep Harbour band (`--c-hero`, a deeper, calmer petrol than the button). White ink (`on-hero`) carries the h1 and the brand, and Mist Ink (`on-hero-2`) carries the answer line, the nav and the crumbs; focus rings and the current-nav underline turn white on it. The card overlaps the band's bottom by 48px (80px from 40rem), so the band frames the calculator instead of competing with it. The band is flat, with no gradient, image or pattern, and it appears once per page. Prose pages keep the quiet paper header. In dark mode the band drops to a deep, low-chroma petrol, so it reads as a tone rather than a light.
 
 **The Green Is Money Rule.** Savings green appears only on money saved: the result range, the live preview, the per-question figure and the recap. When there is no saving, the figure turns to ink (or Slate Ink in the preview), never green.
 
@@ -246,7 +252,7 @@ A cool, low-chroma neutral set tinted toward petrol (hue ≈222), with exactly t
 
 ## Layout
 
-One column. The intro, the calculator card and all content below it share one 34rem column (`--card-max`) and one start edge; the column is centred in the viewport with generous air on desktop and nothing beside it. Intros and headings start at that edge and are never centred. Header and footer chrome run to a 72rem page width. Prose pages cap running text at 68ch.
+One column. The intro, the calculator card and all content below it share one 34rem column (`--card-max`) and one start edge; the column is centred in the viewport with generous air on desktop and nothing beside it. Intros and headings start at that edge and are never centred. Header and footer chrome run to a 72rem page width. On calculator pages the hero band runs full bleed behind the header and intro, with its content held to the same 34rem column. Prose pages cap running text at 68ch.
 
 Spacing is a 4px grid (steps 1–20). Page gutters are 16px, rising to 24px at 40rem. Card padding is 24px by 20px, rising to 32px at 40rem. The intro sits 24px above the card on mobile and 48px on desktop. Content begins 64px below the card, and sections are 48px apart. Fields inside a step are 12px apart and steps use 20px internal gaps.
 
@@ -300,8 +306,8 @@ Sober and full-weight; one per step does the work.
 - **Error / Disabled:** Amber Caution stroke and hint, applied only after blur. Hints reserve one line so nothing shifts.
 
 ### Sliders
-- **Direction:** sliders run left to right even inside RTL: min on the left, fill growing rightward, the same way as the numerals typed above them. An RTL track made the thumb move against the digits. The slider, its value bubble and its scale share one LTR axis on `.slider-wrap`.
-- **Track:** a 4px pill. The filled part (from the left) is Deep Petrol; the rest is Hairline.
+- **Direction:** sliders follow Hebrew reading order, as native RTL ranges do: min on the right, fill growing leftward. This is the convention on Israeli bank and calculator sites; the scale reads max-left, min-right to match.
+- **Track:** a 4px pill. The filled part (from the right) is Deep Petrol; the rest is Hairline.
 - **Thumb:** 24px Card White circle with a 2px petrol ring and contact shadow; it scales to 1.12 while pressed and shows a 4px focus halo. A value bubble in ink appears above the thumb while dragging, except on slider-only fields, where the value already sits beside the label.
 
 ### Icons
@@ -311,10 +317,10 @@ One authored set in `Icon.astro`: a 24px grid, 2px stroke, round caps and joins,
 - **Quiet notice:** a caveat that is not a warning (for example, no CPI linkage) sits on Pale Slate in Slate Ink, led by the info icon. The Amber notice stays reserved for problems.
 
 ### Navigation
-- **Style:** a quiet header on Cool Paper with a hairline base. Links are 15px Slate Ink with 44px targets and darken to ink on hover. The current page is ink with a 2px petrol underline. Breadcrumbs are 15px with a Faint Slate "/" separator.
+- **Style:** on calculator pages the header joins the hero band (brand and current page in white, links in Mist Ink, no base rule). Elsewhere it is a quiet header on Cool Paper with a hairline base. Links are 15px Slate Ink with 44px targets and darken to ink on hover. The current page is ink with a 2px petrol underline. Breadcrumbs are 15px with a Faint Slate "/" separator.
 
 ### Result, Comparison and Meter (signature)
-The live result is the product. The label sits in Slate Ink, then the range in Kept-Money Green at display scale on one line, then the monthly difference at 20px, then a sentence and costs line in meta.
+The live result is the product. On the inputs step, the card footer's live preview is the page's hero number: Kept-Money Green at up to 36px, sized from the footer width and string length (`--chars`) so even a long range stays on one line beside its label, and counting in place as sliders move. The label sits in Slate Ink, then the range in Kept-Money Green at display scale on one line, then the monthly difference at 20px, then a sentence and costs line in meta.
 - **Count-up:** figures animate between old and new values in place, with no reflow.
 - **Before/after bars:** one shared, zero-based grid, so both bars are drawn on the same track length, with values in their own column. "Today" is a Faint Slate pill. "After" is a light ink band (text at 22%) spanning the range, with a solid ink segment up to the low value; an open range always shows at least 3px of band. Widths morph over 350ms.
 - **Accuracy meter:** a 2px hairline in Pale Slate filled with Slate Ink, headed by a meta line ("0 of 3"). It fills as optional questions are answered and the range tightens.

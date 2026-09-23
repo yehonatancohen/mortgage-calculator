@@ -31,6 +31,7 @@ const pairs = [
   ['c-text-3', 'c-surface', 4.5], ['c-accent-ink', 'c-surface', 4.5], ['c-on-accent', 'c-accent', 4.5], ['c-on-accent', 'c-accent-hover', 4.5],
   ['c-savings', 'c-surface', 4.5], ['c-savings', 'c-savings-soft', 4.5], ['c-attention', 'c-surface', 4.5], ['c-danger', 'c-surface', 4.5],
   ['c-accent-ink', 'c-accent-soft', 4.5], ['c-border-strong', 'c-surface', 3], ['c-focus', 'c-surface', 3], ['c-focus', 'c-bg', 3], ['c-track', 'c-surface', 3],
+  ['c-on-hero', 'c-hero', 4.5], ['c-on-hero-2', 'c-hero', 4.5],
 ];
 let fail = 0;
 for (const [name, theme] of [['light', light], ['dark', dark]]) {

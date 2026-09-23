@@ -67,15 +67,14 @@
 /* Slider value bubble (visible while dragging) */
 .slider-wrap {
   position: relative;
-  direction: ltr; /* the slider and its bubble share one left-to-right axis */
 }
 .slider-bubble {
   --pos: 0.5;
   position: absolute;
   inset-block-end: calc(100% - var(--space-1));
-  /* LTR range: min is at the left edge; centre the bubble over the thumb */
-  left: calc(var(--pos) * (100% - 1.5rem) + 0.75rem);
-  translate: -50% 4px;
+  /* RTL range: min is at the right edge; centre the bubble over the thumb */
+  inset-inline-start: calc(var(--pos) * (100% - 1.5rem) + 0.75rem);
+  translate: 50% 4px;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
   background: var(--c-text);
@@ -90,7 +89,7 @@
 }
 .is-dragging .slider-bubble {
   opacity: 1;
-  translate: -50% 0;
+  translate: 50% 0;
 }
 .field--slider-only .slider-bubble {
   display: none; /* the value is already shown beside the label */
@@ -259,9 +258,16 @@
   color: var(--c-text-2);
   font-size: var(--text-sm);
 }
+.calc__footer {
+  container-type: inline-size;
+}
 .calc__preview-value {
-  font-size: var(--text-xl);
+  /* The live figure is the page's hero number. It is sized by the footer width and the string length
+     (--chars, set with the value) so a long range still fits on one line beside its label. */
+  font-size: clamp(var(--text-lg), calc((100cqi - 7.5rem) / (var(--chars, 10) * 0.6)), 2.25rem);
   font-weight: var(--fw-bold);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--c-savings);
   white-space: nowrap;
 }

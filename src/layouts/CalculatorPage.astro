@@ -28,13 +28,18 @@ const path = Astro.url.pathname;
 const jsonLd = [webApplicationLd({ name: appName, description, path, dateModified: updated }), faqLd(faq)];
 ---
 <Base title={metaTitle} description={description} jsonLd={jsonLd} breadcrumbs={crumbs}>
-  <main id="main" class="page">
-    {crumbs.length > 1 && <Breadcrumbs crumbs={crumbs} />}
-    <header class="page-intro">
-      <h1>{title}</h1>
-      <p class="page-intro__answer">{answer}</p>
-    </header>
+  <main id="main">
+    <div class="hero">
+      <div class="hero__inner">
+        {crumbs.length > 1 && <Breadcrumbs crumbs={crumbs} />}
+        <header class="page-intro">
+          <h1>{title}</h1>
+          <p class="page-intro__answer">{answer}</p>
+        </header>
+      </div>
+    </div>
 
+    <div class="page">
     <div class="calc-slot">
       <slot />
     </div>
@@ -87,6 +92,7 @@ const jsonLd = [webApplicationLd({ name: appName, description, path, dateModifie
         </span>
         <Icon name="arrow-left" />
       </a>
+    </div>
     </div>
   </main>
 </Base>

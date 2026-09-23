@@ -61,6 +61,30 @@
   }
 }
 
+/* On pages with a hero band the header joins it: one continuous colour field above the card. */
+body:has(.hero) .site-header {
+  background: var(--c-hero);
+  border-block-end-color: transparent;
+}
+body:has(.hero) .brand,
+body:has(.hero) .brand__mark,
+body:has(.hero) .site-nav a:hover,
+body:has(.hero) .site-nav a[aria-current='page'] {
+  color: var(--c-on-hero);
+}
+body:has(.hero) .brand__mark path {
+  stroke: var(--c-hero);
+}
+body:has(.hero) .site-nav a {
+  color: var(--c-on-hero-2);
+}
+body:has(.hero) .site-nav a[aria-current='page'] {
+  text-decoration-color: var(--c-on-hero);
+}
+body:has(.hero) .site-header :focus-visible {
+  outline-color: var(--c-on-hero);
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
   margin-block-start: var(--space-20);
@@ -140,6 +164,9 @@
   margin-inline: auto;
   padding-block: var(--space-6) var(--space-5);
 }
+.hero .page-intro {
+  padding-block-end: var(--space-4);
+}
 .page-intro h1 {
   margin-block-end: var(--space-3);
 }
@@ -161,6 +188,50 @@
 .calc-slot {
   max-inline-size: var(--card-max);
   margin-inline: auto;
+}
+
+/* Hero band: the page's one colour field. The title sits on deep petrol and the card rises out of it,
+   overlapping the band's lower edge, so the calculator reads as the thing the page is about. */
+.hero {
+  --hero-overlap: var(--space-12);
+  background: var(--c-hero);
+  color: var(--c-on-hero);
+  padding-inline: var(--gutter);
+  padding-block-end: var(--hero-overlap);
+}
+@media (min-width: 40rem) {
+  .hero {
+    --hero-overlap: var(--space-20);
+  }
+}
+.hero__inner {
+  max-inline-size: var(--card-max);
+  margin-inline: auto;
+}
+.hero .page-intro__answer,
+.hero .crumbs,
+.hero .crumbs a,
+.hero .crumbs li + li::before {
+  color: var(--c-on-hero-2);
+}
+.hero .crumbs [aria-current] {
+  color: var(--c-on-hero);
+}
+.hero :focus-visible {
+  outline-color: var(--c-on-hero);
+}
+.hero ::selection {
+  background: var(--c-on-hero);
+  color: var(--c-hero);
+}
+.hero + .page .calc-slot {
+  position: relative;
+  margin-block-start: calc(-1 * var(--space-12));
+}
+@media (min-width: 40rem) {
+  .hero + .page .calc-slot {
+    margin-block-start: calc(-1 * var(--space-20));
+  }
 }
 
 /* Content below the calculator: one readable column */

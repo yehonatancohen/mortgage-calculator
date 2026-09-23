@@ -114,6 +114,7 @@ export function initRefinance(root: HTMLElement) {
     out('sub').forEach((el) => (el.textContent = v.sub));
 
     const pv = out('preview')[0]!;
+    pv.style.setProperty('--chars', String(v.preview.length));
     if (numeric && prevNumeric && prev.kind === v.kind) countTo(pv, from, [v.low, v.high], (vals) => previewText(v, vals));
     else pv.textContent = v.preview;
     preview.dataset.kind = v.kind;

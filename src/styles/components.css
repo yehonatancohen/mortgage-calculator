@@ -94,10 +94,8 @@
 }
 
 /* ---------- Slider ----------
-   Sliders run left to right, like the numerals they control: min on the left, fill from the left.
-   (An RTL track made the thumb move against the digits typed above it.) */
+   Sliders follow Hebrew reading order, as native RTL ranges do: min on the right, fill from the right. */
 .slider {
-  direction: ltr;
   --fill: 50%;
   display: block; /* no inline baseline slack under the track */
   position: relative;
@@ -111,7 +109,7 @@
 .slider::-webkit-slider-runnable-track {
   block-size: 4px;
   border-radius: var(--radius-pill);
-  background: linear-gradient(to right, var(--c-accent) var(--fill), var(--c-border) var(--fill));
+  background: linear-gradient(to left, var(--c-accent) var(--fill), var(--c-border) var(--fill));
 }
 .slider::-moz-range-track {
   block-size: 4px;
@@ -155,7 +153,6 @@
   box-shadow: 0 0 0 4px color-mix(in oklch, var(--c-focus) 35%, transparent);
 }
 .slider-scale {
-  direction: ltr;
   display: flex;
   justify-content: space-between;
   font-size: var(--text-xs);
