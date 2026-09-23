@@ -205,8 +205,34 @@ body:has(.hero) .site-header :focus-visible {
   }
 }
 .hero__inner {
+  position: relative;
   max-inline-size: var(--card-max);
   margin-inline: auto;
+}
+/* Skyline: stands on the band's lower edge in the empty space at the column's end side (left).
+   Wide screens only; on phones the band has no free room and the first viewport has no height to spare. */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+.hero-art {
+  display: none;
+}
+@media (min-width: 64rem) {
+  .hero-art {
+    display: block;
+    position: absolute;
+    inset-block-end: 0;
+    right: calc(50% + var(--card-max) / 2 + var(--space-12));
+    inline-size: min(25rem, calc(50% - var(--card-max) / 2 - var(--space-16)));
+    block-size: auto;
+    color: var(--c-on-hero-2);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .hero-art__fill {
+    fill: color-mix(in oklch, var(--c-on-hero) 6%, transparent);
+  }
 }
 .hero .page-intro__answer,
 .hero .crumbs,

@@ -6,6 +6,7 @@
 import Base from './Base.astro';
 import Icon from '../components/Icon.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import HeroArt from '../components/HeroArt.astro';
 import { faqLd, webApplicationLd, type Crumb } from '../seo/schema';
 import { hebrewDate } from '../ui/dates';
 
@@ -30,6 +31,7 @@ const jsonLd = [webApplicationLd({ name: appName, description, path, dateModifie
 <Base title={metaTitle} description={description} jsonLd={jsonLd} breadcrumbs={crumbs}>
   <main id="main">
     <div class="hero">
+      <HeroArt />
       <div class="hero__inner">
         {crumbs.length > 1 && <Breadcrumbs crumbs={crumbs} />}
         <header class="page-intro">
