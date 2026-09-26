@@ -7,10 +7,7 @@ import { SITE } from '../config/site';
   description={`תנאי השימוש באתר ${SITE.brand} ובמחשבוני המשכנתא.`}
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'תנאי שימוש', path: '/terms/' }]}
   updated="2026-09-22"
-  draft
-  noindex
 >
-  <!-- DRAFT: requires legal review before launch. -->
   <h2>המידע באתר</h2>
   <p>המחשבונים והתכנים באתר מיועדים למידע כללי והערכה בלבד. הם אינם ייעוץ פיננסי, ייעוץ השקעות, ייעוץ משפטי או הצעה לאשראי, ואינם מחליפים בדיקה אישית. <a href="/methodology/">פירוט ההנחות</a>.</p>
 
@@ -24,5 +21,5 @@ import { SITE } from '../config/site';
   <p>מותר לצטט נתונים וחישובים מהאתר עם קישור למקור.</p>
 
   <h2>יצירת קשר</h2>
-  <p><a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a></p>
+  <p>אפשר לפנות אלינו דרך <a href={SITE.contactPath}>טופס יצירת הקשר</a>.</p>
 </ProsePage>

@@ -7,6 +7,7 @@ EXPOSE_DEV_OTP=1             # dev only: shows the mock code in the form
 # SMS_SENDER=YourBrand
 ADMIN_PASSWORD=change-me
 ADMIN_EMAIL=you@example.com
+# CONTACT_EMAIL=you@example.com   # inbox for the public /contact/ form; falls back to ADMIN_EMAIL
 ADVISOR_NAME=Advisor name
 ADVISOR_EMAIL=advisor@example.com
 # ADVISOR_WEBHOOK_URL=https://hooks.example.com/leads

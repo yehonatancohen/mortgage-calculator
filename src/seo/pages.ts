@@ -37,8 +37,8 @@ export async function allPages(): Promise<PageEntry[]> {
     ...BANKS.map((b) => ({ path: `/banks/${b.slug}/`, title: `מחזור משכנתא ב${b.name}`, description: `איך לבדוק מחזור משכנתא ב${b.name}.`, index: !b.draft, lastmod: BASE, section: 'bank' as const })),
     { path: '/about/', title: 'אודות', description: 'מי אנחנו ואיך האתר ממומן.', index: true, lastmod: BASE, section: 'info' },
     { path: '/accessibility/', title: 'הצהרת נגישות', description: 'רמת הנגישות ודרכי פנייה.', index: true, lastmod: BASE, section: 'info' },
-    { path: '/privacy/', title: 'מדיניות פרטיות', description: 'אילו פרטים נאספים ולמי הם מועברים.', index: false, lastmod: BASE, section: 'info' },
-    { path: '/terms/', title: 'תנאי שימוש', description: 'תנאי השימוש באתר.', index: false, lastmod: BASE, section: 'info' },
+    { path: '/privacy/', title: 'מדיניות פרטיות', description: 'אילו פרטים נאספים ולמי הם מועברים.', index: true, lastmod: BASE, section: 'info' },
+    { path: '/terms/', title: 'תנאי שימוש', description: 'תנאי השימוש באתר.', index: true, lastmod: BASE, section: 'info' },
     { path: '/dev/tokens/', title: 'Tokens', description: 'Design tokens', index: false, lastmod: BASE, section: 'info' },
   ];
 }

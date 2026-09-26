@@ -6,38 +6,29 @@ Things only you can supply or decide. Everything else (market data, guide text, 
 
 File: `src/config/site.ts`
 
-- [ ] `domain` and `url`: the real domain (the build uses `url` for canonical links, sitemap and OG images).
-- [ ] `contactEmail`: a real inbox you read. It appears on the about, privacy and accessibility pages.
-- [ ] `legalName`: the legal entity that runs the site (company or licensed business). Shown on the privacy and terms pages.
-- [ ] `editorial.author`: name and role of whoever writes the content.
-- [ ] `editorial.reviewer`: name of a real, qualified mortgage advisor who reviews the guides. This drives the Article schema and E-E-A-T signals. Don't use a made-up name.
+- [x] `domain` and `url`: set to `tachles-mashkanta.co.il`.
+- [x] Owner decided: no legal entity name, author, or reviewer identity is published anywhere on the site. `editorial.author`/`editorial.reviewer` were removed from `site.ts` and from the Article schema (`src/seo/schema.ts`) rather than left as placeholders.
+- [x] The **only** place the owner's own contact info appears is the accessibility coordinator email on `/accessibility/`, by explicit request. No other page should carry personal info.
 
 ## 2. About page
 
-File: `src/pages/about.astro` (look for `TODO(content)`)
+File: `src/pages/about.astro`
 
-- [ ] Company details: who you are, where you're registered.
-- [ ] Team: real people only.
-- [ ] Reviewer credentials: what qualification or certification the advisor holds.
+- [x] Owner decided not to add company/team/reviewer details. Left as a general "what we do" page with no identifying info.
 
 ## 3. Accessibility statement
 
 File: `src/pages/accessibility.astro`
 
-- [ ] Name of the accessibility coordinator (currently `[שם רכז/ת הנגישות]`).
-- [ ] Coordinator phone (currently `[טלפון]`).
-- [ ] Date of the last accessibility audit. This is required under the Equal Rights for Persons with Disabilities Regulations and IS 5568. If no audit has been done yet, arrange one.
+- [x] Contact is the owner's email (`yoncohenyon@gmail.com`), by explicit request — the one exception to "no personal info on the site."
+- [ ] Date of the last accessibility audit, if one is ever performed (required under the Equal Rights for Persons with Disabilities Regulations and IS 5568). Currently unaudited.
 
-## 4. Privacy and legal (needs a lawyer)
+## 4. Privacy and legal
 
-File: `src/pages/privacy.astro` (look for `TODO(legal)`). The page is `draft` and `noindex` until a lawyer approves it.
+File: `src/pages/privacy.astro`, `src/pages/terms.astro`
 
-- [ ] **Retention period:** how long you keep leads and rate-alert signups, and when you delete them.
-- [ ] **Data location:** where Cloudflare stores the D1 database (region).
-- [ ] **SMS provider:** choose one, then name it on the page (see section 5).
-- [ ] **Clarity consent:** if you turn on Microsoft Clarity (`INTEGRATIONS.clarityId`), decide how you ask for consent. The page text switches automatically when Clarity is on.
-- [ ] **Lawyer review:** have an Israeli privacy lawyer review `/privacy/` and `/terms/` (Privacy Protection Law, Amendment 13). Then remove `draft` and `noindex` from both pages.
-- [ ] **Consent wording:** review `src/config/consent.ts` with the lawyer too. Bump `version` if the wording changes.
+- [x] Owner decided to index these now without a lawyer review; the legal-review TODOs (SMS provider name, retention period, Clarity consent wording) were removed as not required.
+- [ ] If you change your mind, an Israeli privacy lawyer should still review both against the Privacy Protection Law (Amendment 13) at some point.
 
 ## 5. Providers and integrations
 

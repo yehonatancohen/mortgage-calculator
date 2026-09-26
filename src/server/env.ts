@@ -24,6 +24,8 @@ export interface Env {
   /** Operator: receives Tier B review notices; password for /admin (user "admin"). */
   ADMIN_EMAIL?: string;
   ADMIN_PASSWORD?: string;
+  /** Inbox for the public contact form. Falls back to ADMIN_EMAIL when unset. Never checked into source. */
+  CONTACT_EMAIL?: string;
   /** Email via Resend (https://resend.com). Without a key, emails are logged. */
   RESEND_API_KEY?: string;
   EMAIL_FROM?: string;

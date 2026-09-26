@@ -17,7 +17,7 @@ export const organizationLd = () => ({
   url: abs('/'),
   logo: abs('/icon-512.png'),
   description: SITE.tagline,
-  email: SITE.contactEmail,
+  contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', url: abs(SITE.contactPath) },
 });
 
 export const websiteLd = () => ({
@@ -67,8 +67,6 @@ export const articleLd = (o: { headline: string; description: string; path: stri
   inLanguage: 'he-IL',
   datePublished: o.datePublished,
   dateModified: o.dateModified,
-  author: { '@type': 'Person', name: SITE.editorial.author.name, jobTitle: SITE.editorial.author.title },
-  reviewedBy: { '@type': 'Person', name: SITE.editorial.reviewer.name, jobTitle: SITE.editorial.reviewer.title },
   publisher: { '@id': orgId() },
 });
 

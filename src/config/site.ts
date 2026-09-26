@@ -4,23 +4,16 @@
  */
 export const SITE = {
   brand: "תכל'ס משכנתא",
-  domain: '[DOMAIN]',
+  domain: 'tachles-mashkanta.co.il',
   /** Canonical origin. Replace with https://<your domain>. Must be a valid URL for the build. */
-  url: 'https://example.com',
+  url: 'https://tachles-mashkanta.co.il',
   locale: 'he-IL',
   lang: 'he',
   dir: 'rtl',
   /** Short description used in the footer, Organization schema and llms.txt. */
   tagline: 'מחשבוני משכנתא שקופים ובדיקה חינם מול יועץ משכנתאות עצמאי.',
-  /** Contact for the accessibility statement and privacy requests. Replace before launch. */
-  contactEmail: 'contact@example.com',
-  /** Legal entity shown on legal pages. Replace before launch. */
-  legalName: '[LEGAL ENTITY NAME]',
-  /** Author / reviewer shown on articles (Article schema). Replace with real, qualified people. */
-  editorial: {
-    author: { name: '[AUTHOR NAME]', title: '[AUTHOR ROLE]' },
-    reviewer: { name: '[REVIEWER NAME]', title: 'יועץ/ת משכנתאות מוסמך/ת' },
-  },
+  /** Public contact path. The actual inbox is a server secret (CONTACT_EMAIL / ADMIN_EMAIL), never checked in. */
+  contactPath: '/contact/',
 } as const;
 
 /** Third-party slots. Leave empty to disable. None of them may block rendering. */

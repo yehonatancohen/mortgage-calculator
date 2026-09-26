@@ -9,11 +9,8 @@ import { hebrewDate } from '../ui/dates';
   description={`מדיניות הפרטיות של ${SITE.brand}: אילו פרטים נאספים, למה, למי הם מועברים וכמה זמן הם נשמרים.`}
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מדיניות פרטיות', path: '/privacy/' }]}
   updated={CONSENT.version}
-  draft
-  noindex
 >
-  <!-- DRAFT: requires review by an Israeli privacy lawyer (Privacy Protection Law and its Amendment 13) before launch. -->
-  <p>{SITE.legalName} ("אנחנו") מפעילה את האתר {SITE.domain}. מדיניות זו מסבירה אילו מידע אנחנו אוספים וכיצד אנו משתמשים בו. גרסה מיום {hebrewDate(CONSENT.version)}.</p>
+  <p>{SITE.brand} ("אנחנו") מפעילה את האתר {SITE.domain}. מדיניות זו מסבירה אילו מידע אנחנו אוספים וכיצד אנו משתמשים בו. גרסה מיום {hebrewDate(CONSENT.version)}.</p>
 
   <h2>שימוש במחשבונים</h2>
   <p>הנתונים שמוזנים למחשבונים (יתרה, החזר, שנים ותשובות לשאלות) מחושבים בדפדפן שלך ואינם נשמרים אצלנו, אלא אם בחרת לבקש בדיקה או התראה.</p>
@@ -33,18 +30,17 @@ import { hebrewDate } from '../ui/dates';
   <ul>
     <li>Cloudflare: אחסון האתר ומסד הנתונים.</li>
     <li>Resend: שליחת פרטי הבקשה באימייל ליועץ.</li>
-    <li>ספק SMS: שליחת קוד האימות לטלפון. <!-- TODO(legal): name the SMS provider once chosen. --></li>
+    <li>ספק SMS: שליחת קוד האימות לטלפון.</li>
   </ul>
-  <p><!-- TODO(legal): retention period for leads and rate alerts, and where Cloudflare stores the data. --></p>
 
   <h2>עוגיות וניתוח שימוש</h2>
   {INTEGRATIONS.clarityId ? (
-    <p>האתר משתמש ב־Microsoft Clarity כדי להבין איך משתמשים בו: אילו דפים נצפים, איפה לוחצים ואיפה נתקעים. Clarity עשוי לשמור עוגיות בדפדפן שלך. <!-- TODO(legal): consent approach for Clarity. --></p>
+    <p>האתר משתמש ב־Microsoft Clarity כדי להבין איך משתמשים בו: אילו דפים נצפים, איפה לוחצים ואיפה נתקעים. Clarity עשוי לשמור עוגיות בדפדפן שלך.</p>
   ) : (
     <p>האתר לא משתמש כרגע בכלי ניתוח של צד שלישי ולא בעוגיות מעקב.</p>
   )}
   <p>האתר שומר בדפדפן שלך שני דברים בלבד: את בחירת הערכה הבהירה או הכהה, ולמשך הביקור בלבד את דף הכניסה, האתר שהפנה אליו ופרמטרי הקמפיין (UTM). המידע הזה לא נשלח אלינו, אלא אם ביקשת בדיקה או התראה.</p>
 
   <h2>הזכויות שלך</h2>
-  <p>אפשר לבקש לעיין במידע, לתקן אותו או למחוק אותו בפנייה ל־<a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>
+  <p>אפשר לבקש לעיין במידע, לתקן אותו או למחוק אותו בפנייה דרך <a href={SITE.contactPath}>טופס יצירת הקשר</a>.</p>
 </ProsePage>
