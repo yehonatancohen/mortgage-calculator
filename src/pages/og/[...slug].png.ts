@@ -21,6 +21,14 @@ async function loadFonts() {
   return fonts;
 }
 
+let logoDataUri: string | null = null;
+function loadLogo() {
+  if (logoDataUri) return logoDataUri;
+  const buf = fs.readFileSync('public/logo-icon.png');
+  logoDataUri = `data:image/png;base64,${buf.toString('base64')}`;
+  return logoDataUri;
+}
+
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 /** Greedy word wrap by character budget (Hebrew glyphs are close to uniform width in Heebo). */
@@ -50,7 +58,7 @@ function svg(p: PageEntry) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <rect width="1200" height="630" fill="#f3f6f8"/>
   <rect x="0" y="0" width="1200" height="8" fill="#005971"/>
-  <g transform="translate(1036 72)"><rect width="64" height="64" rx="16" fill="#005971"/><path d="M18 35l9 9 19-22" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <image x="1030" y="66" width="70" height="62" href="${loadLogo()}"/>
   <text x="1012" y="116" font-family="Heebo" font-weight="700" font-size="34" text-anchor="end" direction="rtl" fill="#171f25">${esc(SITE.brand)}</text>
   ${title.map((l, i) => `<text x="${x}" y="${titleY + i * 84}" font-family="Heebo" font-weight="700" font-size="72" text-anchor="end" direction="rtl" fill="#171f25">${esc(l)}</text>`).join('')}
   ${desc.map((l, i) => `<text x="${x}" y="${titleY + title.length * 84 + 24 + i * 46}" font-family="Heebo" font-size="34" text-anchor="end" direction="rtl" fill="#4a545a">${esc(l)}</text>`).join('')}

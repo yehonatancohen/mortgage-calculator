@@ -34,7 +34,7 @@ related_targets: []
 - The card follows, holding the three labeled inputs with their sliders.
 - A live preview line gives the savings range in savings green at display scale.
 - The primary button is pinned to the bottom bar within thumb reach.
-- Desktop at 1440 shows the same single column (max 34rem), centred with generous air, and nothing beside it.
+- Desktop at 1440 keeps the 34rem calculator column but pairs it with a second column: "how it works" sits beside the card instead of empty margin either side. Worked examples widen into a two-up row below; FAQ, sources and the next-link stay in the narrow column.
 
 **FORM:** The canon (category standard), user-selected over roll 7f22a872 (assigned #5, Israeli wayfinding). The signature interaction is the live result: the figure counts in place, the range tightens as accuracy answers land, and the before/after bars morph.
 

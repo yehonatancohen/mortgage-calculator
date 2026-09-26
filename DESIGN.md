@@ -1,5 +1,5 @@
 ---
-name: "[BRAND] mortgage calculators"
+name: "תכל'ס משכנתא mortgage calculators"
 description: "Honest Hebrew mortgage calculators: one white card that answers before it asks."
 colors:
   bg: "oklch(0.972 0.004 222)"
@@ -173,7 +173,7 @@ components:
     padding: "0.75rem 1rem"
 ---
 
-# Design System: [BRAND] mortgage calculators
+# Design System: תכל'ס משכנתא mortgage calculators
 
 ## Overview
 
@@ -190,7 +190,7 @@ The system rejects the lead-gen arrangement: no hero image, no form above the an
 - One white card with a hairline border and one soft shadow.
 - Petrol accent on interactive affordances only; savings green on money saved only; data graphics in ink.
 - One Heebo variable family at three weights (400/500/700), tabular numerals everywhere.
-- One 34rem column with a shared start edge; one primary action per step.
+- One 34rem calculator column with a shared start edge; one primary action per step. On desktop (≥64rem) it gains a real second column: "how it works" sits beside the card instead of empty margin.
 - Short, calm motion that tells state (count-up, step transitions, bar morphs) and disappears under reduced motion.
 
 ## Colors
@@ -252,7 +252,9 @@ A cool, low-chroma neutral set tinted toward petrol (hue ≈222), with exactly t
 
 ## Layout
 
-One column. The intro, the calculator card and all content below it share one 34rem column (`--card-max`) and one start edge; the column is centred in the viewport with generous air on desktop and nothing beside it. Intros and headings start at that edge and are never centred. Header and footer chrome run to a 72rem page width. On calculator pages the hero band runs full bleed behind the header and intro, with its content held to the same 34rem column. Prose pages cap running text at 68ch.
+One column, up to a point. The intro, the calculator card, and every section below it share one 34rem column (`--card-max`) and one start edge; on mobile and tablet (below 64rem) the column is simply centred in the viewport with generous air. Intros and headings start at that edge and are never centred. Header and footer chrome run to a 72rem page width. On calculator pages the hero band runs full bleed behind the header and intro, with its content held to the same 34rem column. Prose pages cap running text at 68ch.
+
+At 64rem and up, the calculator gains a real second column instead of empty margin: "how it works" (`.side`) sits beside the card (`.calc-slot`) in a `.primary` grid, card first (page-start side, right in RTL) at 34rem, aside second at 16–22rem (`--aside-max`), the pair centred as a unit. Below that, the worked-example section alone is allowed to widen to `--content-wide` (card + gap + aside) and lay its examples out two-up; FAQ, sources and the next-link stay pinned to the 34rem column, since prose and link rows read worse stretched wide.
 
 Spacing is a 4px grid (steps 1–20). Page gutters are 16px, rising to 24px at 40rem. Card padding is 24px by 20px, rising to 32px at 40rem. The intro sits 24px above the card on mobile and 48px on desktop. Content begins 64px below the card, and sections are 48px apart. Fields inside a step are 12px apart and steps use 20px internal gaps.
 
@@ -336,7 +338,7 @@ Steps swap through the View Transitions API over 220ms. Forward moves content to
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep every surface to one 34rem column with a shared start edge; intros and headings start at that edge.
+- **Do** keep every surface to one 34rem column with a shared start edge below 64rem; intros and headings start at that edge. At 64rem+, the calculator card keeps its 34rem width but gains a real second column (`.side`) rather than sitting alone in empty margin.
 - **Do** give each step exactly one primary button, full width in the card footer, sticky below 40rem.
 - **Do** set every figure in tabular numerals and isolate figures and ranges as LTR (LRI/PDI or `<bdi class="num">`) so ranges read low to high.
 - **Do** round result totals down to ₪1,000, and payments and fees to ₪10.

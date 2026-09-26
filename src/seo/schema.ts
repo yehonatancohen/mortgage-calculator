@@ -15,7 +15,7 @@ export const organizationLd = () => ({
   '@id': orgId(),
   name: SITE.brand,
   url: abs('/'),
-  logo: abs('/favicon.svg'),
+  logo: abs('/icon-512.png'),
   description: SITE.tagline,
   email: SITE.contactEmail,
 });

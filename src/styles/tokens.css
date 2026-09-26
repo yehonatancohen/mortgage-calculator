@@ -104,6 +104,8 @@
   --measure: 68ch;
   --card-max: 34rem;
   --page-max: 72rem;
+  --aside-max: 22rem;
+  --content-wide: calc(var(--card-max) + var(--space-8) + var(--aside-max));
 
   /* ---------- Shape ---------- */
   --radius-sm: 0.375rem;

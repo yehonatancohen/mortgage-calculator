@@ -36,7 +36,11 @@ const groups = [
 <footer class="site-footer">
   <div class="site-footer__inner">
     <div class="site-footer__about">
-      <p class="site-footer__brand">{SITE.brand}</p>
+      <p class="site-footer__brand">
+        <img class="site-footer__mark site-footer__mark--light" src="/logo-icon.png" width="32" height="29" alt="" />
+        <img class="site-footer__mark site-footer__mark--dark" src="/logo-icon-white.png" width="32" height="29" alt="" />
+        {SITE.brand}
+      </p>
       <p>{SITE.tagline}</p>
     </div>
     {groups.map((g) => (

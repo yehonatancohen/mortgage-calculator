@@ -25,9 +25,12 @@
   text-decoration: none;
 }
 .brand__mark {
-  inline-size: 1.5rem;
-  block-size: 1.5rem;
-  color: var(--c-text);
+  inline-size: 1.75rem;
+  block-size: auto;
+  display: block;
+}
+.brand__mark--dark {
+  display: none;
 }
 .site-nav ul {
   display: flex;
@@ -61,19 +64,39 @@
   }
 }
 
+/* Dark theme: the header background is dark, so use the white logo mark. */
+:root[data-theme='dark'] .brand__mark--light,
+[data-theme='dark'] .brand__mark--light {
+  display: none;
+}
+:root[data-theme='dark'] .brand__mark--dark,
+[data-theme='dark'] .brand__mark--dark {
+  display: block;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .brand__mark--light {
+    display: none;
+  }
+  :root:not([data-theme='light']) .brand__mark--dark {
+    display: block;
+  }
+}
+
 /* On pages with a hero band the header joins it: one continuous colour field above the card. */
 body:has(.hero) .site-header {
   background: var(--c-hero);
   border-block-end-color: transparent;
 }
 body:has(.hero) .brand,
-body:has(.hero) .brand__mark,
 body:has(.hero) .site-nav a:hover,
 body:has(.hero) .site-nav a[aria-current='page'] {
   color: var(--c-on-hero);
 }
-body:has(.hero) .brand__mark path {
-  stroke: var(--c-hero);
+body:has(.hero) .brand__mark--light {
+  display: none;
+}
+body:has(.hero) .brand__mark--dark {
+  display: block;
 }
 body:has(.hero) .site-nav a {
   color: var(--c-on-hero-2);
@@ -115,9 +138,36 @@ body:has(.hero) .site-header :focus-visible {
   }
 }
 .site-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   color: var(--c-text);
   font-weight: var(--fw-bold);
   margin-block-end: var(--space-2);
+}
+.site-footer__mark {
+  inline-size: 1.5rem;
+  block-size: auto;
+  display: block;
+}
+.site-footer__mark--dark {
+  display: none;
+}
+:root[data-theme='dark'] .site-footer__mark--light,
+[data-theme='dark'] .site-footer__mark--light {
+  display: none;
+}
+:root[data-theme='dark'] .site-footer__mark--dark,
+[data-theme='dark'] .site-footer__mark--dark {
+  display: block;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .site-footer__mark--light {
+    display: none;
+  }
+  :root:not([data-theme='light']) .site-footer__mark--dark {
+    display: block;
+  }
 }
 .site-footer h2 {
   font-size: var(--text-sm);
@@ -185,9 +235,39 @@ body:has(.hero) .site-header :focus-visible {
     padding-block: var(--space-12) var(--space-8);
   }
 }
+.primary {
+  display: grid;
+  gap: var(--space-8);
+}
 .calc-slot {
   max-inline-size: var(--card-max);
   margin-inline: auto;
+  inline-size: 100%;
+}
+aside.side {
+  max-inline-size: var(--card-max);
+  margin-inline: auto;
+  inline-size: 100%;
+}
+aside.side > h2 {
+  margin-block-end: var(--space-4);
+}
+/* Desktop: the calculator keeps its column, and "how it works" becomes a real
+   second column beside it instead of empty margin either side. */
+@media (min-width: 64rem) {
+  .primary {
+    grid-template-columns: minmax(0, var(--card-max)) minmax(16rem, var(--aside-max));
+    justify-content: center;
+    align-items: start;
+  }
+  .calc-slot,
+  aside.side {
+    margin-inline: 0;
+  }
+  .side {
+    position: sticky;
+    top: var(--space-8);
+  }
 }
 
 /* Hero band: the page's one colour field. The title sits on deep petrol and the card rises out of it,
@@ -260,20 +340,36 @@ body:has(.hero) .site-header :focus-visible {
   }
 }
 
-/* Content below the calculator: one readable column */
-/* Everything below the card shares the card's column and start edge. */
+/* Content below the calculator: each section is its own readable column,
+   sharing the card's start edge, inside a wider shell that lets the
+   worked-example section break out to two columns on desktop. */
 .content {
-  max-inline-size: var(--card-max);
+  max-inline-size: var(--content-wide);
   margin-inline: auto;
   padding-block-start: var(--space-16);
   display: grid;
   gap: var(--space-12);
+}
+.content > section,
+.content > .next-link {
+  max-inline-size: var(--card-max);
+  margin-inline: auto;
+  inline-size: 100%;
 }
 .content > section > h2 {
   margin-block-end: var(--space-4);
 }
 .content > section > h2 + p {
   margin-block-start: 0;
+}
+@media (min-width: 64rem) {
+  .examples-section {
+    max-inline-size: var(--content-wide);
+  }
+  .examples {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
 }
 
 /* Prose */
