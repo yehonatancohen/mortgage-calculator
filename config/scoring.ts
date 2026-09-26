@@ -8,7 +8,9 @@ export const scoring = {
 
   hardFilters: {
     minBalance: 300_000,
-    requireVerifiedPhone: true,
+    // Phone verification (SMS OTP) is disabled client-side for now (no SMS provider configured),
+    // so every lead arrives unverified. Set back to true once OTP is re-enabled.
+    requireVerifiedPhone: false,
   },
 
   /** Group weights; must sum to 100. */

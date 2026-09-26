@@ -46,8 +46,8 @@ describe('server recompute', () => {
     expect(c!.score).toBeGreaterThan(0);
     expect(['A', 'B', 'C']).toContain(c!.tier);
   });
-  it('an unverified phone is always tier C', () => {
-    expect(computeRefinance(base.inputs, false, 'now', '/')!.tier).toBe('C');
+  it('an unverified phone no longer forces tier C (SMS verification is disabled)', () => {
+    expect(['A', 'B', 'C']).toContain(computeRefinance(base.inputs, false, 'now', '/')!.tier);
   });
   it('rejects out-of-range inputs', () => {
     expect(computeRefinance({ balance: -1, payment: 5000, years: 20 }, true, 'now', '/')).toBeNull();

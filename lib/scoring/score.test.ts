@@ -35,9 +35,15 @@ describe('scoreRefinanceLead', () => {
     expect(r.total).toBeLessThanOrEqual(100);
     expect(r.groups.value + r.groups.fit + r.groups.intent).toBeCloseTo(r.total, 0);
   });
-  it('hard filters force tier C whatever the score', () => {
-    expect(scoreRefinanceLead({ ...strong, phoneVerified: false }, scoring)).toMatchObject({ tier: 'C', hardFilterPass: false, hardFilterReasons: ['phone_not_verified'] });
+  it('low balance forces tier C whatever the score', () => {
     expect(scoreRefinanceLead({ ...strong, balance: 250_000 }, scoring).hardFilterReasons).toContain('balance_below_minimum');
+  });
+  it('an unverified phone no longer blocks a lead (SMS verification is disabled)', () => {
+    expect(scoreRefinanceLead({ ...strong, phoneVerified: false }, scoring).tier).toBe('A');
+  });
+  it('requireVerifiedPhone, if re-enabled, forces tier C for an unverified lead', () => {
+    const cfg = { ...scoring, hardFilters: { ...scoring.hardFilters, requireVerifiedPhone: true } };
+    expect(scoreRefinanceLead({ ...strong, phoneVerified: false }, cfg)).toMatchObject({ tier: 'C', hardFilterPass: false, hardFilterReasons: ['phone_not_verified'] });
   });
   it('weak intent and small savings keep a lead out of tier A', () => {
     const r = scoreRefinanceLead(
@@ -61,7 +67,11 @@ describe('tierBuyerLead', () => {
   it('applies the buyer rules', () => {
     expect(tierBuyerLead({ loan: 1_000_000, phoneVerified: true, timing: 'now' }, scoring).tier).toBe('A');
     expect(tierBuyerLead({ loan: 500_000, phoneVerified: true, timing: 'now' }, scoring).tier).toBe('B');
-    expect(tierBuyerLead({ loan: 1_000_000, phoneVerified: false, timing: 'now' }, scoring).tier).toBe('C');
+    expect(tierBuyerLead({ loan: 1_000_000, phoneVerified: false, timing: 'now' }, scoring).tier).toBe('A');
     expect(tierBuyerLead({ loan: 300_000, phoneVerified: true, timing: 'now' }, scoring).tier).toBe('C');
+  });
+  it('requireVerifiedPhone, if re-enabled, forces tier C for an unverified lead', () => {
+    const cfg = { ...scoring, hardFilters: { ...scoring.hardFilters, requireVerifiedPhone: true } };
+    expect(tierBuyerLead({ loan: 1_000_000, phoneVerified: false, timing: 'now' }, cfg).tier).toBe('C');
   });
 });

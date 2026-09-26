@@ -1,0 +1,32 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "arial",
+        "files": [
+          "src/pages/api/contact.ts"
+        ],
+        "createdAt": "2026-09-26T11:10:41.973Z",
+        "reason": "email HTML template for Resend delivery, not site UI; matches existing pattern in src/server/notify.ts which also inlines Arial for client-agnostic email rendering"
+      },
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "files": [
+          "src/pages/api/contact.ts"
+        ],
+        "createdAt": "2026-09-26T11:13:27.511Z",
+        "reason": "email HTML template for Resend delivery, not site UI; matches existing pattern in src/server/notify.ts which inlines Arial for client-agnostic email rendering"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "arial",
+        "createdAt": "2026-09-26T13:02:06.292Z",
+        "reason": "email HTML template font, not site UI; out of scope for DESIGN.md"
+      }
+    ]
+  }
+}

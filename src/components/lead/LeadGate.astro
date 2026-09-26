@@ -35,7 +35,7 @@ const promises =
       <div class="field">
         <label class="field__label" for={`${id}-phone`}>טלפון נייד</label>
         <input class="input input--ltr" id={`${id}-phone`} name="phone" type="tel" inputmode="tel" autocomplete="tel-national" enterkeyhint="next" placeholder="05X-XXX-XXXX" maxlength="12" required aria-describedby={`${id}-phone-hint`} />
-        <p class="field__hint" id={`${id}-phone-hint`} data-hint-for="phone">נשלח קוד אימות ב־SMS.</p>
+        <p class="field__hint" id={`${id}-phone-hint`} data-hint-for="phone"></p>
       </div>
       <fieldset class="field question question--inline">
         <legend class="field__label" id={`${id}-timing`}>מתי תרצה/י לפעול?</legend>
@@ -64,7 +64,7 @@ const promises =
       {INTEGRATIONS.turnstileSiteKey && <div class="turnstile" data-turnstile data-sitekey={INTEGRATIONS.turnstileSiteKey}></div>}
       <p class="form-error" role="alert" data-form-error></p>
       <div class="lead__footer">
-        <button type="submit" class="btn btn--primary" data-submit>שליחת קוד אימות</button>
+        <button type="submit" class="btn btn--primary" data-submit>שליחת הבקשה</button>
       </div>
     </form>
   </div>

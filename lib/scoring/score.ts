@@ -89,7 +89,7 @@ export interface BuyerLeadFacts {
 
 export function tierBuyerLead(f: BuyerLeadFacts, cfg: ScoringConfig): { tier: 'A' | 'B' | 'C'; reasons: string[] } {
   const reasons: string[] = [];
-  if (!f.phoneVerified) reasons.push('phone_not_verified');
+  if (cfg.hardFilters.requireVerifiedPhone && !f.phoneVerified) reasons.push('phone_not_verified');
   if (f.loan < cfg.buyer.minLoan) reasons.push('loan_below_minimum');
   if (reasons.length) return { tier: 'C', reasons };
   const a = cfg.buyer.tierAWhen;

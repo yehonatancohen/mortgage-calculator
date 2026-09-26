@@ -1,6 +1,6 @@
 # תכל'ס משכנתא: Israeli mortgage refinance calculator
 
-A Hebrew RTL site with free mortgage calculators. The money page (`/`) is a refinance calculator that shows a result first and asks for contact details last. Visitors who opt in, and verify their phone by SMS, become exclusive leads for one mortgage advisor.
+A Hebrew RTL site with free mortgage calculators. The money page (`/`) is a refinance calculator that shows a result first and asks for contact details last. Visitors who opt in become exclusive leads for one mortgage advisor. (Phone verification by SMS is built but currently disabled — see "Phone verification" below.)
 
 Stack:
 - **Site:** Astro, with static pages and small vanilla-TS islands.
@@ -53,24 +53,27 @@ migrations/               D1 schema
 
 ## How a lead flows
 
-1. The visitor sees a result without giving any details. Opting in asks for first name, mobile, timing and an unchecked contact consent (plus a separate optional marketing consent).
-2. `POST /api/otp/send/` sends a 6-digit SMS code:
-   - rate limited per IP (10/h) and per phone (3/10 min)
-   - Turnstile check when configured
-   - honeypot field
-3. `POST /api/otp/verify/` checks the code and returns a signed 30-minute token. Codes are hashed, expire after 10 min and allow 5 attempts.
-4. `POST /api/lead/`:
-   - Validates the payload and rejects unverified phones.
+1. The visitor sees a result without giving any details. Opting in asks for first name, mobile, timing and an unchecked contact consent (plus a separate optional marketing consent), then submits directly.
+2. `POST /api/lead/`:
+   - Validates the payload.
    - Recomputes every number on the server, so client figures are never trusted, and scores the lead.
    - Stores it with inputs, results, score breakdown, UTM and entry page.
-5. Routing:
+3. Routing:
    - **Tier A:** delivered to the single advisor, with email plus a signed webhook and a private status link.
    - **Tier B:** held for `/admin`, and the operator is emailed.
    - **Tier C:** nurture list.
    - A repeat phone within 30 days is marked as a duplicate and not redelivered.
-6. The visitor never sees the score or tier.
+4. The visitor never sees the score or tier.
 
 Rate alerts (`/api/alert/`) collect only an email or WhatsApp number, from visitors below the threshold.
+
+### Phone verification (currently disabled)
+
+The lead form used to gate submission behind an SMS one-time code (`/api/otp/send/` → `/api/otp/verify/` → a signed 30-minute token that `/api/lead/` required). That's disabled for now since no SMS provider is configured — leads are stored with `phone_verified = 0` and delivered/held the same as before. All the OTP code and endpoints are still in place; to turn it back on:
+1. Configure an SMS provider (`SMS_PROVIDER=http`, `SMS_HTTP_URL`, `SMS_HTTP_AUTH`, `SMS_SENDER` — see `src/server/sms.ts`).
+2. In `src/scripts/leadgate.ts`, restore the `sendCode()` + `showStage(root, 'otp')` call in the main form's submit handler (in place of `submitLead()`), so the form goes through the OTP stage before submitting.
+3. In `src/pages/api/lead.ts`, restore the hard `if (!verified) return json({ ok: false, error: 'not_verified' }, 401)` check.
+4. Set `requireVerifiedPhone: true` back in `config/scoring.ts`.
 
 ## Going live checklist
 

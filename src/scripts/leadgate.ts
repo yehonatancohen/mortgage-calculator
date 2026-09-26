@@ -153,6 +153,37 @@ export function initLeadGate(root: HTMLElement) {
     }, 1000);
   }
 
+  // Phone verification (SMS OTP) is disabled for now — no SMS provider is configured.
+  // The form submits the lead directly. To re-enable, restore the sendCode()/showStage('otp')
+  // call here in place of submitLead(), same as before.
+  async function submitLead(btn: HTMLButtonElement) {
+    busy(btn, true);
+    formError.textContent = '';
+    const res = await post('/api/lead/', {
+      kind,
+      firstName: name.value.trim(),
+      phone: phone.value,
+      token: '',
+      timing,
+      consentContact: consent.checked,
+      consentMarketing: marketing.checked,
+      inputs: contexts.get(root)?.() ?? {},
+      entryPage: entryPage(),
+      utm: utm(),
+      referrer: referrer(),
+      hp: hp.value,
+    });
+    busy(btn, false);
+    if (!res.ok) {
+      formError.textContent = ERR[res.error ?? 'default'] ?? ERR.default!;
+      return;
+    }
+    track('lead_submitted', { kind, timing });
+    root.querySelector<HTMLElement>('[data-done-title]')!.textContent = `תודה, ${name.value.trim()}. הבקשה התקבלה.`;
+    showStage(root, 'done');
+    root.querySelector<HTMLElement>('[data-done-title]')!.focus();
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     attempted = true;
@@ -162,12 +193,7 @@ export function initLeadGate(root: HTMLElement) {
       return;
     }
     const btn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
-    if (!(await sendCode(btn))) return;
-    root.querySelector<HTMLElement>('[data-otp-phone]')!.textContent = formatILMobile(phone.value);
-    digits.forEach((d) => (d.value = ''));
-    otpError.textContent = '';
-    showStage(root, 'otp');
-    digits[0]!.focus();
+    await submitLead(btn);
   });
 
   // OTP boxes: auto-advance, backspace to previous. A pasted or autofilled code arrives as one

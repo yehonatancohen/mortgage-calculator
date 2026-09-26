@@ -17,9 +17,10 @@ export const POST: APIRoute = async ({ request }) => {
   const ip = await ipHash(env, request);
   if (!(await rateLimit(env, `lead:ip:${ip}`, 10, 3600))) return json({ ok: false, error: 'rate_limited' }, 429);
 
-  // Hard filter: an unverified phone never becomes a lead.
+  // Phone verification (SMS OTP) is disabled for now — no SMS provider is configured, so leads
+  // pass through unverified. `checkToken` still marks a lead verified if a valid token is ever
+  // supplied (e.g. once OTP is re-enabled client-side), but an unverified lead is no longer blocked.
   const verified = await checkToken(env, v.value.phoneE164, v.value.token);
-  if (!verified) return json({ ok: false, error: 'not_verified' }, 401);
 
   const computed =
     v.value.kind === 'refinance'

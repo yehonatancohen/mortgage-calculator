@@ -32,7 +32,7 @@ File: `src/pages/privacy.astro`, `src/pages/terms.astro`
 
 ## 5. Providers and integrations
 
-- [ ] **SMS provider** for OTP codes: pick an Israeli gateway and set `SMS_PROVIDER`, `SMS_HTTP_URL`, `SMS_HTTP_AUTH` and `SMS_SENDER` (see `src/server/sms.ts`).
+- [ ] **SMS provider** (deferred): phone verification is disabled for now — leads pass through unverified (see "Phone verification" in `README.md`). When ready, pick an Israeli gateway and set `SMS_PROVIDER`, `SMS_HTTP_URL`, `SMS_HTTP_AUTH` and `SMS_SENDER` (see `src/server/sms.ts`), then follow the re-enable steps in the README.
 - [ ] **Resend:** set `RESEND_API_KEY` and `EMAIL_FROM` for the advisor emails.
 - [ ] **Cloudflare D1:** create the database and put its id in `wrangler.jsonc` (`REPLACE_WITH_D1_DATABASE_ID`).
 - [ ] **Turnstile:** add the site key to `INTEGRATIONS.turnstileSiteKey` and the secret to `TURNSTILE_SECRET`.

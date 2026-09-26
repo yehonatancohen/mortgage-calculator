@@ -1,11 +1,21 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "mortgage-website",
-  "compatibility_date": "2026-09-01",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "@astrojs/cloudflare/entrypoints/server",
-  "assets": { "directory": "./dist/client", "binding": "ASSETS" },
-  "d1_databases": [
-    { "binding": "DB", "database_name": "mortgage-leads", "database_id": "REPLACE_WITH_D1_DATABASE_ID", "migrations_dir": "migrations" }
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "mortgage-website",
+	"compatibility_date": "2026-09-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "@astrojs/cloudflare/entrypoints/server",
+	"assets": {
+		"directory": "./dist/client",
+		"binding": "ASSETS"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "mortgage-leads",
+			"database_id": "082917c3-a3aa-4d79-904f-d5a04839732c",
+			"migrations_dir": "migrations"
+		}
+	]
 }

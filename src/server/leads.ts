@@ -242,8 +242,10 @@ export async function ensureAdvisor(env: Env) {
 }
 
 export async function deliverHeldLead(env: Env, origin: string, id: string): Promise<boolean> {
+  // Requiring phone_verified here would block every held lead now that SMS verification is
+  // disabled (see api/lead.ts) — every lead is currently phone_verified = 0.
   const lead = await env.DB.prepare('SELECT * FROM leads WHERE id = ?1').bind(id).first<Record<string, string | number | null>>();
-  if (!lead || lead.status === 'delivered' || !lead.phone_verified) return false;
+  if (!lead || lead.status === 'delivered') return false;
   const advisor = await ensureAdvisor(env);
   await env.DB.prepare(`UPDATE leads SET status = 'delivered', tier = 'A', advisor_id = ?2, delivered_at = ?3 WHERE id = ?1`).bind(id, advisor.id, new Date().toISOString()).run();
   const inputs = JSON.parse(String(lead.inputs_json)) as Record<string, unknown>;
