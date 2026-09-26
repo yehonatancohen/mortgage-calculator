@@ -156,7 +156,7 @@ function feeRange(input: RefinanceInput, a: RefinanceAssumptions, blendedRate: n
       const f =
         bal > 0
           ? estimateFixedTrackFee(
-              { balance: bal, contractRate, marketRate: a.marketFixedRate, monthsRemaining: input.months, yearsElapsed: sc.years },
+              { balance: bal, contractRate, marketRate: a.marketFixedRate, monthsRemaining: input.months, yearsElapsed: sc.years, gaveNotice: true },
               a.fee,
             ).total
           : a.fee.operationalFee;

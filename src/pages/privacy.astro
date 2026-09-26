@@ -1,6 +1,6 @@
 ---
 import ProsePage from '../layouts/ProsePage.astro';
-import { SITE } from '../config/site';
+import { INTEGRATIONS, SITE } from '../config/site';
 import { CONSENT } from '../config/consent';
 import { hebrewDate } from '../ui/dates';
 ---
@@ -28,10 +28,22 @@ import { hebrewDate } from '../ui/dates';
   <p>נשלח עדכונים שיווקיים רק אם סימנת הסכמה נפרדת לכך. אפשר לבטל בכל עת.</p>
 
   <h2>אבטחה ושמירה</h2>
-  <p>המידע נשמר בשרתים מאובטחים של ספק הענן שלנו. <!-- TODO(legal): retention period, storage location, sub-processors (Cloudflare, SMS provider, email provider). --></p>
+  <p>המידע נשמר במסד הנתונים של Cloudflare, ספק האחסון והשרתים של האתר, ומועבר בחיבור מוצפן (HTTPS). קוד האימות שנשלח ב־SMS נמחק מיד אחרי שהטלפון אומת.</p>
+  <p>ספקים שמעבדים מידע בשבילנו:</p>
+  <ul>
+    <li>Cloudflare: אחסון האתר ומסד הנתונים.</li>
+    <li>Resend: שליחת פרטי הבקשה באימייל ליועץ.</li>
+    <li>ספק SMS: שליחת קוד האימות לטלפון. <!-- TODO(legal): name the SMS provider once chosen. --></li>
+  </ul>
+  <p><!-- TODO(legal): retention period for leads and rate alerts, and where Cloudflare stores the data. --></p>
 
   <h2>עוגיות וניתוח שימוש</h2>
-  <p>האתר עשוי להשתמש בכלי ניתוח (כגון Microsoft Clarity) כדי להבין איך משתמשים בו. <!-- TODO(legal): list tools actually enabled and consent approach. --></p>
+  {INTEGRATIONS.clarityId ? (
+    <p>האתר משתמש ב־Microsoft Clarity כדי להבין איך משתמשים בו: אילו דפים נצפים, איפה לוחצים ואיפה נתקעים. Clarity עשוי לשמור עוגיות בדפדפן שלך. <!-- TODO(legal): consent approach for Clarity. --></p>
+  ) : (
+    <p>האתר לא משתמש כרגע בכלי ניתוח של צד שלישי ולא בעוגיות מעקב.</p>
+  )}
+  <p>האתר שומר בדפדפן שלך שני דברים בלבד: את בחירת הערכה הבהירה או הכהה, ולמשך הביקור בלבד את דף הכניסה, האתר שהפנה אליו ופרמטרי הקמפיין (UTM). המידע הזה לא נשלח אלינו, אלא אם ביקשת בדיקה או התראה.</p>
 
   <h2>הזכויות שלך</h2>
   <p>אפשר לבקש לעיין במידע, לתקן אותו או למחוק אותו בפנייה ל־<a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>

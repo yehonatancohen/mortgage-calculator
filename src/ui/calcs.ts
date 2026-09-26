@@ -76,7 +76,7 @@ export function feeView(s: FeeState, params: PrepaymentFeeParams): CalcView {
       total: formatILS(Math.round(f.total)),
       capitalization: formatILS(Math.round(f.capitalization)),
       timeDiscount: f.timeDiscount > 0 ? `−${formatILS(Math.round(f.timeDiscount))}` : formatILS(0),
-      noticeDiscount: f.noticeDiscount > 0 ? `−${formatILS(Math.round(f.noticeDiscount))}` : formatILS(0),
+      noticeFee: formatILS(Math.round(f.noticeFee)),
       operational: formatILS(f.operational),
       why,
     },

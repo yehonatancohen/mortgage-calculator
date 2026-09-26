@@ -1,17 +1,37 @@
 {
-  "$comment": "Parameters for the SIMPLIFIED prepayment-fee estimate (lib/mortgage/prepaymentFee.ts). Verify against the Banking Order on early-repayment fees and Bank of Israel guidance.",
-  "operationalFee": { "value": 60, "unit": "ils", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+  "$comment": "Parameters for the SIMPLIFIED prepayment-fee estimate (lib/mortgage/prepaymentFee.ts), from the Banking Order (Early Repayment of Housing Loans), 2002, consolidated to 2015.",
+  "operationalFee": {
+    "value": 60,
+    "unit": "ils",
+    "source": "https://www.boi.org.il/media/qy5cow0l/116.pdf",
+    "lastUpdated": "2026-09-26",
+    "note": "s. 3(1): operational fee of up to ₪60. s. 9(b) lets the Supervisor index it to CPI by notice in Reshumot."
+  },
   "timeDiscounts": {
     "value": [
-      { "minYears": 0, "discount": 0 },
-      { "minYears": 1, "discount": 0.2 },
-      { "minYears": 3, "discount": 0.3 }
+      {
+        "minYears": 0,
+        "discount": 0
+      },
+      {
+        "minYears": 3,
+        "discount": 0.2
+      },
+      {
+        "minYears": 5,
+        "discount": 0.3
+      }
     ],
     "unit": "fraction",
-    "source": "https://www.boi.org.il/",
-    "lastUpdated": "2026-09-22",
-    "TODO_VERIFY": true,
-    "note": "PLACEHOLDER: discount on the capitalization component by years since origination"
+    "source": "https://www.boi.org.il/media/qy5cow0l/116.pdf",
+    "lastUpdated": "2026-09-26",
+    "note": "s. 8(b): discount on the capitalization fee, 20% from 3 to 5 years since origination, 30% from 5 years. Complementary loans (s. 8(a)) get a different schedule, which we don't model."
   },
-  "noticeDiscount": { "value": 0.1, "unit": "fraction", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER: discount for advance notice" }
+  "noNoticeFeeRate": {
+    "value": 0.001,
+    "unit": "fraction",
+    "source": "https://www.boi.org.il/media/qy5cow0l/116.pdf",
+    "lastUpdated": "2026-09-26",
+    "note": "s. 3(2): if notice was under ten days, a fee of one tenth of a percent of the amount repaid."
+  }
 }

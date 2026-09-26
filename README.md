@@ -94,41 +94,26 @@ Rate alerts (`/api/alert/`) collect only an email or WhatsApp number, from visit
    - `lead_gate_view`, `otp_sent`, `otp_verified`, `lead_submitted`
    - `rate_alert_view`, `rate_alert_submitted`, `calculator_used`
    - Every event carries `entry_page`.
-7. **Verify data:** fill every value in the table below. Remove `TODO_VERIFY` and the `PLACEHOLDER` note and set `lastUpdated`. The tests enforce this.
+7. **Data:** market values are verified (see [Market data and sources](#market-data-and-sources)). Refresh `rates.json` monthly.
 8. **Legal:** have a lawyer review `/privacy/` and `/terms/`, then remove `draft` and `noindex`. Fill in the accessibility coordinator in `/accessibility/`.
-9. **Content:** write the guides (`src/content/guides/*.md`) and the bank pages, then set `draft: false`. Drafts are noindex and kept out of the sitemap and `llms.txt`.
+9. **Content:** the guides (`src/content/guides/*.md`) and bank pages are written. Have them reviewed, fill in the reviewer in `SITE.editorial`, then set `draft: false`. Drafts are noindex and kept out of the sitemap and `llms.txt`.
 10. **Deploy:** `npm run build && npx wrangler deploy`.
 
-## Values to verify before launch (`TODO_VERIFY`)
+## Market data and sources
 
-There are 22 at the moment; regenerate this table with `npm run todo-verify -- --md`.
+All 22 market values in `data/*.json` were verified on 2026-09-26; `npm run todo-verify` prints 0. Each value carries its exact source URL and a note on how it was derived.
 
-| File | Path | Placeholder | Source to check |
+| File | What | Source | Refresh |
 |---|---|---|---|
-| `assumptions.json` | `switchingCosts` | `[2000,6000]` | Bank of Israel / market quotes |
-| `prepayment-fee.json` | `operationalFee` | `60` | Bank of Israel (early-repayment fee rules) |
-| `prepayment-fee.json` | `timeDiscounts` | `0 / 20% after 1y / 30% after 3y` | Bank of Israel |
-| `prepayment-fee.json` | `noticeDiscount` | `0.1` | Bank of Israel |
-| `purchase-tax.json` | `validFrom` | `"2026-01-16"` | Israel Tax Authority |
-| `purchase-tax.json` | `singleHome.brackets` | round-number placeholders | Israel Tax Authority |
-| `purchase-tax.json` | `additionalHome.brackets` | round-number placeholders | Israel Tax Authority |
-| `rates.json` | `period` | `"2026-08"` | Bank of Israel |
-| `rates.json` | `tracks.prime` | `4.5` | Bank of Israel |
-| `rates.json` | `tracks.fixedUnlinked` | `5` | Bank of Israel |
-| `rates.json` | `tracks.fixedLinked` | `3.5` | Bank of Israel |
-| `rates.json` | `tracks.variableUnlinked5y` | `4.75` | Bank of Israel |
-| `rates.json` | `tracks.variableLinked5y` | `3.25` | Bank of Israel |
-| `rates.json` | `fixedRateByOriginBucket.before2015` | `[4,6]` | Bank of Israel (historical) |
-| `rates.json` | `fixedRateByOriginBucket.2015to2019` | `[2.5,4]` | Bank of Israel (historical) |
-| `rates.json` | `fixedRateByOriginBucket.2020to2022` | `[2,3.5]` | Bank of Israel (historical) |
-| `rates.json` | `fixedRateByOriginBucket.since2023` | `[4.5,6]` | Bank of Israel (historical) |
-| `regulation.json` | `maxLtv.firstHome` | `0.75` | Bank of Israel |
-| `regulation.json` | `maxLtv.replacementHome` | `0.7` | Bank of Israel |
-| `regulation.json` | `maxLtv.additionalHome` | `0.5` | Bank of Israel |
-| `regulation.json` | `maxPaymentToIncome` | `0.5` | Bank of Israel |
-| `regulation.json` | `maxTermYears` | `30` | Bank of Israel |
+| `rates.json` | Average rates on new loans by track | Bank of Israel monthly report on housing loans (`boi_files/Pikuah/dyYYMMDD.xlsx`, tables 877-1 and 877-2) | Monthly, about two weeks after month end. The guides (`src/content/guides/`) quote these rates with the month; update them too. |
+| `rates.json` | `fixedRateByOriginBucket` | BOI series `BNK_99034_LR_BIR_MRTG_467` (edge.boi.gov.il SDMX API) and `mashfix.xls` for loans before 2013 | Only `since2023` moves |
+| `purchase-tax.json` | Brackets | Tax Authority real-estate instruction 1/2026 | Single home frozen to 15.1.2028; additional home valid to 31.12.2026, so recheck in January 2027 |
+| `prepayment-fee.json` | Operational fee, time discounts, no-notice fee | Banking Order (Early Repayment of Housing Loans), 2002 | When the order is amended |
+| `regulation.json` | LTV, payment-to-income, term | Directive 329, version 13 (circular 2852, 30/06/2026) | When the directive is amended |
 
-The `source` fields currently point at the regulator's home page. Replace each with the exact publication URL when you verify it.
+`assumptions.json` → `switchingCosts` is our own estimate (`internal:methodology`), because no official source publishes a total for appraisal, file opening and lien registration.
+
+When you refresh a value, update `value`, `source`, `lastUpdated` and `note`. If you can't confirm it, set `TODO_VERIFY: true` so the tests flag it.
 
 ## Modelling notes
 

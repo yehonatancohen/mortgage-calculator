@@ -74,7 +74,7 @@ export function refinanceAssumptions(): RefinanceAssumptions {
     fee: {
       operationalFee: prepaymentFee.operationalFee.value,
       timeDiscounts: prepaymentFee.timeDiscounts.value,
-      noticeDiscount: prepaymentFee.noticeDiscount.value,
+      noNoticeFeeRate: prepaymentFee.noNoticeFeeRate.value,
     },
   };
 }

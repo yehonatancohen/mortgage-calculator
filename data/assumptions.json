@@ -1,17 +1,126 @@
 {
-  "$comment": "Methodology parameters for the refinance savings range. Values sourced 'internal:methodology' are our modelling choices, documented on /methodology/. Market-derived ones carry TODO_VERIFY.",
-  "benchmarkMix": { "value": { "prime": 0.34, "fixedUnlinked": 0.33, "variableUnlinked5y": 0.33 }, "unit": "weights", "source": "internal:methodology", "lastUpdated": "2026-09-22", "note": "Benchmark = weighted average of track rates for a typical unlinked mix. Weights must sum to 1." },
-  "marketFixedReferenceTrack": { "value": "fixedUnlinked", "unit": "track", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "bandBase": { "value": 0.6, "unit": "percent", "source": "internal:methodology", "lastUpdated": "2026-09-22", "note": "Plus/minus around the benchmark before any optional answers" },
-  "bandNarrowKnown": { "value": 0.15, "unit": "percent", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "bandNarrowUnknown": { "value": 0.05, "unit": "percent", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "bandMin": { "value": 0.15, "unit": "percent", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "fixedShareIfYes": { "value": [0.2, 0.5], "unit": "fraction", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "fixedShareIfUnknown": { "value": [0, 0.5], "unit": "fraction", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "fixedRateMaxAboveBlended": { "value": 1.5, "unit": "percent", "source": "internal:methodology", "lastUpdated": "2026-09-22", "note": "Fee estimate: a fixed track cannot be priced more than this above the loan's blended rate" },
-  "originBuckets": { "value": { "before2015": [2005, 2014], "2015to2019": [2015, 2019], "2020to2022": [2020, 2022], "since2023": [2023, 2026] }, "unit": "years", "source": "internal:methodology", "lastUpdated": "2026-09-22", "note": "2005 is an assumed floor for the time-elapsed discount." },
-  "switchingCosts": { "value": [2000, 6000], "unit": "ils", "source": "https://www.boi.org.il/", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER: appraisal, file-opening and registration costs of a new mortgage" },
-  "meaningfulTotal": { "value": 10000, "unit": "ils", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "meaningfulMonthly": { "value": 100, "unit": "ils", "source": "internal:methodology", "lastUpdated": "2026-09-22" },
-  "accuracy": { "value": { "base": 55, "perKnown": 15, "perUnknown": 5 }, "unit": "percent", "source": "internal:methodology", "lastUpdated": "2026-09-22" }
+  "$comment": "Methodology parameters for the refinance savings range. All values here are our modelling choices, documented on /methodology/.",
+  "benchmarkMix": {
+    "value": {
+      "prime": 0.34,
+      "fixedUnlinked": 0.33,
+      "variableUnlinked5y": 0.33
+    },
+    "unit": "weights",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22",
+    "note": "Benchmark = weighted average of track rates for a typical unlinked mix. Weights must sum to 1."
+  },
+  "marketFixedReferenceTrack": {
+    "value": "fixedUnlinked",
+    "unit": "track",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "bandBase": {
+    "value": 0.6,
+    "unit": "percent",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22",
+    "note": "Plus/minus around the benchmark before any optional answers"
+  },
+  "bandNarrowKnown": {
+    "value": 0.15,
+    "unit": "percent",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "bandNarrowUnknown": {
+    "value": 0.05,
+    "unit": "percent",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "bandMin": {
+    "value": 0.15,
+    "unit": "percent",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "fixedShareIfYes": {
+    "value": [
+      0.2,
+      0.5
+    ],
+    "unit": "fraction",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "fixedShareIfUnknown": {
+    "value": [
+      0,
+      0.5
+    ],
+    "unit": "fraction",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "fixedRateMaxAboveBlended": {
+    "value": 1.5,
+    "unit": "percent",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22",
+    "note": "Fee estimate: a fixed track cannot be priced more than this above the loan's blended rate"
+  },
+  "originBuckets": {
+    "value": {
+      "before2015": [
+        2005,
+        2014
+      ],
+      "2015to2019": [
+        2015,
+        2019
+      ],
+      "2020to2022": [
+        2020,
+        2022
+      ],
+      "since2023": [
+        2023,
+        2026
+      ]
+    },
+    "unit": "years",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22",
+    "note": "2005 is an assumed floor for the time-elapsed discount."
+  },
+  "switchingCosts": {
+    "value": [
+      2000,
+      6000
+    ],
+    "unit": "ils",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-26",
+    "note": "Our estimate of a new mortgage's one-off costs: appraisal, bank file-opening fee and lien registration. No official source publishes a total; banks and appraisers set their own prices. Documented on /methodology/."
+  },
+  "meaningfulTotal": {
+    "value": 10000,
+    "unit": "ils",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "meaningfulMonthly": {
+    "value": 100,
+    "unit": "ils",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  },
+  "accuracy": {
+    "value": {
+      "base": 55,
+      "perKnown": 15,
+      "perUnknown": 5
+    },
+    "unit": "percent",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-22"
+  }
 }

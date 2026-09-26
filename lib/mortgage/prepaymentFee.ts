@@ -7,8 +7,9 @@ import { annuityFactor, monthlyRate, payment } from './annuity';
  * The model: for a fixed-rate track, the capitalization-difference component
  * is the present value of the remaining payments discounted at the current
  * market reference rate, minus the balance, when that is positive (i.e. when
- * the market rate is below the contract rate). A time-elapsed discount and an
- * early-notice discount reduce it; a flat operational fee is added.
+ * the market rate is below the contract rate). A time-elapsed discount reduces it.
+ * A flat operational fee is added, plus a fee on the amount repaid when the
+ * borrower gave less than ten days' notice (Banking Order 2002, s. 3(2)).
  *
  * It ignores CPI-averaging components and bank-specific details. It is
  * labeled as an estimate everywhere it is shown.
@@ -19,8 +20,8 @@ export interface PrepaymentFeeParams {
   operationalFee: number;
   /** Discount on the capitalization component by years since origination. Sorted by minYears asc. */
   timeDiscounts: { minYears: number; discount: number }[];
-  /** Discount when the borrower gives advance notice (fraction). */
-  noticeDiscount: number;
+  /** Fee on the amount repaid when notice was under ten days (fraction). */
+  noNoticeFeeRate: number;
 }
 
 export interface FixedTrackInput {
@@ -37,7 +38,7 @@ export interface FixedTrackInput {
 export interface FeeBreakdown {
   capitalization: number;
   timeDiscount: number;
-  noticeDiscount: number;
+  noticeFee: number;
   operational: number;
   total: number;
 }
@@ -59,13 +60,12 @@ export function estimateFixedTrackFee(t: FixedTrackInput, params: PrepaymentFeeP
   const cap = capitalizationDifference(t);
   const td = timeDiscountFor(t.yearsElapsed, params.timeDiscounts);
   const afterTime = cap * (1 - td);
-  const nd = t.gaveNotice ? params.noticeDiscount : 0;
-  const afterNotice = afterTime * (1 - nd);
+  const noticeFee = t.gaveNotice ? 0 : Math.max(0, t.balance) * params.noNoticeFeeRate;
   return {
     capitalization: cap,
     timeDiscount: cap - afterTime,
-    noticeDiscount: afterTime - afterNotice,
+    noticeFee,
     operational: params.operationalFee,
-    total: afterNotice + params.operationalFee,
+    total: afterTime + noticeFee + params.operationalFee,
   };
 }

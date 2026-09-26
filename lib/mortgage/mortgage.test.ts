@@ -128,10 +128,10 @@ describe('schedules', () => {
 });
 
 describe('prepayment fee (simplified estimate)', () => {
-  const params = { operationalFee: 60, timeDiscounts: [{ minYears: 0, discount: 0 }, { minYears: 1, discount: 0.2 }, { minYears: 3, discount: 0.3 }], noticeDiscount: 0.1 };
+  const params = { operationalFee: 60, timeDiscounts: [{ minYears: 0, discount: 0 }, { minYears: 3, discount: 0.2 }, { minYears: 5, discount: 0.3 }], noNoticeFeeRate: 0.001 };
   it('no capitalization fee when market rate ≥ contract rate', () => {
     expect(capitalizationDifference({ balance: 500_000, contractRate: 0.03, marketRate: 0.05, monthsRemaining: 200 })).toBe(0);
-    expect(estimateFixedTrackFee({ balance: 500_000, contractRate: 0.03, marketRate: 0.05, monthsRemaining: 200, yearsElapsed: 5 }, params).total).toBe(60);
+    expect(estimateFixedTrackFee({ balance: 500_000, contractRate: 0.03, marketRate: 0.05, monthsRemaining: 200, yearsElapsed: 5, gaveNotice: true }, params).total).toBe(60);
   });
   it('positive when market rate is below contract rate, and equals PV difference', () => {
     const t = { balance: 400_000, contractRate: 0.06, marketRate: 0.04, monthsRemaining: 180 };
@@ -140,15 +140,23 @@ describe('prepayment fee (simplified estimate)', () => {
     expect(cap).toBeCloseTo(pv - 400_000, 6);
     expect(cap).toBeGreaterThan(0);
   });
-  it('applies time and notice discounts in order', () => {
-    const t = { balance: 400_000, contractRate: 0.06, marketRate: 0.04, monthsRemaining: 180, yearsElapsed: 4, gaveNotice: true };
+  it('applies the time discount, and no notice fee when notice was given', () => {
+    const t = { balance: 400_000, contractRate: 0.06, marketRate: 0.04, monthsRemaining: 180, yearsElapsed: 6, gaveNotice: true };
     const f = estimateFixedTrackFee(t, params);
-    expect(f.total).toBeCloseTo(f.capitalization * 0.7 * 0.9 + 60, 6);
-    expect(f.capitalization - f.timeDiscount - f.noticeDiscount + f.operational).toBeCloseTo(f.total, 6);
+    expect(f.noticeFee).toBe(0);
+    expect(f.total).toBeCloseTo(f.capitalization * 0.7 + 60, 6);
+    expect(f.capitalization - f.timeDiscount + f.noticeFee + f.operational).toBeCloseTo(f.total, 6);
+  });
+  it('adds 0.1% of the amount repaid without ten days notice', () => {
+    const t = { balance: 400_000, contractRate: 0.03, marketRate: 0.05, monthsRemaining: 180, yearsElapsed: 1 };
+    const f = estimateFixedTrackFee(t, params);
+    expect(f.noticeFee).toBeCloseTo(400, 6);
+    expect(f.total).toBeCloseTo(460, 6);
   });
   it('time discount lookup picks the highest threshold reached', () => {
-    expect(timeDiscountFor(0.5, params.timeDiscounts)).toBe(0);
-    expect(timeDiscountFor(1, params.timeDiscounts)).toBe(0.2);
+    expect(timeDiscountFor(2.9, params.timeDiscounts)).toBe(0);
+    expect(timeDiscountFor(3, params.timeDiscounts)).toBe(0.2);
+    expect(timeDiscountFor(4.9, params.timeDiscounts)).toBe(0.2);
     expect(timeDiscountFor(10, params.timeDiscounts)).toBe(0.3);
   });
 });
@@ -169,7 +177,7 @@ const A: RefinanceAssumptions = {
   meaningfulTotal: 10_000,
   meaningfulMonthly: 100,
   accuracy: { base: 55, perKnown: 15, perUnknown: 5 },
-  fee: { operationalFee: 60, timeDiscounts: [{ minYears: 0, discount: 0 }, { minYears: 1, discount: 0.2 }, { minYears: 3, discount: 0.3 }], noticeDiscount: 0.1 },
+  fee: { operationalFee: 60, timeDiscounts: [{ minYears: 0, discount: 0 }, { minYears: 3, discount: 0.2 }, { minYears: 5, discount: 0.3 }], noNoticeFeeRate: 0.001 },
 };
 
 describe('refinanceSavings', () => {

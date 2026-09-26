@@ -1,35 +1,59 @@
 {
-  "$comment": "Purchase-tax brackets (ILS, marginal rates). Brackets are updated every January; fill from the Israel Tax Authority table and set validFrom.",
-  "validFrom": { "value": "2026-01-16", "source": "https://www.gov.il/he/departments/israel_tax_authority", "lastUpdated": "2026-09-22", "TODO_VERIFY": true, "note": "PLACEHOLDER" },
+  "$comment": "Purchase-tax brackets (ILS, marginal rates) per Israel Tax Authority real-estate instruction 1/2026 (18.01.2026). Brackets are frozen under the 2025 Arrangements Law.",
+  "validFrom": {
+    "value": "2025-01-16",
+    "source": "https://www.gov.il/BlobFolder/policy/inst-01-2026/he/realestate_inst-01-2026.pdf",
+    "lastUpdated": "2026-09-26",
+    "note": "Single-home brackets frozen 16.1.2025–15.1.2028. Additional-home brackets are a temporary provision valid to 31.12.2026."
+  },
   "singleHome": {
     "label": "דירה יחידה",
     "brackets": {
       "value": [
-        { "upTo": 1900000, "rate": 0 },
-        { "upTo": 2300000, "rate": 0.035 },
-        { "upTo": 6000000, "rate": 0.05 },
-        { "upTo": 20000000, "rate": 0.08 },
-        { "upTo": null, "rate": 0.1 }
+        {
+          "upTo": 1978745,
+          "rate": 0
+        },
+        {
+          "upTo": 2347040,
+          "rate": 0.035
+        },
+        {
+          "upTo": 6055070,
+          "rate": 0.05
+        },
+        {
+          "upTo": 20183565,
+          "rate": 0.08
+        },
+        {
+          "upTo": null,
+          "rate": 0.1
+        }
       ],
       "unit": "ils/fraction",
-      "source": "https://www.gov.il/he/departments/israel_tax_authority",
-      "lastUpdated": "2026-09-22",
-      "TODO_VERIFY": true,
-      "note": "PLACEHOLDER: round numbers, not the real table"
+      "source": "https://www.gov.il/BlobFolder/policy/inst-01-2026/he/realestate_inst-01-2026.pdf",
+      "lastUpdated": "2026-09-26",
+      "note": "Instruction 1/2026 s. 2(a); law s. 9(c1c)(3). Israeli resident buying a single home."
     }
   },
   "additionalHome": {
     "label": "דירה נוספת",
     "brackets": {
       "value": [
-        { "upTo": 6000000, "rate": 0.08 },
-        { "upTo": null, "rate": 0.1 }
+        {
+          "upTo": 6055070,
+          "rate": 0.08
+        },
+        {
+          "upTo": null,
+          "rate": 0.1
+        }
       ],
       "unit": "ils/fraction",
-      "source": "https://www.gov.il/he/departments/israel_tax_authority",
-      "lastUpdated": "2026-09-22",
-      "TODO_VERIFY": true,
-      "note": "PLACEHOLDER: round numbers, not the real table"
+      "source": "https://www.gov.il/BlobFolder/policy/inst-01-2026/he/realestate_inst-01-2026.pdf",
+      "lastUpdated": "2026-09-26",
+      "note": "Instruction 1/2026 s. 2(b); law s. 9(c1f), temporary provision to 31.12.2026. Recheck in January 2027."
     }
   }
 }

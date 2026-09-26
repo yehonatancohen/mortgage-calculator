@@ -17,7 +17,7 @@ const A: RefinanceAssumptions = {
   meaningfulTotal: 10_000,
   meaningfulMonthly: 100,
   accuracy: { base: 55, perKnown: 15, perUnknown: 5 },
-  fee: { operationalFee: 60, timeDiscounts: [{ minYears: 0, discount: 0 }, { minYears: 1, discount: 0.2 }, { minYears: 3, discount: 0.3 }], noticeDiscount: 0.1 },
+  fee: { operationalFee: 60, timeDiscounts: [{ minYears: 0, discount: 0 }, { minYears: 3, discount: 0.2 }, { minYears: 5, discount: 0.3 }], noNoticeFeeRate: 0.001 },
 };
 
 describe('fee cap', () => {

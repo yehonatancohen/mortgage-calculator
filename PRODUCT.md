@@ -41,7 +41,7 @@ web
 
 - Users arrive from search or AI answers, often on a phone, sometimes after visiting a bank's site.
 - They already know their remaining balance, monthly payment and years left from their bank statement or app. Many do not know their tracks or their rate.
-- The site operator swaps in the real brand, domain, SMS provider, rates and tax brackets. Every unverified market value is flagged `TODO_VERIFY` in `data/*.json`.
+- The site operator swaps in the real brand, domain and SMS provider, and refreshes the rates monthly. Any unverified market value is flagged `TODO_VERIFY` in `data/*.json`.
 
 ## Capabilities and Constraints
 
@@ -82,7 +82,7 @@ web
 ## Evidence on Hand
 
 - There are no testimonials, customer counts, press, advisor names or licences yet. Do not fabricate any of them.
-- Market data (benchmark rates, purchase-tax brackets, LTV/PTI limits, prepayment-fee parameters) are placeholders until verified against Bank of Israel and Tax Authority sources.
+- Market data (benchmark rates, purchase-tax brackets, LTV/PTI limits, prepayment-fee parameters) were verified against Bank of Israel and Tax Authority sources on 2026-09-26. Rates need a monthly refresh.
 
 ## Product Principles
 
