@@ -3,7 +3,7 @@
  * through setLeadContext(); the server recomputes everything from them.
  */
 import { formatILMobile, isValidILMobile } from '../../lib/mortgage';
-import { entryPage, referrer, track, utm } from './analytics';
+import { entryPage, referrer, sessionId, track, utm } from './analytics';
 import { chipGroup } from './chips';
 
 type InputsFn = () => Record<string, unknown>;
@@ -171,6 +171,7 @@ export function initLeadGate(root: HTMLElement) {
       entryPage: entryPage(),
       utm: utm(),
       referrer: referrer(),
+      sessionId: sessionId(),
       hp: hp.value,
     });
     busy(btn, false);
@@ -266,6 +267,7 @@ export function initLeadGate(root: HTMLElement) {
       entryPage: entryPage(),
       utm: utm(),
       referrer: referrer(),
+      sessionId: sessionId(),
       hp: hp.value,
     });
     busy(btn, false);

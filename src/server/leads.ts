@@ -30,6 +30,10 @@ export interface LeadPayload {
   entryPage?: string;
   utm?: Record<string, string>;
   referrer?: string;
+  /** First-party session id (see src/scripts/analytics.ts), joined to tachles-analytics.sessions
+   * by the sibling tachles-admin project. Optional: absent when the beacon never ran (e.g. an
+   * ad/privacy blocker) or ANALYTICS isn't bound. */
+  sessionId?: string;
 }
 
 type Valid<T> = { ok: true; value: T } | { ok: false; error: string };
@@ -68,6 +72,7 @@ export function validateLead(p: Partial<LeadPayload> | null): Valid<LeadPayload 
       entryPage: cleanText(p.entryPage, 200) || '/',
       utm,
       referrer: cleanText(p.referrer, 300),
+      sessionId: cleanText(p.sessionId, 64) || undefined,
     },
   };
 }
@@ -179,8 +184,8 @@ export async function storeAndDeliver(
   await env.DB.prepare(
     `INSERT INTO leads (id, kind, first_name, phone, phone_verified, timing, consent_contact, consent_marketing, consent_version,
        inputs_json, results_json, score, score_json, scoring_version, tier, status, advisor_id, delivered_at, status_token,
-       duplicate_of, entry_page, utm_json, referrer, user_agent, ip_hash)
-     VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24)`,
+       duplicate_of, entry_page, utm_json, referrer, user_agent, ip_hash, session_id)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25)`,
   )
     .bind(
       id,
@@ -207,9 +212,16 @@ export async function storeAndDeliver(
       lead.referrer ?? '',
       meta.userAgent.slice(0, 300),
       meta.ipHash,
+      lead.sessionId ?? null,
     )
     .run();
   await logEvent(env, id, 'created', { tier: computed.tier, status });
+
+  // Best-effort: tag the visitor's analytics session with this lead id, so tachles-admin can
+  // join the journey without re-reading PII from here. Never blocks lead delivery.
+  if (env.ANALYTICS && lead.sessionId) {
+    await env.ANALYTICS.prepare(`UPDATE sessions SET lead_id = ?1 WHERE id = ?2`).bind(id, lead.sessionId).run().catch(() => {});
+  }
 
   const summary: LeadSummary = {
     id,

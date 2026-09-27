@@ -74,8 +74,31 @@ const ld = [organizationLd(), ...(path === '/' ? [websiteLd()] : []), ...(breadc
     </script>
     {INTEGRATIONS.clarityId && (
       <script is:inline define:vars={{ id: INTEGRATIONS.clarityId }}>
-        const load = () => { (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', id); };
+        const load = () => {
+          (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', id);
+          // Tag Clarity recordings with the same session id analytics.ts uses, so tachles-admin
+          // can link a session's journey to its recording. Read directly from sessionStorage
+          // (not imported from analytics.ts) since this script runs before Clarity's own tag has
+          // loaded — calling window.clarity() any earlier would be a no-op.
+          try { const sid = sessionStorage.getItem('mc_session'); if (sid) window.clarity('set', 'session_id', sid); } catch {}
+        };
         'requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 4000 }) : addEventListener('load', () => setTimeout(load, 1500));
+      </script>
+    )}
+
+    {INTEGRATIONS.ga4Id && (
+      <script is:inline define:vars={{ id: INTEGRATIONS.ga4Id }}>
+        const loadGa4 = () => {
+          const s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', id, { anonymize_ip: false });
+        };
+        'requestIdleCallback' in window ? requestIdleCallback(loadGa4, { timeout: 4000 }) : addEventListener('load', () => setTimeout(loadGa4, 1500));
       </script>
     )}
   </body>

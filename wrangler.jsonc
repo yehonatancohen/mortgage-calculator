@@ -16,6 +16,14 @@
 			"database_name": "mortgage-leads",
 			"database_id": "082917c3-a3aa-4d79-904f-d5a04839732c",
 			"migrations_dir": "migrations"
+		},
+		{
+			// Owned by the sibling tachles-admin project (same database_id as its ANALYTICS binding
+			// in tachles-admin/wrangler.jsonc). This project only ever writes to it via /api/t;
+			// migrations live in tachles-admin/migrations.
+			"binding": "ANALYTICS",
+			"database_name": "tachles-analytics",
+			"database_id": "23d2663a-37b2-4cd3-9c84-82a4e13fa2ae"
 		}
 	],
 	"kv_namespaces": [

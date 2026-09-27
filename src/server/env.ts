@@ -6,6 +6,10 @@ import { env as cfEnv } from 'cloudflare:workers';
 
 export interface Env {
   DB: D1Database;
+  /** tachles-analytics, owned by the sibling tachles-admin project. Only src/pages/api/t.ts
+   * writes to it. Optional so local dev/preview without the binding still works (the beacon
+   * endpoint no-ops when it's absent). */
+  ANALYTICS?: D1Database;
   /** Signs OTP verification tokens and hashes codes. Required in production. */
   OTP_SECRET?: string;
   /** 'mock' (logs the code) | 'http' (generic JSON provider, see sms.ts). Default mock. */

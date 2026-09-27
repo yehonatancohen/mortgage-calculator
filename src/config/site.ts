@@ -20,6 +20,8 @@ export const SITE = {
 export const INTEGRATIONS = {
   /** Microsoft Clarity project id (loaded after the page is idle). */
   clarityId: '',
+  /** GA4 measurement id, e.g. "G-XXXXXXXXXX" (loaded after the page is idle, like Clarity). */
+  ga4Id: 'G-B7S9YQT6EJ',
   /** Google Search Console HTML-tag verification token. */
   googleSiteVerification: '',
   /** Cloudflare Turnstile site key (public). Server secret: TURNSTILE_SECRET. */
