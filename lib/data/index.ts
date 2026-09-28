@@ -7,6 +7,7 @@ import assumptions from '../../data/assumptions.json';
 import prepaymentFee from '../../data/prepayment-fee.json';
 import regulation from '../../data/regulation.json';
 import purchaseTaxData from '../../data/purchase-tax.json';
+import cpi from '../../data/cpi.json';
 import { pct, type RefinanceAssumptions, type TakenBucket, type TaxBracket } from '../mortgage';
 
 export interface Sourced<T = unknown> {
@@ -96,7 +97,7 @@ export const purchaseTaxBrackets = {
   validFrom: purchaseTaxData.validFrom.value,
 };
 
-export const datasets = { rates, assumptions, prepaymentFee, regulation, purchaseTax: purchaseTaxData };
+export const datasets = { rates, assumptions, prepaymentFee, regulation, purchaseTax: purchaseTaxData, cpi };
 
 /** Every sourced value in every dataset, with its JSON path. */
 export function sourcedValues(): { file: string; path: string; entry: Sourced }[] {
