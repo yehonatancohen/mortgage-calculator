@@ -19,7 +19,7 @@ export const SITE = {
 /** Third-party slots. Leave empty to disable. None of them may block rendering. */
 export const INTEGRATIONS = {
   /** Microsoft Clarity project id (loaded after the page is idle). */
-  clarityId: '',
+  clarityId: 'yp68y27awh',
   /** GA4 measurement id, e.g. "G-XXXXXXXXXX" (loaded after the page is idle, like Clarity). */
   ga4Id: 'G-B7S9YQT6EJ',
   /** Google Search Console HTML-tag verification token. */
