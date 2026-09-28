@@ -75,6 +75,17 @@ The lead form used to gate submission behind an SMS one-time code (`/api/otp/sen
 3. In `src/pages/api/lead.ts`, restore the hard `if (!verified) return json({ ok: false, error: 'not_verified' }, 401)` check.
 4. Set `requireVerifiedPhone: true` back in `config/scoring.ts`.
 
+## Testing on production (test mode)
+
+To check that leads really arrive without polluting the numbers, open `/admin/test-mode/` (same Basic auth as `/admin/`) and press **הפעלה בדפדפן הזה**. That browser now carries a signed, HttpOnly cookie, and a red "מצב בדיקה" bar shows at the top of every page. While it's on:
+
+- `/api/t` drops the visit on the server, so nothing reaches `tachles-analytics`. This doesn't depend on the page's JS; a forged or missing cookie simply gets counted.
+- `/api/lead` runs the real pipeline (validation, recompute, scoring, tier routing, email) but stores the lead with `is_test = 1`. The advisor's email goes to `ADMIN_EMAIL` instead, marked `[בדיקה]`, and the webhook is skipped.
+- The browser skips GA4 and Clarity. These are third-party tools, so the server can't filter them. That's why the red bar is there: no bar, no test.
+- Test leads are left out of `/admin/`, the CSV export and every tachles-admin query and snapshot.
+
+`/admin/test-mode/` lists recent test leads with their delivery log. For each lead it also counts the rows `tachles-analytics` holds for its session, which should be 0. Operator pages (`/admin/`, `/lead/<token>/`) are never tracked, whether test mode is on or off. The cookie is per browser, so turn it on again on your phone or in a private window. Requires migration `0004_test_leads.sql`.
+
 ## Going live checklist
 
 1. **Brand:** set `SITE` in `src/config/site.ts` (brand, domain, `url`, contact, legal name, editorial names).

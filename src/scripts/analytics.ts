@@ -51,8 +51,9 @@ const store = {
 
 const randomId = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
-/** Owner opt-out flag, set by Base.astro when the site is opened with ?internal=1. */
-const isInternal = () => store.get('mc_internal', localStorage) === '1';
+/** Owner test mode hint cookie (src/server/testmode.ts). /api/t drops the beacon server-side
+ * anyway; this also keeps the event out of GA4/Clarity/dataLayer. */
+const isInternal = () => /(?:^|;\s*)mc_test_ui=1(?:;|$)/.test(document.cookie);
 
 export function initAnalytics() {
   if (isInternal()) return;

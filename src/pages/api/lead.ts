@@ -3,6 +3,7 @@ import { getEnv } from '../../server/env';
 import { ipHash, isBot, json, rateLimit, readJson, sameOrigin } from '../../server/guard';
 import { computeBuyer, computeRefinance, storeAndDeliver, validateLead, type LeadPayload } from '../../server/leads';
 import { checkToken } from '../../server/otp';
+import { isTestRequest } from '../../server/testmode';
 
 export const prerender = false;
 
@@ -29,7 +30,10 @@ export const POST: APIRoute = async ({ request }) => {
   if (!computed) return json({ ok: false, error: 'invalid_inputs' }, 400);
 
   const origin = env.PUBLIC_ORIGIN ?? new URL(request.url).origin;
-  await storeAndDeliver(env, origin, v.value, computed, verified, { userAgent: request.headers.get('user-agent') ?? '', ipHash: ip });
+  // Owner test mode: the lead goes through the same pipeline but is stored as is_test = 1 and
+  // emailed to ADMIN_EMAIL instead of the advisor.
+  const isTest = await isTestRequest(env, request);
+  await storeAndDeliver(env, origin, v.value, computed, verified, { userAgent: request.headers.get('user-agent') ?? '', ipHash: ip, isTest });
   // The visitor never sees the score or tier.
   return json({ ok: true });
 };

@@ -74,3 +74,17 @@ export async function notifyAdminReview(env: Env, l: LeadSummary, adminUrl: stri
   if (!env.ADMIN_EMAIL) return true;
   return sendEmail(env, env.ADMIN_EMAIL, `ליד לבדיקה ידנית (${l.tier}, ${l.score ?? '—'})`, leadEmailHtml({ ...l, statusUrl: adminUrl }, 'ליד ממתין לבדיקה ידנית.'));
 }
+
+/** Owner test mode: the same email the advisor would get, sent to ADMIN_EMAIL instead. No
+ * webhook, so the advisor's CRM never sees a test lead. */
+export async function notifyTestLead(env: Env, l: LeadSummary, status: string) {
+  if (!env.ADMIN_EMAIL) return { email: false, reason: 'ADMIN_EMAIL not set' };
+  const routed = status === 'delivered' ? 'היה נשלח ליועץ' : status === 'held' ? 'היה ממתין לבדיקה ידנית' : status === 'nurture' ? 'היה עובר לטיפוח' : 'היה מסומן ככפול';
+  const email = await sendEmail(
+    env,
+    env.ADMIN_EMAIL,
+    `[בדיקה] ליד חדש: ${l.firstName} (${l.tier}, ${l.score ?? '—'})`,
+    leadEmailHtml(l, `ליד בדיקה — לא נשלח ליועץ ולא נספר בנתונים. ליד אמיתי כזה ${routed}.`),
+  );
+  return { email, emailConfigured: Boolean(env.RESEND_API_KEY && env.EMAIL_FROM) };
+}

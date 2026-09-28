@@ -1,0 +1,166 @@
+---
+/**
+ * Owner test mode (see src/server/testmode.ts). Turn it on in a browser, then use the site
+ * normally: leads go through the real pipeline but are stored as is_test = 1, emailed to
+ * ADMIN_EMAIL instead of the advisor, and never reach the analytics. This page lists those test
+ * leads with their delivery log, and proves no analytics rows were written for them.
+ */
+import Base from '../../layouts/Base.astro';
+import { adminAuthorized, unauthorized } from '../../server/auth';
+import { getEnv } from '../../server/env';
+import { sameOrigin } from '../../server/guard';
+import { isTestRequest, testModeCookies } from '../../server/testmode';
+
+export const prerender = false;
+
+const env = getEnv();
+if (!(await adminAuthorized(env, Astro.request))) return unauthorized();
+Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
+Astro.response.headers.set('cache-control', 'no-store');
+
+let on = await isTestRequest(env, Astro.request);
+let message = '';
+if (Astro.request.method === 'POST' && sameOrigin(Astro.request)) {
+  const action = String((await Astro.request.formData()).get('action') ?? '');
+  if (action === 'on' || action === 'off') {
+    on = action === 'on';
+    for (const c of await testModeCookies(env, on)) Astro.response.headers.append('set-cookie', c);
+    message = on ? 'מצב בדיקה הופעל בדפדפן הזה.' : 'מצב בדיקה כובה בדפדפן הזה.';
+  } else if (action === 'clear') {
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM lead_events WHERE lead_id IN (SELECT id FROM leads WHERE is_test = 1)'),
+      env.DB.prepare('DELETE FROM leads WHERE is_test = 1'),
+    ]);
+    message = 'לידי הבדיקה נמחקו.';
+  }
+}
+
+const { results: leads } = await env.DB.prepare(
+  `SELECT id, created_at, kind, first_name, phone, tier, score, status, session_id, status_token FROM leads WHERE is_test = 1 ORDER BY created_at DESC LIMIT 20`,
+).all<Record<string, string | number | null>>();
+const { results: events } = leads.length
+  ? await env.DB.prepare(`SELECT lead_id, at, type, data FROM lead_events WHERE lead_id IN (SELECT id FROM leads WHERE is_test = 1 ORDER BY created_at DESC LIMIT 20) ORDER BY at`).all<{
+      lead_id: string;
+      at: string;
+      type: string;
+      data: string | null;
+    }>()
+  : { results: [] };
+
+// Proof, not trust: count the rows tachles-analytics holds for each test lead's session. With the
+// beacon dropped server-side this must be 0; anything else means a leak.
+const leaked = new Map<string, number>();
+if (env.ANALYTICS) {
+  for (const l of leads) {
+    if (!l.session_id) continue;
+    const r = await env.ANALYTICS.prepare(
+      `SELECT (SELECT count(*) FROM sessions WHERE id = ?1) + (SELECT count(*) FROM events WHERE session_id = ?1) + (SELECT count(*) FROM pageviews WHERE session_id = ?1) AS n`,
+    )
+      .bind(l.session_id)
+      .first<{ n: number }>();
+    leaked.set(String(l.id), r?.n ?? 0);
+  }
+}
+const origin = env.PUBLIC_ORIGIN ?? Astro.url.origin;
+const STATUS_LABEL: Record<string, string> = { delivered: 'היה נשלח ליועץ', held: 'היה ממתין לבדיקה', nurture: 'היה עובר לטיפוח', duplicate: 'כפול (בין לידי הבדיקה)' };
+const EVENT_LABEL: Record<string, string> = { created: 'נשמר', test_notified: 'מייל נשלח ל־ADMIN_EMAIL', notify_failed: 'שליחת המייל נכשלה', outcome: 'עודכן סטטוס' };
+---
+<Base title="מצב בדיקה" description="ניהול" noindex bare>
+  <main id="main" class="page admin">
+    <header class="admin__head">
+      <h1>מצב בדיקה</h1>
+      <a href="/admin/">חזרה ללידים</a>
+    </header>
+    {message && <p class="notice" role="status">{message}</p>}
+
+    <section>
+      <p class="admin__state" data-on={on ? 'true' : 'false'}>
+        {on ? 'פעיל בדפדפן הזה (אומת בשרת).' : 'כבוי בדפדפן הזה.'}
+      </p>
+      <form method="post" class="admin__actions">
+        {on ? <button class="btn btn--secondary" name="action" value="off">כיבוי</button> : <button class="btn btn--primary" name="action" value="on">הפעלה בדפדפן הזה</button>}
+        {on && <a class="btn btn--quiet" href="/">לאתר, לשלוח ליד בדיקה</a>}
+      </form>
+      <ul class="admin__notes">
+        <li>המצב נשמר בעוגייה חתומה בדפדפן הזה בלבד. בטלפון או בחלון גלישה בסתר צריך להפעיל שוב.</li>
+        <li>עם המצב פעיל, השרת עצמו מסנן: הביקורים לא נכתבים ל־tachles-analytics, והליד נשמר כליד בדיקה ונשלח במייל ל־ADMIN_EMAIL בלבד (לא ליועץ ולא ל־webhook).</li>
+        <li>GA4 ו־Clarity הם כלים חיצוניים, ולכן הדפדפן מדלג על טעינתם. כשהמצב פעיל מופיע באתר פס "מצב בדיקה" — אם הוא לא מופיע, אל תשלחו ליד.</li>
+        <li>לידי בדיקה לא מופיעים ברשימות, בספירות, בייצוא ה־CSV ובדוחות של tachles-admin.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>לידי בדיקה אחרונים (<bdi class="num">{leads.length}</bdi>)</h2>
+      {leads.length === 0 ? (
+        <p class="meta-line">עוד אין. הפעילו את המצב, מלאו את המחשבון באתר ושלחו פרטים.</p>
+      ) : (
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>נוצר</th><th>שם</th><th>טלפון</th><th>דרגה</th><th class="num">ציון</th><th>ניתוב</th><th>יומן משלוח</th><th>שורות אנליטיקס</th><th>קישור יועץ</th></tr></thead>
+            <tbody>
+              {leads.map((l) => (
+                <tr>
+                  <td class="num">{String(l.created_at).slice(0, 16)}</td>
+                  <td>{l.first_name}</td>
+                  <td class="num">{String(l.phone).replace('+972', '0')}</td>
+                  <td>{l.tier}</td>
+                  <td class="num">{l.score ?? '—'}</td>
+                  <td>{STATUS_LABEL[String(l.status)] ?? l.status}</td>
+                  <td>
+                    {events.filter((e) => e.lead_id === l.id).map((e) => (
+                      <div class={e.type === 'notify_failed' ? 'admin__bad' : ''}>{EVENT_LABEL[e.type] ?? e.type}</div>
+                    ))}
+                  </td>
+                  <td class="num">
+                    {!env.ANALYTICS ? '—' : !l.session_id ? 'אין session' : leaked.get(String(l.id)) === 0 ? <span>0 ✓</span> : <span class="admin__bad">{leaked.get(String(l.id))} ✗</span>}
+                  </td>
+                  <td><a href={`${origin}/lead/${l.status_token}/`}>פתיחה</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {leads.length > 0 && (
+        <form method="post" class="admin__actions">
+          <button class="btn btn--quiet" name="action" value="clear">מחיקת כל לידי הבדיקה</button>
+        </form>
+      )}
+    </section>
+  </main>
+</Base>
+
+<style>
+  .admin {
+    display: grid;
+    gap: var(--space-10);
+    padding-block: var(--space-8);
+  }
+  .admin__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+  }
+  .admin h2 {
+    margin-block-end: var(--space-3);
+  }
+  .admin__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block: var(--space-4);
+  }
+  .admin__state {
+    font-weight: 700;
+  }
+  .admin__notes {
+    display: grid;
+    gap: var(--space-2);
+    padding-inline-start: var(--space-6);
+  }
+  .admin__bad {
+    color: var(--c-danger);
+    font-weight: 700;
+  }
+</style>
