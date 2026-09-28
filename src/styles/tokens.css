@@ -34,7 +34,7 @@
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 /* ---------- Color: light (default; also re-applies inside a forced-light subtree) ---------- */
@@ -62,9 +62,11 @@
   --c-attention-soft: oklch(0.96 0.03 80);
   --c-danger: oklch(0.5 0.17 27);
   --c-shadow: oklch(0.25 0.03 235 / 0.1);
-  --c-hero: oklch(0.36 0.07 222);
-  --c-on-hero: oklch(0.99 0.003 222);
-  --c-on-hero-2: oklch(0.88 0.028 222);
+  --c-hero: oklch(0.965 0.012 250);
+  --c-hero-top: oklch(0.99 0.004 250);
+  --c-on-hero: oklch(0.3 0.08 258);
+  --c-on-hero-2: oklch(0.44 0.016 235);
+  --c-swoosh: oklch(0.76 0.16 70);
   /* END:LIGHT */
 }
 
@@ -139,35 +141,7 @@
 }
 
 /* ---------- Color: dark ---------- */
-/* Applied by system preference unless the user forced light, or when forced dark. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --c-bg: oklch(0.175 0.01 228);
-    --c-surface: oklch(0.215 0.012 228);
-    --c-surface-2: oklch(0.25 0.013 228);
-    --c-border: oklch(0.32 0.013 228);
-    --c-border-strong: oklch(0.56 0.014 228);
-    --c-text: oklch(0.955 0.004 222);
-    --c-text-2: oklch(0.79 0.01 222);
-    --c-text-3: oklch(0.72 0.012 222);
-    --c-accent: oklch(0.76 0.09 215);
-    --c-accent-hover: oklch(0.82 0.08 215);
-    --c-accent-ink: oklch(0.8 0.085 215);
-    --c-accent-soft: oklch(0.29 0.035 220);
-    --c-on-accent: oklch(0.18 0.02 228);
-    --c-track: oklch(0.56 0.014 228);
-    --c-focus: oklch(0.8 0.1 215);
-    --c-savings: oklch(0.8 0.14 155);
-    --c-savings-soft: oklch(0.28 0.04 155);
-    --c-attention: oklch(0.82 0.11 75);
-    --c-attention-soft: oklch(0.3 0.04 75);
-    --c-danger: oklch(0.74 0.14 27);
-    --c-shadow: oklch(0 0 0 / 0.4);
-    --c-hero: oklch(0.27 0.045 222);
-    --c-on-hero: oklch(0.97 0.004 222);
-    --c-on-hero-2: oklch(0.84 0.024 222);
-  }
-}
+/* The site is always light. The dark palette applies only inside an explicit [data-theme='dark'] subtree (the /dev/tokens preview). */
 :root[data-theme='dark'],
 [data-theme='dark'] {
   /* THEME:DARK */
@@ -193,8 +167,10 @@
   --c-danger: oklch(0.74 0.14 27);
   --c-shadow: oklch(0 0 0 / 0.4);
   --c-hero: oklch(0.27 0.045 222);
+  --c-hero-top: oklch(0.27 0.045 222);
   --c-on-hero: oklch(0.97 0.004 222);
   --c-on-hero-2: oklch(0.84 0.024 222);
+  --c-swoosh: oklch(0.78 0.15 70);
   /* END:DARK */
   color-scheme: dark;
 }

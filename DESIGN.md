@@ -20,9 +20,11 @@ colors:
   savings-soft: "oklch(0.955 0.03 155)"
   attention: "oklch(0.49 0.11 65)"
   attention-soft: "oklch(0.96 0.03 80)"
-  hero: "oklch(0.36 0.07 222)"
-  on-hero: "oklch(0.99 0.003 222)"
-  on-hero-2: "oklch(0.88 0.028 222)"
+  hero: "oklch(0.965 0.012 250)"
+  hero-top: "oklch(0.99 0.004 250)"
+  on-hero: "oklch(0.3 0.08 258)"
+  on-hero-2: "oklch(0.44 0.016 235)"
+  swoosh: "oklch(0.76 0.16 70)"
 typography:
   display:
     fontFamily: "Heebo, 'Heebo Fallback', system-ui, sans-serif"
@@ -181,12 +183,12 @@ components:
 
 The system reads like a well-set bank statement written for the account holder rather than the bank. A cool, near-neutral grey ground holds one white card with a hairline border and a single soft shadow. Near-black ink carries the text, and the only colours are the ones that mean something: a deep petrol for what you can press, and a savings green that appears only on money you would keep. It is the category standard executed at Wise / GOV.UK / Monzo craft, in right-to-left Hebrew. It answers before it asks.
 
-Density is calm and single-minded. Every surface is one 34rem column with one shared start edge. Within it, each step has one primary action pinned to the card's footer. Figures are the heroes: tabular, isolated left-to-right inside Hebrew, rounded down honestly, and they count in place instead of jumping. Motion is short and settles quickly (150/220/350ms on an expo-like ease-out), and all of it collapses to instant under reduced motion. Light and dark themes share every role; dark follows the system preference unless the visitor forces a theme.
+Density is calm and single-minded. Every surface is one 34rem column with one shared start edge. Within it, each step has one primary action pinned to the card's footer. Figures are the heroes: tabular, isolated left-to-right inside Hebrew, rounded down honestly, and they count in place instead of jumping. Motion is short and settles quickly (150/220/350ms on an expo-like ease-out), and all of it collapses to instant under reduced motion. The site is always light, whatever the system preference; the dark palette survives only for an explicit `data-theme="dark"` subtree (the `/dev/tokens` preview).
 
 The system rejects the lead-gen arrangement: no hero image, no form above the answer, no pop-up, no badges or testimonial counts standing in for proof. The result and its assumptions are the proof.
 
 **Key Characteristics:**
-- One deep petrol hero band (header, crumbs, title) that the white card rises out of, overlapping its lower edge; below it, a cool grey ground.
+- One paper-white hero band (header, crumbs, title, proof points) that settles into pale blue, with the logo's amber swoosh sweeping under the title; the white card rises out of it, overlapping its lower edge; below it, a cool grey ground.
 - One white card with a hairline border and one soft shadow.
 - Petrol accent on interactive affordances only; savings green on money saved only; data graphics in ink.
 - One Heebo variable family at three weights (400/500/700), tabular numerals everywhere.
@@ -219,7 +221,7 @@ A cool, low-chroma neutral set tinted toward petrol (hue ≈222), with exactly t
 ### Named Rules
 **The Petrol Means Press Rule.** Petrol marks interactive affordances only: primary buttons, focus rings, the active slider fill and thumb, links, the secondary button, selected chips, hover borders on chips and the next-step card, the current-page underline in the navigation, the disclosure toggle, caret and text selection. It never colours a figure, a data graphic, a surface or a decoration, with one exception: the hero band.
 
-**The One Band Rule.** On calculator pages, the header, breadcrumbs, h1 and answer line sit on one continuous Deep Harbour band (`--c-hero`, a deeper, calmer petrol than the button). White ink (`on-hero`) carries the h1 and the brand, and Mist Ink (`on-hero-2`) carries the answer line, the nav and the crumbs; focus rings and the current-nav underline turn white on it. The card overlaps the band's bottom by 48px (80px from 40rem), so the band frames the calculator instead of competing with it. The band is flat, with no gradient, photo or pattern, and it appears once per page. Its one image is the **skyline** (`HeroArt.astro`): a line drawing in the icon grammar (2px round strokes) of a Bauhaus block with a rooftop solar water heater, a tower and a gabled house, in Mist Ink at 55% with a 6% fill. It stands on the band's lower edge in the empty space beside the column, from 64rem up only; phones skip it. Never replace it with a stock photo. Prose pages keep the quiet paper header. In dark mode the band drops to a deep, low-chroma petrol, so it reads as a tone rather than a light.
+**The One Band Rule.** On calculator pages, the header, breadcrumbs, h1, answer line and optional proof points sit on one band: a vertical fade from Paper White (`--c-hero-top`) to Pale Sky (`--c-hero`). The header floats on it with no background or rule. Logo Navy (`on-hero`) carries the h1, the brand and the current crumb; Slate Ink (`on-hero-2`) carries the answer line, the nav and the crumbs. The band's one graphic is the **swoosh**: the logo's amber arc (`--c-swoosh`), drawn inline in `CalculatorPage.astro`, sweeping from the band's lower start corner up under the title. It spans the band from 40rem up and flattens into a 7rem strip just above the card on phones. Proof points (`points` prop, front page only) are short ticked lines with a savings-green check; any date in them comes from the data files, never typed. The card overlaps the band by 48px (80px from 40rem). Prose pages keep the quiet paper header.
 
 **The Green Is Money Rule.** Savings green appears only on money saved: the result range, the live preview, the per-question figure and the recap. When there is no saving, the figure turns to ink (or Slate Ink in the preview), never green.
 
