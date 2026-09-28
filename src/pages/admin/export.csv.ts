@@ -14,7 +14,7 @@ const cell = (v: unknown) => {
 export const GET: APIRoute = async ({ request }) => {
   const env = getEnv();
   if (!(await adminAuthorized(env, request))) return unauthorized();
-  const { results } = await env.DB.prepare(`SELECT ${COLS.join(', ')} FROM leads ORDER BY created_at DESC`).all<Record<string, unknown>>();
+  const { results } = await env.DB.prepare(`SELECT ${COLS.join(', ')} FROM leads WHERE is_test = 0 ORDER BY created_at DESC`).all<Record<string, unknown>>();
   const csv = '﻿' + [COLS.join(','), ...results.map((r) => COLS.map((c) => cell(r[c])).join(','))].join('\r\n');
   return new Response(csv, {
     headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="leads.csv"', 'cache-control': 'no-store' },

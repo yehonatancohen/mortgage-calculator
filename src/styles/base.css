@@ -140,6 +140,17 @@ bdi.num {
   transform: none;
 }
 
+/* Owner test mode (Base.astro adds it only when the test-mode cookie is set). */
+.test-mode-banner {
+  display: block;
+  padding: var(--space-2) var(--space-4);
+  background: var(--c-danger);
+  color: var(--c-surface);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

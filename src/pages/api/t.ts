@@ -5,12 +5,14 @@
  * endpoint is the only thing in this repo that writes to it).
  *
  * No-ops (200, does nothing) when ANALYTICS isn't bound, so local dev/preview without that
- * binding still works, and when the request looks like a bot.
+ * binding still works, when the request looks like a bot, and when the owner's test-mode cookie
+ * is present (src/server/testmode.ts), whatever the page's JS did.
  */
 import type { APIRoute } from 'astro';
 import { getEnv, type Env } from '../../server/env';
 import { clientIp, rateLimit } from '../../server/guard';
 import { sha256Hex } from '../../server/crypto';
+import { isTestRequest } from '../../server/testmode';
 
 export const prerender = false;
 
@@ -58,6 +60,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const ua = request.headers.get('user-agent') ?? '';
   if (isBotUa(ua)) return new Response(null, { status: 204 });
+  if (await isTestRequest(env, request)) return new Response(null, { status: 204 });
 
   // Loose rate limit per IP: this is a high-frequency endpoint (periodic + unload flushes), so
   // the ceiling is generous compared to lead/otp endpoints — it only needs to stop abuse, not

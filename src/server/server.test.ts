@@ -3,6 +3,7 @@ import { computeBuyer, computeRefinance, validateLead } from './leads';
 import { checkToken, issueToken } from './otp';
 import { randomCode, randomToken, safeEqual } from './crypto';
 import type { Env } from './env';
+import { isTestRequest, testModeCookies, testToken, verifyTestToken } from './testmode';
 
 const base = {
   kind: 'refinance' as const,
@@ -84,5 +85,26 @@ describe('crypto helpers', () => {
     expect(randomToken()).toMatch(/^[A-Za-z0-9_-]{43}$/);
     expect(safeEqual('abc', 'abc')).toBe(true);
     expect(safeEqual('abc', 'abd')).toBe(false);
+  });
+});
+
+describe('test mode cookie', () => {
+  const env = { OTP_SECRET: 'secret' } as Env;
+  const req = (cookie: string) => new Request('https://x/', { headers: { cookie } });
+  it('accepts a token it signed and rejects forged, foreign or expired ones', async () => {
+    const t = await testToken(env);
+    expect(await verifyTestToken(env, t)).toBe(true);
+    expect(await verifyTestToken({ OTP_SECRET: 'other' } as Env, t)).toBe(false);
+    expect(await verifyTestToken(env, `${Number(t.split('.')[0]) + 1}.${t.split('.')[1]}`)).toBe(false);
+    expect(await verifyTestToken(env, t, Date.now() + 400 * 86_400_000)).toBe(false);
+    expect(await verifyTestToken(env, '1')).toBe(false);
+    expect(await verifyTestToken(env, undefined)).toBe(false);
+  });
+  it('trusts only the signed HttpOnly cookie, never the UI hint', async () => {
+    const [signed] = await testModeCookies(env, true);
+    expect(signed).toContain('HttpOnly');
+    expect(await isTestRequest(env, req(`a=b; ${signed!.split(';')[0]}; mc_test_ui=1`))).toBe(true);
+    expect(await isTestRequest(env, req('mc_test_ui=1'))).toBe(false);
+    expect(await isTestRequest(env, req('mc_test=1'))).toBe(false);
   });
 });

@@ -9,7 +9,7 @@ import { scoreRefinanceLead, tierBuyerLead } from '../../lib/scoring/score';
 import { CONSENT } from '../config/consent';
 import { newId, randomToken } from './crypto';
 import type { Env } from './env';
-import { notifyAdminReview, notifyAdvisor, type LeadSummary } from './notify';
+import { notifyAdminReview, notifyAdvisor, notifyTestLead, type LeadSummary } from './notify';
 
 const TIMINGS = ['now', 'months', 'checking'] as const;
 const TAKEN = ['before2015', '2015to2019', '2020to2022', 'since2023', 'unknown'] as const;
@@ -170,22 +170,29 @@ export async function storeAndDeliver(
   lead: LeadPayload & { phoneE164: string },
   computed: Computed,
   phoneVerified: boolean,
-  meta: { userAgent: string; ipHash: string },
+  meta: { userAgent: string; ipHash: string; isTest?: boolean },
 ): Promise<{ id: string }> {
+  const isTest = meta.isTest === true;
   const id = newId();
   const statusToken = randomToken();
-  const dup = await env.DB.prepare(`SELECT id FROM leads WHERE phone = ?1 AND created_at > datetime('now', ?2) AND status != 'duplicate' ORDER BY created_at DESC LIMIT 1`)
-    .bind(lead.phoneE164, `-${DUPLICATE_WINDOW_DAYS} days`)
+  // Test and real leads are de-duplicated separately, so testing with your own number never
+  // turns a later real lead from that number into a "duplicate" (or the other way round).
+  const dup = await env.DB.prepare(
+    `SELECT id FROM leads WHERE phone = ?1 AND created_at > datetime('now', ?2) AND status != 'duplicate' AND is_test = ?3 ORDER BY created_at DESC LIMIT 1`,
+  )
+    .bind(lead.phoneE164, `-${DUPLICATE_WINDOW_DAYS} days`, isTest ? 1 : 0)
     .first<{ id: string }>();
 
   const status = dup ? 'duplicate' : computed.tier === 'A' ? 'delivered' : computed.tier === 'B' ? 'held' : 'nurture';
-  const advisor = status === 'delivered' ? await ensureAdvisor(env) : null;
+  // A test lead keeps the status a real one would get (so routing can be checked) but never
+  // gets an advisor.
+  const advisor = status === 'delivered' && !isTest ? await ensureAdvisor(env) : null;
 
   await env.DB.prepare(
     `INSERT INTO leads (id, kind, first_name, phone, phone_verified, timing, consent_contact, consent_marketing, consent_version,
        inputs_json, results_json, score, score_json, scoring_version, tier, status, advisor_id, delivered_at, status_token,
-       duplicate_of, entry_page, utm_json, referrer, user_agent, ip_hash, session_id)
-     VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25)`,
+       duplicate_of, entry_page, utm_json, referrer, user_agent, ip_hash, session_id, is_test)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26)`,
   )
     .bind(
       id,
@@ -213,13 +220,14 @@ export async function storeAndDeliver(
       meta.userAgent.slice(0, 300),
       meta.ipHash,
       lead.sessionId ?? null,
+      isTest ? 1 : 0,
     )
     .run();
-  await logEvent(env, id, 'created', { tier: computed.tier, status });
+  await logEvent(env, id, 'created', { tier: computed.tier, status, test: isTest });
 
   // Best-effort: tag the visitor's analytics session with this lead id, so tachles-admin can
   // join the journey without re-reading PII from here. Never blocks lead delivery.
-  if (env.ANALYTICS && lead.sessionId) {
+  if (env.ANALYTICS && lead.sessionId && !isTest) {
     await env.ANALYTICS.prepare(`UPDATE sessions SET lead_id = ?1 WHERE id = ?2`).bind(id, lead.sessionId).run().catch(() => {});
   }
 
@@ -234,7 +242,10 @@ export async function storeAndDeliver(
     statusUrl: `${origin}/lead/${statusToken}/`,
     lines: [['טלפון', lead.phoneE164.replace('+972', '0')], ['מתי לפעול', timingLabel(lead.timing)], ...computed.lines],
   };
-  if (advisor) {
+  if (isTest) {
+    const r = await notifyTestLead(env, summary, status);
+    await logEvent(env, id, r.email ? 'test_notified' : 'notify_failed', { ...r, to: 'ADMIN_EMAIL' });
+  } else if (advisor) {
     const r = await notifyAdvisor(env, advisor, summary);
     await logEvent(env, id, r.email && r.webhook ? 'delivered' : 'notify_failed', r);
   } else if (status === 'held') {
@@ -257,7 +268,7 @@ export async function deliverHeldLead(env: Env, origin: string, id: string): Pro
   // Requiring phone_verified here would block every held lead now that SMS verification is
   // disabled (see api/lead.ts) — every lead is currently phone_verified = 0.
   const lead = await env.DB.prepare('SELECT * FROM leads WHERE id = ?1').bind(id).first<Record<string, string | number | null>>();
-  if (!lead || lead.status === 'delivered') return false;
+  if (!lead || lead.status === 'delivered' || lead.is_test) return false;
   const advisor = await ensureAdvisor(env);
   await env.DB.prepare(`UPDATE leads SET status = 'delivered', tier = 'A', advisor_id = ?2, delivered_at = ?3 WHERE id = ?1`).bind(id, advisor.id, new Date().toISOString()).run();
   const inputs = JSON.parse(String(lead.inputs_json)) as Record<string, unknown>;
