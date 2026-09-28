@@ -6,7 +6,6 @@
 import Base from './Base.astro';
 import Icon from '../components/Icon.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import HeroArt from '../components/HeroArt.astro';
 import { faqLd, webApplicationLd, type Crumb } from '../seo/schema';
 import { hebrewDate } from '../ui/dates';
 
@@ -21,20 +20,29 @@ interface Props {
   next: { href: string; title: string; text: string };
   crumbs: Crumb[];
   appName: string;
+  /** Optional short proof points under the answer line. */
+  points?: string[];
 }
-const { title, metaTitle = title, description, answer, updated, faq, sources, next, crumbs, appName } = Astro.props;
+const { title, metaTitle = title, description, answer, updated, faq, sources, next, crumbs, appName, points = [] } = Astro.props;
 const path = Astro.url.pathname;
 const jsonLd = [webApplicationLd({ name: appName, description, path, dateModified: updated }), faqLd(faq)];
 ---
 <Base title={metaTitle} description={description} jsonLd={jsonLd} breadcrumbs={crumbs}>
   <main id="main">
     <div class="hero">
-      <HeroArt />
+      <svg class="hero__swoosh" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d="M-20 392C520 400 1020 340 1460 190C1040 360 520 408-20 400Z" fill="currentColor" fill-opacity="0.9" />
+      </svg>
       <div class="hero__inner">
         {crumbs.length > 1 && <Breadcrumbs crumbs={crumbs} />}
         <header class="page-intro">
           <h1>{title}</h1>
           <p class="page-intro__answer">{answer}</p>
+          {points.length > 0 && (
+            <ul class="page-intro__points">
+              {points.map((p) => <li><Icon name="check" />{p}</li>)}
+            </ul>
+          )}
         </header>
       </div>
     </div>

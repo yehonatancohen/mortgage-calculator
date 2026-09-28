@@ -247,7 +247,7 @@ export async function storeAndDeliver(
     await logEvent(env, id, r.email ? 'test_notified' : 'notify_failed', { ...r, to: 'ADMIN_EMAIL' });
   } else if (advisor) {
     const r = await notifyAdvisor(env, advisor, summary);
-    await logEvent(env, id, r.email && r.webhook ? 'delivered' : 'notify_failed', r);
+    await logEvent(env, id, r.email && r.webhook ? 'delivered' : 'notify_failed', { ...r, emailConfigured: Boolean(env.RESEND_API_KEY && env.EMAIL_FROM) });
   } else if (status === 'held') {
     await notifyAdminReview(env, summary, `${origin}/admin/?lead=${id}`);
   }

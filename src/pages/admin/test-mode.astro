@@ -63,7 +63,15 @@ if (env.ANALYTICS) {
 }
 const origin = env.PUBLIC_ORIGIN ?? Astro.url.origin;
 const STATUS_LABEL: Record<string, string> = { delivered: 'היה נשלח ליועץ', held: 'היה ממתין לבדיקה', nurture: 'היה עובר לטיפוח', duplicate: 'כפול (בין לידי הבדיקה)' };
-const EVENT_LABEL: Record<string, string> = { created: 'נשמר', test_notified: 'מייל נשלח ל־ADMIN_EMAIL', notify_failed: 'שליחת המייל נכשלה', outcome: 'עודכן סטטוס' };
+const EVENT_LABEL: Record<string, string> = { created: 'נשמר', test_notified: 'מייל נשלח ל־ADMIN_EMAIL', notify_failed: 'המייל לא נשלח', outcome: 'עודכן סטטוס' };
+const reason = (data: string | null) => {
+  try {
+    const r = JSON.parse(data ?? '{}').reason;
+    return typeof r === 'string' ? `: ${r}` : '';
+  } catch {
+    return '';
+  }
+};
 ---
 <Base title="מצב בדיקה" description="ניהול" noindex bare>
   <main id="main" class="page admin">
@@ -108,7 +116,7 @@ const EVENT_LABEL: Record<string, string> = { created: 'נשמר', test_notified
                   <td>{STATUS_LABEL[String(l.status)] ?? l.status}</td>
                   <td>
                     {events.filter((e) => e.lead_id === l.id).map((e) => (
-                      <div class={e.type === 'notify_failed' ? 'admin__bad' : ''}>{EVENT_LABEL[e.type] ?? e.type}</div>
+                      <div class={e.type === 'notify_failed' ? 'admin__bad' : ''}>{EVENT_LABEL[e.type] ?? e.type}{e.type === 'notify_failed' && reason(e.data)}</div>
                     ))}
                   </td>
                   <td class="num">

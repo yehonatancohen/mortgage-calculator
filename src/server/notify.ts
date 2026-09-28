@@ -22,8 +22,9 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 
 export async function sendEmail(env: Env, to: string, subject: string, html: string): Promise<boolean> {
   if (!env.RESEND_API_KEY || !env.EMAIL_FROM) {
+    // Not sent, so not a success: lead_events records notify_failed rather than a false "delivered".
     console.log(`[email:log] to=${to} subject=${JSON.stringify(subject)}`);
-    return true;
+    return false;
   }
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -86,5 +87,5 @@ export async function notifyTestLead(env: Env, l: LeadSummary, status: string) {
     `[בדיקה] ליד חדש: ${l.firstName} (${l.tier}, ${l.score ?? '—'})`,
     leadEmailHtml(l, `ליד בדיקה — לא נשלח ליועץ ולא נספר בנתונים. ליד אמיתי כזה ${routed}.`),
   );
-  return { email, emailConfigured: Boolean(env.RESEND_API_KEY && env.EMAIL_FROM) };
+  return email ? { email } : { email, reason: env.RESEND_API_KEY && env.EMAIL_FROM ? 'Resend rejected the email' : 'RESEND_API_KEY or EMAIL_FROM not set' };
 }

@@ -94,7 +94,7 @@ web
 
 ## Accessibility & Inclusion
 
-- WCAG 2.x AA in both light and dark themes, and an accessibility statement page (Israeli regulation, IS 5568).
+- WCAG 2.x AA (the site is always light; the dark palette is kept for explicit previews only), and an accessibility statement page (Israeli regulation, IS 5568).
 - Hebrew RTL first and mobile first.
 - Full keyboard support, visible focus, labeled inputs, and `aria-live` on results.
 - `prefers-reduced-motion` is respected everywhere.
