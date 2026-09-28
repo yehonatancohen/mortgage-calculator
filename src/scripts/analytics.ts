@@ -51,7 +51,11 @@ const store = {
 
 const randomId = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
+/** Owner opt-out flag, set by Base.astro when the site is opened with ?internal=1. */
+const isInternal = () => store.get('mc_internal', localStorage) === '1';
+
 export function initAnalytics() {
+  if (isInternal()) return;
   if (!store.get(ENTRY)) {
     store.set(ENTRY, location.pathname);
     const params = new URLSearchParams(location.search);
@@ -82,6 +86,7 @@ export const sessionId = () => store.get(SESSION) ?? '';
 export const visitorId = () => store.get(VISITOR, localStorage) ?? '';
 
 export function track(event: string, props: Props = {}) {
+  if (isInternal()) return;
   const payload = { event, entry_page: entryPage(), page: location.pathname, ...props };
   (window.dataLayer ??= []).push(payload);
   window.clarity?.('event', event);
