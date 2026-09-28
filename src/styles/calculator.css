@@ -4,7 +4,6 @@
   position: relative;
   display: grid;
   gap: var(--space-6);
-  padding-block-end: 0;
 }
 .step {
   display: grid;
@@ -219,7 +218,10 @@
   display: grid;
   gap: var(--space-3);
   margin-inline: calc(-1 * var(--space-5));
-  padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom));
+  margin-block-end: calc(-1 * var(--space-6));
+  padding: var(--space-4) var(--space-5) calc(var(--space-6) + env(safe-area-inset-bottom));
+  border-end-start-radius: var(--radius-lg);
+  border-end-end-radius: var(--radius-lg);
   background: var(--c-surface);
   border-block-start: var(--border-w) solid var(--c-border);
   border-end-start-radius: var(--radius-lg);
@@ -427,7 +429,7 @@
 @media (min-width: 40rem) {
   .lead__footer {
     position: static;
-    margin-inline: 0;
+    margin: 0;
     padding: 0;
     border: 0;
     background: none;
