@@ -28,6 +28,7 @@ const faq = [
   answer={`משכנתא של ${formatILS(initial.loan)} ל־25 שנה בריבית ${formatPercent(rate / 100)} תעלה כ־${v.out.payment} בחודש. שנו את הסכום, הריבית והתקופה.`}
   appName="מחשבון החזר חודשי"
   updated={updated}
+  method="נוסחת שפיצר: החזר קבוע מסכום ההלוואה, הריבית החודשית (שנתית ÷ 12) ומספר החודשים. ההשוואה לקרן שווה מחשבת קרן קבועה וריבית על היתרה."
   faq={faq}
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'החזר חודשי', path: '/calculators/monthly-payment/' }]}
   sources={[{ label: 'בנק ישראל: דוח חודשי על הלוואות לדיור', url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/' }]}

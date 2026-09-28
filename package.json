@@ -14,7 +14,8 @@
     "cf-typegen": "wrangler types",
     "contrast": "node scripts/contrast.mjs",
     "build:fonts": "node scripts/build-font.mjs",
-    "font-audit": "node scripts/font-audit.mjs"
+    "font-audit": "node scripts/font-audit.mjs",
+    "seo-check": "node scripts/seo-check.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",

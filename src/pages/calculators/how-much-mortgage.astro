@@ -31,6 +31,7 @@ const faq = [
   answer={`עם הכנסה נטו של ${formatILS(initial.income)} והון עצמי של ${formatILS(initial.equity)} אפשר לרכוש דירה ראשונה בכ־${v.out.maxPrice}, עם משכנתא של כ־${v.out.loan}.`}
   appName="מחשבון כמה משכנתא אפשר לקבל"
   updated={updated}
+  method="הנמוך מבין שני גבולות: משכנתא שההחזר עליה לא עולה על שיעור מההכנסה הפנויה, ומשכנתא שהון עצמי נתון מאפשר לפי שיעור המימון המרבי לסוג הרכישה."
   faq={faq}
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'כמה משכנתא אפשר לקבל', path: '/calculators/how-much-mortgage/' }]}
   sources={[{ label: 'בנק ישראל: הוראת ניהול בנקאי תקין 329, מגבלות למתן הלוואות לדיור', url: 'https://www.boi.org.il/roles/supervisionregulation/nbt/nbt329/' }]}

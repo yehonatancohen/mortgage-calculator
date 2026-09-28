@@ -11,7 +11,7 @@ export const SITE = {
   lang: 'he',
   dir: 'rtl',
   /** Short description used in the footer, Organization schema and llms.txt. */
-  tagline: 'מחשבוני משכנתא שקופים ובדיקה חינם מול יועץ משכנתאות עצמאי.',
+  tagline: 'מרכז מחשבוני המשכנתא בעברית: תוצאה מיידית, נתונים עם מקור ותאריך, ובדיקה חינם מול יועץ עצמאי אם רוצים.',
   /** Public contact path. The actual inbox is a server secret (CONTACT_EMAIL / ADMIN_EMAIL), never checked in. */
   contactPath: '/contact/',
 } as const;
@@ -31,5 +31,6 @@ export const INTEGRATIONS = {
 export const NAV = [
   { href: '/calculators/', label: 'מחשבונים' },
   { href: '/ribit-mashkanta-hayom/', label: 'ריבית היום' },
+  { href: '/questions/', label: 'שאלות' },
   { href: '/guides/', label: 'מדריכים' },
 ] as const;

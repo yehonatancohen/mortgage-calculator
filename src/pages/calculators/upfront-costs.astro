@@ -1,0 +1,112 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import Icon from '../../components/Icon.astro';
+import { datasets, limits, purchaseCosts, purchaseTaxBrackets } from '../../../lib/data';
+import { formatILS, formatPercent } from '../../../lib/mortgage';
+import { upfrontView, type UpfrontOpts, type UpfrontState } from '../../ui/calcs';
+
+const opts: UpfrontOpts = {
+  ltv: limits.maxLtv,
+  tax: { singleHome: purchaseTaxBrackets.singleHome, additionalHome: purchaseTaxBrackets.additionalHome },
+  lawyerRate: purchaseCosts.lawyerRate,
+  brokerRate: purchaseCosts.brokerRate,
+  vatRate: purchaseCosts.vatRate,
+  mortgageFees: (purchaseCosts.mortgageFees[0] + purchaseCosts.mortgageFees[1]) / 2,
+};
+const initial: UpfrontState = { price: 2_000_000, type: 'firstHome', broker: 'no' };
+const v = upfrontView(initial, opts);
+const updated = [datasets.purchaseCosts.lawyerFeeRate.lastUpdated, datasets.purchaseTax.singleHome.brackets.lastUpdated, datasets.regulation.maxLtv.firstHome.lastUpdated].sort().at(-1)!;
+const examples = [1_500_000, 2_000_000, 2_500_000, 3_000_000].map((price) => ({ price, v: upfrontView({ ...initial, price }, opts) }));
+
+const faq = [
+  { q: 'כמה מזומן צריך לקנות דירה?', a: `לפחות ההון העצמי הנדרש לפי סוג הרכישה (${formatPercent(1 - limits.maxLtv.firstHome, 0)} מהמחיר בדירה ראשונה), ועוד עלויות רכישה: מס רכישה, עורך דין, שמאות ופתיחת תיק, ותיווך אם נעזרים במתווך.` },
+  { q: 'האם אפשר לקחת משכנתא גם על העלויות?', a: 'לא. המשכנתא מממנת חלק ממחיר הדירה בלבד. מס הרכישה והעלויות הנלוות משולמים מהון עצמי או ממקורות אחרים.' },
+  { q: 'איך מחושבות העלויות?', a: `מס הרכישה לפי מדרגות רשות המסים. עורך דין ${formatPercent(purchaseCosts.lawyerRate, 1)} ועוד מע"מ, ותיווך ${formatPercent(purchaseCosts.brokerRate, 0)} ועוד מע"מ אם נבחר. אלה הערכות מקובלות בשוק ולא תעריף קבוע, ואפשר להתמקח עליהן.` },
+  { q: 'מה לא כלול?', a: 'שיפוץ, ריהוט, מעבר, ביטוחים, ועד בית והוצאות מעבר אחרות, וגם ביטול או הקלות במס רכישה. כדאי להוסיף להן מרווח.' },
+];
+---
+<CalculatorPage
+  title="מחשבון הון עצמי ועלויות רכישת דירה"
+  metaTitle="מחשבון הון עצמי ועלויות רכישה: כמה מזומן צריך לדירה?"
+  description="כמה מזומן צריך ביום הרכישה? מחשבון שמחבר הון עצמי מינימלי, מס רכישה, עורך דין, תיווך ועלויות משכנתא לפי מחיר הדירה וסוג הרכישה."
+  answer={`לדירה ראשונה ב־${formatILS(initial.price)}, בלי תיווך, צריך כ־${v.out.cash} מזומן: הון עצמי של ${v.out.equity} ועוד ${v.out.costs} עלויות רכישה.`}
+  appName="מחשבון הון עצמי ועלויות רכישה"
+  updated={updated}
+  method="הון עצמי מינימלי = מחיר × (1 − שיעור המימון המרבי לפי סוג הרכישה). עלויות = מס רכישה לפי מדרגות רשות המסים + עורך דין + תיווך (אם נבחר) + עלויות משכנתא. הכול מעוגל כלפי מעלה לאלף שקלים."
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'הון עצמי ועלויות', path: '/calculators/upfront-costs/' }]}
+  sources={[
+    { label: 'בנק ישראל: הוראת ניהול בנקאי תקין 329, מגבלות למתן הלוואות לדיור', url: 'https://www.boi.org.il/roles/supervisionregulation/nbt/nbt329/' },
+    { label: 'רשות המסים: הוראת ביצוע מיסוי מקרקעין 1/2026', url: 'https://www.gov.il/he/pages/inst-01-2026' },
+  ]}
+  next={{ href: '/calculators/how-much-mortgage/', title: 'כמה משכנתא אפשר לקבל?', text: 'לפי ההכנסה וההון שנשאר אחרי העלויות.' }}
+>
+  <div class="card calc-card" data-calc="upfront-costs">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial, opts })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="price" label="מחיר הדירה" value={initial.price} min={500_000} max={10_000_000} step={50_000} textMin={10_000} textMax={100_000_000} shorthand="balance" scale={['₪500K', '₪10M']} />
+      <fieldset class="field question question--inline">
+        <legend class="field__label" id="upfront-type">סוג הרכישה</legend>
+        <div class="chips" role="radiogroup" aria-labelledby="upfront-type" data-chips="type">
+          <button type="button" class="chip" role="radio" aria-checked="true" data-answer="firstHome"><Icon name="check" class="chip__check" />דירה ראשונה</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="replacementHome"><Icon name="check" class="chip__check" />דירה חלופית</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="additionalHome"><Icon name="check" class="chip__check" />דירה נוספת</button>
+        </div>
+      </fieldset>
+      <fieldset class="field question question--inline">
+        <legend class="field__label" id="upfront-broker">תיווך</legend>
+        <div class="chips" role="radiogroup" aria-labelledby="upfront-broker" data-chips="broker">
+          <button type="button" class="chip" role="radio" aria-checked="true" data-answer="no"><Icon name="check" class="chip__check" />בלי מתווך</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-answer="yes"><Icon name="check" class="chip__check" />עם מתווך</button>
+        </div>
+      </fieldset>
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">מזומן נדרש ביום הרכישה</p>
+        <p class="result__figure result__figure--neutral" data-out="cash" data-count style={`--chars: ${v.out.cash!.length}`}>{v.out.cash}</p>
+      </div>
+      <dl class="kv" data-summary>
+        <div><dt>הון עצמי מינימלי</dt><dd data-out="equity">{v.out.equity}</dd></div>
+        <div><dt>משכנתא מרבית</dt><dd data-out="loan">{v.out.loan}</dd></div>
+        <div><dt>מס רכישה</dt><dd data-out="tax">{v.out.tax}</dd></div>
+        <div><dt>עורך דין (כולל מע"מ)</dt><dd data-out="lawyer">{v.out.lawyer}</dd></div>
+        <div><dt>תיווך (כולל מע"מ)</dt><dd data-out="broker">{v.out.broker}</dd></div>
+        <div><dt>שמאות ופתיחת תיק</dt><dd data-out="fees">{v.out.fees}</dd></div>
+        <div><dt>סך העלויות</dt><dd data-out="costs">{v.out.costs}</dd></div>
+        <div><dt>מזומן כשיעור מהמחיר</dt><dd data-out="share">{v.out.share}</dd></div>
+      </dl>
+      <p class="disclaimer">הערכה בלבד. עלויות עורך דין ותיווך הן אומדן שוק, לא תעריף. <a href="/methodology/">איך חישבנו</a></p>
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <p>דירה ראשונה, בלי תיווך, לפי מחיר:</p>
+    <div class="table-wrap">
+      <table class="data-table data-table--stack">
+        <thead><tr><th scope="col">מחיר הדירה</th><th scope="col" class="num">הון עצמי מינימלי</th><th scope="col" class="num">עלויות רכישה</th><th scope="col" class="num">מזומן נדרש</th></tr></thead>
+        <tbody>
+          {examples.map((e) => <tr><th scope="row" class="num">{formatILS(e.price)}</th><td class="num" data-label="הון עצמי מינימלי"><bdi>{e.v.out.equity}</bdi></td><td class="num" data-label="עלויות רכישה"><bdi>{e.v.out.costs}</bdi></td><td class="num" data-label="מזומן נדרש"><bdi>{e.v.out.cash}</bdi></td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p>המשכנתא מממנת רק חלק ממחיר הדירה, ושיעור המימון המרבי תלוי בסוג הרכישה. את השאר, ועוד עלויות הרכישה, משלמים במזומן.</p>
+    <p>מס הרכישה מחושב במדרגות של רשות המסים. שכר הטרחה של עורך הדין ועמלת התיווך הן הערכות מקובלות, וחשוב לבדוק הצעות מחיר בפועל.</p>
+    <p>כדי לבדוק מה ההכנסה מאפשרת, המשיכו ל<a href="/calculators/how-much-mortgage/">מחשבון כמה משכנתא אפשר לקבל</a>.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { upfrontView, type UpfrontOpts, type UpfrontState } from '../../ui/calcs';
+  const root = document.querySelector<HTMLElement>('[data-calc="upfront-costs"]');
+  if (root) {
+    const { initial, opts } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: UpfrontState; opts: UpfrontOpts };
+    initCalc(root, initial, (s) => upfrontView(s, opts));
+  }
+</script>

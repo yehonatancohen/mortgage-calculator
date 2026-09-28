@@ -6,6 +6,7 @@
 import Base from './Base.astro';
 import Icon from '../components/Icon.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import RelatedCalcs from '../components/RelatedCalcs.astro';
 import { faqLd, webApplicationLd, type Crumb } from '../seo/schema';
 import { hebrewDate } from '../ui/dates';
 
@@ -22,8 +23,10 @@ interface Props {
   appName: string;
   /** Optional short proof points under the answer line. */
   points?: string[];
+  /** How the numbers on this page are calculated, in one or two sentences. */
+  method?: string;
 }
-const { title, metaTitle = title, description, answer, updated, faq, sources, next, crumbs, appName, points = [] } = Astro.props;
+const { title, metaTitle = title, description, answer, updated, faq, sources, next, crumbs, appName, points = [], method } = Astro.props;
 const path = Astro.url.pathname;
 const jsonLd = [webApplicationLd({ name: appName, description, path, dateModified: updated }), faqLd(faq)];
 ---
@@ -77,13 +80,17 @@ const jsonLd = [webApplicationLd({ name: appName, description, path, dateModifie
       </section>
 
       <section aria-labelledby="sources-title">
-        <h2 id="sources-title">מקורות</h2>
-        <p class="meta-line">עודכן לאחרונה: <time datetime={updated}>{hebrewDate(updated)}</time></p>
+        <h2 id="sources-title">מקורות ומתודולוגיה</h2>
+        <p class="meta-line">נתונים עודכנו לאחרונה: <time datetime={updated}>{hebrewDate(updated)}</time></p>
+        {method && <p><strong>שיטת החישוב:</strong> {method}</p>}
         <ul class="sources">
           {sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a></li>)}
           <li><a href="/methodology/">המתודולוגיה וההנחות שלנו</a></li>
+          <li><a href="/how-we-make-money/">איך האתר ממומן</a></li>
         </ul>
       </section>
+
+      <RelatedCalcs />
 
       <a class="next-link" href={next.href}>
         <span>

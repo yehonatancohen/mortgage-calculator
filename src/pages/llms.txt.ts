@@ -24,7 +24,7 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${SITE.brand}
 
-> ${SITE.tagline} מחשבוני משכנתא בעברית לישראל: מחזור משכנתא, החזר חודשי, כמה משכנתא אפשר לקבל, עמלת פירעון מוקדם, מס רכישה ולוח סילוקין. כל תוצאה היא הערכה עם הנחות מפורטות, ולא ייעוץ פיננסי.
+> ${SITE.tagline} המחשבונים: מחזור משכנתא, פירעון חלקי, הצמדה למדד, כמה משכנתא אפשר לקבל, הון עצמי ועלויות רכישה, החזר חודשי, עמלת פירעון מוקדם, מס רכישה ולוח סילוקין. כל תוצאה היא הערכה עם הנחות מפורטות, ולא ייעוץ פיננסי.
 
 Language: Hebrew (he-IL). Currency: ILS (₪). Rates are nominal annual, compounded monthly.
 
@@ -37,9 +37,11 @@ ${rateLines}
 - Max LTV: first home ${formatPercent(limits.maxLtv.firstHome, 0)}, replacement ${formatPercent(limits.maxLtv.replacementHome, 0)}, additional ${formatPercent(limits.maxLtv.additionalHome, 0)}
 
 Methodology and every assumption: ${abs('/methodology/')}
+How the site is funded (advisor referral fees): ${abs('/how-we-make-money/')}
 
 ${section('Calculators', 'calculator')}
 ${section('Data', 'data')}
+${section('Questions and answers', 'question')}
 ${section('Guides', 'guide')}
 ${section('Refinance by bank', 'bank')}
 ${section('About', 'info')}`;

@@ -23,6 +23,7 @@ In development, the SMS provider is a mock. The code is logged in the terminal a
 | `npm run dev` / `npm run build` / `npm run preview` | Dev server / static build + worker / preview on workerd |
 | `npm test` | Unit tests: maths, formatting, data-file schema, scoring, lead validation, OTP tokens |
 | `npm run check` | Type check (Astro + TypeScript) |
+| `npm run seo-check` | After a build: every page has a query-free canonical, the sitemap is clean, no internal link carries `?b=…&p=…&y=…` |
 | `npm run todo-verify` | Lists every data value still marked `TODO_VERIFY` (`-- --md` prints a table) |
 | `npm run contrast` | WCAG contrast of every colour token pair, both themes |
 | `npm run build:fonts` | Rebuilds the self-hosted Heebo subsets |
@@ -46,7 +47,9 @@ src/server/               Worker code: OTP, SMS providers, lead intake, notifica
 src/pages/api/            POST /api/otp/send/, /api/otp/verify/, /api/lead/, /api/alert/
 src/pages/lead/[token]    Advisor's private status link (contacted / meeting / closed / not relevant)
 src/pages/admin/          Operator review of Tier B leads, outcomes per tier, CSV export (Basic auth)
-src/content/guides/       Guide outlines (draft, noindex until written)
+src/config/calculators.ts The calculator hub registry (groups, related links): add a new calculator here
+src/config/questions.ts   Question pages (/questions/…), every figure computed from lib + data
+src/content/guides/       Guides (draft: true stays noindex until written)
 src/seo/                  JSON-LD builders and the page registry (sitemap, llms.txt, OG images)
 migrations/               D1 schema
 ```
@@ -139,3 +142,8 @@ When you refresh a value, update `value`, `source`, `lastUpdated` and `note`. If
 - **Prepayment fee:** estimated for fixed tracks only. The contract rate is capped by the loan's own solved rate.
 - **CPI:** linkage is not modelled, and the site says so.
 - Full details are on `/methodology/`, which renders live from the data files.
+
+## SEO notes
+
+- **Calculator URL variants.** `/?b=…&p=…&y=…` and similar only exist in the browser (`history.replaceState`), are never linked or in the sitemap, and every page's canonical is built from the pathname, so all variants point at the clean URL. We deliberately add no `noindex` (canonical plus noindex sends mixed signals) and no robots.txt block (crawlers must be able to read the canonical). `npm run seo-check` enforces this after each build.
+- **Financial pages** show data source, update date and method: `SourceBox` on prose pages, the sources block and `method` prop on `CalculatorPage`.

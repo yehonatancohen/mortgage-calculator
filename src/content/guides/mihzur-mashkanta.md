@@ -6,6 +6,11 @@ published: '2026-09-22'
 updated: '2026-09-28'
 draft: false
 order: 1
+sources:
+  - label: 'צו הבנקאות (פירעון מוקדם של הלוואה לדיור), התשס"ב-2002'
+    url: 'https://www.boi.org.il/media/qy5cow0l/116.pdf'
+  - label: 'בנק ישראל: דוח חודשי על הלוואות לדיור'
+    url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/'
 related:
   - href: '/'
     title: 'מחשבון מחזור משכנתא'

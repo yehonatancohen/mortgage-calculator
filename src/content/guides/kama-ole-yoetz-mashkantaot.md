@@ -6,6 +6,9 @@ published: '2026-09-22'
 updated: '2026-09-26'
 draft: false
 order: 4
+sources:
+  - label: 'אין מחירון רשמי לייעוץ משכנתאות: המדריך מתאר מבני תמחור מקובלים בשוק'
+    url: ''
 related:
   - href: '/'
     title: 'בדיקה חינם מול יועץ'

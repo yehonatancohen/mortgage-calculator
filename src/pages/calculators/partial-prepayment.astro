@@ -1,0 +1,90 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import { benchmarkRate, datasets } from '../../../lib/data';
+import { formatILS, formatPercent } from '../../../lib/mortgage';
+import { prepayView, type PrepayState } from '../../ui/calcs';
+
+const rate = Math.round(benchmarkRate() * 100 * 20) / 20;
+const initial: PrepayState = { balance: 800_000, rate, years: 20, lump: 100_000 };
+const v = prepayView(initial);
+const updated = datasets.prepaymentFee.operationalFee.lastUpdated;
+const examples = [50_000, 100_000, 200_000].map((lump) => ({ lump, v: prepayView({ ...initial, lump }) }));
+
+const faq = [
+  { q: 'מה עדיף, לקצר את התקופה או להקטין את ההחזר?', a: 'קיצור התקופה חוסך יותר ריבית, כי משלמים ריבית על פחות חודשים. הקטנת ההחזר משחררת תזרים חודשי ומשאירה גמישות. אם ההחזר הנוכחי נוח, קיצור התקופה בדרך כלל משתלם יותר.' },
+  { q: 'האם יש עמלה על פירעון חלקי?', a: 'כן, בדרך כלל. במסלולי פריים ובמסלולים משתנים העמלה נמוכה. במסלול קבוע היא יכולה להיות גבוהה, ולכן כדאי לחשב אותה לפני החלטה במחשבון עמלת הפירעון המוקדם.' },
+  { q: 'איך מבצעים פירעון חלקי?', a: 'פונים לבנק ומבקשים לפרוע חלק מהיתרה, ובוחרים אם לקצר את התקופה או להקטין את ההחזר. הבנק מעדכן את לוח הסילוקין.' },
+  { q: 'האם כדאי לפרוע במקום להשקיע?', a: 'כשהריבית במשכנתא גבוהה מהתשואה הצפויה מהכסף, פירעון הוא "תשואה" בטוחה בגובה הריבית. יש להשאיר קודם כרית נזילות. המחשבון לא נותן ייעוץ השקעות.' },
+];
+---
+<CalculatorPage
+  title="מחשבון פירעון חלקי: לקצר את התקופה או להקטין את ההחזר?"
+  metaTitle="מחשבון פירעון חלקי של משכנתא: קיצור תקופה מול הקטנת החזר"
+  description="יש כסף פנוי? חשבו כמה ריבית תחסכו בפירעון חלקי של המשכנתא, ומה עדיף: לקצר את התקופה או להקטין את ההחזר החודשי."
+  answer={`פירעון של ${formatILS(initial.lump)} ממשכנתא של ${formatILS(initial.balance)} מקצר את התקופה ב־${v.out.shortenTime} וחוסך כ־${v.out.shortenInterest} בריבית, או מוריד את ההחזר ב־${v.out.lowerSaving} בחודש.`}
+  appName="מחשבון פירעון חלקי"
+  updated={updated}
+  method="שני תרחישים על אותה יתרה, ריבית ותקופה: בקיצור התקופה ההחזר נשאר ומחושב מספר החודשים שנותרו, ובהקטנת ההחזר התקופה נשארת ומחושב החזר חדש בשיטת שפיצר. החיסכון הוא הפרש סך הריבית מול המשכנתא ללא פירעון."
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'פירעון חלקי', path: '/calculators/partial-prepayment/' }]}
+  sources={[
+    { label: 'צו הבנקאות (פירעון מוקדם של הלוואה לדיור), התשס"ב-2002', url: 'https://www.boi.org.il/media/qy5cow0l/116.pdf' },
+    { label: 'בנק ישראל: דוח חודשי על הלוואות לדיור', url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/' },
+  ]}
+  next={{ href: '/calculators/prepayment-fee/', title: 'כמה תעלה העמלה?', text: 'חשבו את עמלת הפירעון המוקדם לפני שמחליטים.' }}
+>
+  <div class="card calc-card" data-calc="partial-prepayment">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="balance" label="יתרת המשכנתא" value={initial.balance} min={100_000} max={5_000_000} step={10_000} textMax={30_000_000} shorthand="balance" scale={['₪100K', '₪5M']} />
+      <AmountField name="rate" label="ריבית שנתית" value={initial.rate} min={1} max={10} step={0.05} textMin={0.1} textMax={20} unit="none" suffix="%" decimals={2} scale={['1%', '10%']} />
+      <AmountField name="years" label="שנים שנותרו" value={initial.years} min={2} max={30} step={1} sliderOnly suffix="שנים" scale={['2', '30']} />
+      <AmountField name="lump" label="סכום הפירעון" value={initial.lump} min={10_000} max={2_000_000} step={10_000} textMin={1_000} textMax={30_000_000} shorthand="balance" scale={['₪10K', '₪2M']} />
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">חיסכון בריבית אם מקצרים את התקופה</p>
+        <p class="result__figure result__figure--neutral" data-out="shortenInterest" data-count style={`--chars: ${v.out.shortenInterest!.length}`}>{v.out.shortenInterest}</p>
+      </div>
+      <dl class="kv" data-summary>
+        <div><dt>התקופה מתקצרת ב־</dt><dd data-out="shortenTime">{v.out.shortenTime}</dd></div>
+        <div><dt>תקופה שנותרה אחרי</dt><dd data-out="shortenMonths">{v.out.shortenMonths}</dd></div>
+        <div><dt>החזר חודשי היום</dt><dd data-out="current">{v.out.current}</dd></div>
+        <div><dt>אם מקטינים החזר: החזר חדש</dt><dd data-out="lowerPayment">{v.out.lowerPayment}</dd></div>
+        <div><dt>אם מקטינים החזר: חוסכים בחודש</dt><dd data-out="lowerSaving">{v.out.lowerSaving}</dd></div>
+        <div><dt>אם מקטינים החזר: חיסכון בריבית</dt><dd data-out="lowerInterest">{v.out.lowerInterest}</dd></div>
+      </dl>
+      <p class="disclaimer"><span data-out="note">{v.out.note}</span> <a href="/methodology/">איך חישבנו</a></p>
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <p>יתרה של {formatILS(initial.balance)}, ריבית {formatPercent(rate / 100)}, 20 שנה שנותרו, לפי סכום הפירעון:</p>
+    <div class="table-wrap">
+      <table class="data-table data-table--stack">
+        <thead><tr><th scope="col">סכום פירעון</th><th scope="col" class="num">קיצור: חיסכון בריבית</th><th scope="col" class="num">קיצור: זמן שנחסך</th><th scope="col" class="num">הקטנה: חיסכון בחודש</th></tr></thead>
+        <tbody>
+          {examples.map((e) => <tr><th scope="row" class="num">{formatILS(e.lump)}</th><td class="num" data-label="קיצור: חיסכון בריבית"><bdi>{e.v.out.shortenInterest}</bdi></td><td class="num" data-label="קיצור: זמן שנחסך"><bdi>{e.v.out.shortenTime}</bdi></td><td class="num" data-label="הקטנה: חיסכון בחודש"><bdi>{e.v.out.lowerSaving}</bdi></td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p><strong>פירעון חלקי</strong> הוא החזרה של חלק מהיתרה לפני הזמן. אפשר לבחור בין שתי דרכים: להמשיך באותו החזר ולסיים מוקדם, או להישאר באותה תקופה ולשלם פחות בכל חודש.</p>
+    <p>קיצור התקופה חוסך יותר ריבית, כי הכסף שנפרע מפסיק לצבור ריבית מיד ולא נשארים בחוב חודשים רבים. הקטנת ההחזר משפרת את התזרים החודשי.</p>
+    <p>המחשבון לא כולל את עמלת הפירעון המוקדם. במסלול קבוע כדאי לבדוק אותה ב<a href="/calculators/prepayment-fee/">מחשבון העמלה</a> לפני שמחליטים.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { prepayView, type PrepayState } from '../../ui/calcs';
+  const root = document.querySelector<HTMLElement>('[data-calc="partial-prepayment"]');
+  if (root) {
+    const { initial } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: PrepayState };
+    initCalc(root, initial, prepayView);
+  }
+</script>

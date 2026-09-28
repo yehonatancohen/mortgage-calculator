@@ -10,8 +10,11 @@ import {
   formatILS,
   formatNumber,
   formatPercent,
+  indexedSpitzer,
+  partialPrepayment,
   payment,
   purchaseTax,
+  upfrontCosts,
   spitzerSchedule,
   yearly,
   type PrepaymentFeeParams,
@@ -174,5 +177,115 @@ export function amortView(s: MonthlyState): CalcView {
       ]),
     },
     counts: { diff: Math.round(sp.totalInterest - ks.totalInterest) },
+  };
+}
+
+/** "3 שנים ו־4 חודשים", "8 חודשים", "5 שנים". */
+export function formatDuration(months: number): string {
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  const yy = y === 1 ? 'שנה' : y === 2 ? 'שנתיים' : `${y} שנים`;
+  const mm = m === 1 ? 'חודש' : `${m} חודשים`;
+  if (y === 0) return m === 0 ? '0 חודשים' : mm;
+  return m === 0 ? yy : `${yy} ו־${mm}`;
+}
+
+/* ---------- Partial prepayment ---------- */
+export interface PrepayState {
+  balance: number;
+  rate: number; // percent
+  years: number;
+  lump: number;
+}
+export function prepayView(s: PrepayState): CalcView {
+  const months = Math.round(s.years) * 12;
+  const r = partialPrepayment({ balance: s.balance, annualRate: pctIn(s.rate), monthsRemaining: months, lumpSum: s.lump });
+  const capped = s.lump > s.balance;
+  return {
+    out: {
+      shortenTime: formatDuration(r.shorten.monthsSaved),
+      shortenMonths: formatDuration(r.shorten.months),
+      shortenInterest: formatILS(Math.round(r.shorten.interestSaved)),
+      lowerPayment: formatILS(Math.round(r.lower.payment)),
+      lowerSaving: formatILS(Math.round(r.lower.monthlySaving)),
+      lowerInterest: formatILS(Math.round(r.lower.interestSaved)),
+      current: formatILS(Math.round(r.currentPayment)),
+      note: capped ? 'הסכום שהוזן גבוה מהיתרה, ולכן החישוב מניח פירעון מלא.' : 'לפני עמלת פירעון מוקדם, שתלויה במסלולים שלכם.',
+    },
+    counts: { shortenInterest: Math.round(r.shorten.interestSaved) },
+  };
+}
+
+/* ---------- CPI linkage ---------- */
+export interface CpiState {
+  loan: number;
+  rate: number; // real rate, percent
+  years: number;
+  inflation: number; // percent
+}
+export const CPI_SCENARIOS = [0, 2, 4, 6] as const;
+export function cpiView(s: CpiState): CalcView {
+  const n = Math.round(s.years) * 12;
+  const r = pctIn(s.rate);
+  const x = indexedSpitzer(s.loan, r, n, pctIn(s.inflation));
+  const extra = x.totalPaid - x.unindexedTotal;
+  return {
+    out: {
+      first: formatILS(Math.round(x.firstPayment)),
+      last: formatILS(Math.round(x.lastPayment)),
+      flat: formatILS(Math.round(x.unindexedPayment)),
+      total: formatILS(Math.round(x.totalPaid)),
+      extra: formatILS(Math.round(extra)),
+      growth: formatPercent(x.lastPayment / x.firstPayment - 1, 0),
+    },
+    rows: {
+      scenarios: CPI_SCENARIOS.map((g) => {
+        const y = indexedSpitzer(s.loan, r, n, pctIn(g));
+        return [`${g}% בשנה`, formatILS(Math.round(y.firstPayment)), formatILS(Math.round(y.lastPayment)), formatILS(Math.round(y.totalPaid)), formatILS(Math.round(y.totalPaid - y.unindexedTotal))];
+      }),
+    },
+    counts: { extra: Math.round(extra) },
+  };
+}
+
+/* ---------- Up-front costs of buying ---------- */
+export interface UpfrontState {
+  price: number;
+  type: 'firstHome' | 'replacementHome' | 'additionalHome';
+  broker: 'yes' | 'no';
+}
+export interface UpfrontOpts {
+  ltv: Record<UpfrontState['type'], number>;
+  tax: Record<'singleHome' | 'additionalHome', TaxBracket[]>;
+  lawyerRate: number;
+  brokerRate: number;
+  vatRate: number;
+  mortgageFees: number;
+}
+export function upfrontView(s: UpfrontState, o: UpfrontOpts): CalcView {
+  const tax = purchaseTax(s.price, o.tax[s.type === 'additionalHome' ? 'additionalHome' : 'singleHome']).total;
+  const r = upfrontCosts({
+    price: s.price,
+    maxLtv: o.ltv[s.type],
+    purchaseTax: tax,
+    lawyerRate: o.lawyerRate,
+    brokerRate: s.broker === 'yes' ? o.brokerRate : 0,
+    vatRate: o.vatRate,
+    mortgageFees: o.mortgageFees,
+  });
+  const up = (n: number) => formatILS(Math.ceil(n / 1000) * 1000);
+  return {
+    out: {
+      cash: up(r.cashNeeded),
+      equity: up(r.minEquityForPrice),
+      costs: up(r.costsTotal),
+      loan: formatILS(Math.floor(r.maxLoan / 1000) * 1000),
+      tax: formatILS(Math.round(r.purchaseTax)),
+      lawyer: formatILS(Math.round(r.lawyer)),
+      broker: formatILS(Math.round(r.broker)),
+      fees: formatILS(Math.round(r.mortgageFees)),
+      share: formatPercent(r.cashShareOfPrice, 1),
+    },
+    counts: { cash: Math.ceil(r.cashNeeded / 1000) * 1000 },
   };
 }

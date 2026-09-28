@@ -1,0 +1,22 @@
+---
+/**
+ * "Where this comes from": data source, last update and calculation method, shown on every
+ * financial page so a reader (or an answer engine) can check the numbers.
+ */
+import { hebrewDate } from '../ui/dates';
+interface Props {
+  sources: { label: string; url: string }[];
+  updated?: string;
+  /** One sentence on how the figures on the page were calculated. */
+  method?: string;
+}
+const { sources, updated, method = 'כל המספרים בעמוד מחושבים אוטומטית מהנתונים המצוינים כאן, בריבית נומינלית שנתית עם חישוב חודשי.' } = Astro.props;
+---
+<aside class="source-box" aria-labelledby="source-box-title">
+  <h2 id="source-box-title">מקורות, עדכון ומתודולוגיה</h2>
+  {updated && <p class="meta-line">נתונים עודכנו לאחרונה: <time datetime={updated}>{hebrewDate(updated)}</time></p>}
+  <ul class="sources">
+    {sources.map((s) => <li>{s.url ? <a href={s.url} rel="noopener">{s.label}</a> : s.label}</li>)}
+  </ul>
+  <p>{method} <a href="/methodology/">המתודולוגיה המלאה וההנחות</a>. <a href="/how-we-make-money/">איך האתר ממומן</a>.</p>
+</aside>

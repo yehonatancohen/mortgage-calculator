@@ -1,0 +1,41 @@
+---
+import ProsePage from '../../layouts/ProsePage.astro';
+import Blocks from '../../components/Blocks.astro';
+import Icon from '../../components/Icon.astro';
+import { buildQuestions, QUESTION_TITLES } from '../../config/questions';
+import { articleLd, faqLd } from '../../seo/schema';
+
+export function getStaticPaths() {
+  return buildQuestions().map((q) => ({ params: { slug: q.slug }, props: { q } }));
+}
+const { q } = Astro.props;
+const path = `/questions/${q.slug}/`;
+const faq = [{ q: q.question, a: q.short }, ...q.followUps];
+---
+<ProsePage
+  title={q.question}
+  metaTitle={q.metaTitle}
+  description={q.description}
+  answer={q.short}
+  updated={q.updated}
+  ogType="article"
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'שאלות ותשובות', path: '/questions/' }, { name: q.question, path }]}
+  jsonLd={[articleLd({ headline: q.question, description: q.description, path, datePublished: q.updated, dateModified: q.updated }), faqLd(faq)]}
+  sources={q.sources}
+  related={[q.tool, ...q.related.map((s) => ({ href: `/questions/${s}/`, title: QUESTION_TITLES[s]!, text: 'שאלה קשורה' }))]}
+>
+  <h2>הנתונים</h2>
+  <Blocks blocks={q.data} />
+
+  <h2>דוגמה מחושבת</h2>
+  <Blocks blocks={q.example} />
+
+  <h2>מה החישוב לא כולל</h2>
+  <ul>{q.limits.map((l) => <li>{l}</li>)}</ul>
+
+  <h2>שאלות המשך</h2>
+  <div class="faq">
+    {q.followUps.map((f) => <details><summary>{f.q}<Icon name="chevron-down" /></summary><div><p>{f.a}</p></div></details>)}
+  </div>
+  <p class="meta-line">התשובה מחושבת אוטומטית מקבצי הנתונים של האתר, ולכן היא מתעדכנת כשהנתונים מתעדכנים.</p>
+</ProsePage>

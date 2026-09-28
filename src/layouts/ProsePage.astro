@@ -3,6 +3,7 @@
 import Base from './Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Icon from '../components/Icon.astro';
+import SourceBox from '../components/SourceBox.astro';
 import type { Crumb } from '../seo/schema';
 import { hebrewDate } from '../ui/dates';
 
@@ -18,8 +19,11 @@ interface Props {
   ogType?: 'website' | 'article';
   draft?: boolean;
   related?: { href: string; title: string; text: string }[];
+  /** Financial pages: data sources, shown with the update date and a methodology link. */
+  sources?: { label: string; url: string }[];
+  method?: string;
 }
-const { title, metaTitle = title, description, answer, crumbs, updated, jsonLd, noindex, ogType, draft, related = [] } = Astro.props;
+const { title, metaTitle = title, description, answer, crumbs, updated, jsonLd, noindex, ogType, draft, related = [], sources, method } = Astro.props;
 ---
 <Base title={metaTitle} description={description} breadcrumbs={crumbs} jsonLd={jsonLd} noindex={noindex} ogType={ogType}>
   <main id="main" class="page">
@@ -34,6 +38,7 @@ const { title, metaTitle = title, description, answer, crumbs, updated, jsonLd, 
       <div class="prose">
         <slot />
       </div>
+      {sources && sources.length > 0 && <SourceBox sources={sources} updated={updated} method={method} />}
       {related.length > 0 && (
         <aside class="article__related" aria-label="המשך">
           {related.map((r) => (

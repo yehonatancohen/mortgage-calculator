@@ -1,22 +1,20 @@
 ---
 import { SITE } from '../config/site';
+import { CALCULATORS } from '../config/calculators';
 const year = 2026;
 const groups = [
   {
     title: 'מחשבונים',
     links: [
-      ['/', 'מחזור משכנתא'],
-      ['/calculators/monthly-payment/', 'החזר חודשי'],
-      ['/calculators/prepayment-fee/', 'עמלת פירעון מוקדם'],
-      ['/calculators/how-much-mortgage/', 'כמה משכנתא אפשר לקבל'],
-      ['/calculators/purchase-tax/', 'מס רכישה'],
-      ['/calculators/amortization/', 'לוח סילוקין'],
+      ...CALCULATORS.map((c) => [c.path, c.short]),
+      ['/calculators/', 'כל המחשבונים'],
     ],
   },
   {
     title: 'מידע',
     links: [
       ['/ribit-mashkanta-hayom/', 'ריבית משכנתא היום'],
+      ['/questions/', 'שאלות ותשובות'],
       ['/guides/', 'מדריכים'],
       ['/banks/', 'מחזור לפי בנק'],
       ['/methodology/', 'איך אנחנו מחשבים'],
@@ -26,6 +24,7 @@ const groups = [
     title: 'עלינו',
     links: [
       ['/about/', 'אודות'],
+      ['/how-we-make-money/', 'איך אנחנו מרוויחים'],
       ['/privacy/', 'מדיניות פרטיות'],
       ['/terms/', 'תנאי שימוש'],
       ['/accessibility/', 'הצהרת נגישות'],

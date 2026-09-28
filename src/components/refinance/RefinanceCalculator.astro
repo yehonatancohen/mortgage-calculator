@@ -109,7 +109,7 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
     </details>
 
     <div class="meter" data-meter>
-      <div class="meter__head"><span id="refi-acc-label">דיוק החישוב</span><span data-out="accuracy">{v.answeredText}</span></div>
+      <div class="meter__head"><span id="refi-acc-label" data-out="accuracy">{v.answeredText}</span></div>
       <div class="meter__track" role="meter" aria-labelledby="refi-acc-label" aria-valuemin="0" aria-valuemax="3" aria-valuenow={v.answered} aria-valuetext={v.answeredText}><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${(v.answered / 3) * 100}%`}></div></div>
     </div>
   </section>
@@ -125,7 +125,7 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
         <span class="q-result__label" data-out="q-label">{v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'}</span>
         <bdi class="q-result__figure num" data-out="q-figure">{v.kind === 'none' || v.kind === 'invalid' ? '—' : v.figure}</bdi>
         <div class="meter meter--compact">
-          <div class="meter__head"><span>דיוק החישוב</span><span data-out="accuracy">{v.answeredText}</span></div>
+          <div class="meter__head"><span data-out="accuracy">{v.answeredText}</span></div>
           <div class="meter__track" aria-hidden="true"><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${(v.answered / 3) * 100}%`}></div></div>
         </div>
       </div>

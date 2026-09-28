@@ -1,0 +1,23 @@
+---
+import ProsePage from '../../layouts/ProsePage.astro';
+import { buildQuestions } from '../../config/questions';
+
+const questions = buildQuestions();
+---
+<ProsePage
+  title="שאלות ותשובות על משכנתאות"
+  description="תשובות ישירות לשאלות נפוצות על משכנתא: כמה עולה מחזור, כמה הון עצמי צריך, כמה מס רכישה ועוד. כל תשובה עם מספרים מחושבים, מקור ומחשבון."
+  answer="כל עמוד עונה על שאלה אחת: תשובה קצרה, נתונים, דוגמה מחושבת, מקור ומחשבון שמאפשר להריץ את המספרים שלכם."
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'שאלות ותשובות', path: '/questions/' }]}
+>
+  <ul class="link-list">
+    {questions.map((q) => (
+      <li>
+        <a href={`/questions/${q.slug}/`}>
+          <span class="link-list__title">{q.question}</span>
+          <span class="link-list__text">{q.short}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</ProsePage>

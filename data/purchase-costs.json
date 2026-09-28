@@ -1,0 +1,30 @@
+{
+  "$comment": "Typical one-off costs of buying a home, used by the up-front costs calculator. Market practice, not regulation: every figure is a starting estimate the user can change, and each is flagged for verification against current quotes.",
+  "lawyerFeeRate": {
+    "label": "שכר טרחת עורך דין (לפני מע\"מ)",
+    "value": 0.005,
+    "unit": "fraction",
+    "source": "https://www.gov.il/he/departments/israel_tax_authority",
+    "lastUpdated": "2026-09-28",
+    "note": "Typical 0.5%–1% of the price plus VAT for a purchase from a private seller; the fee is negotiable and there is no statutory rate. We use the low end as a floor.",
+    "TODO_VERIFY": true
+  },
+  "brokerFeeRate": {
+    "label": "עמלת תיווך (לפני מע\"מ)",
+    "value": 0.02,
+    "unit": "fraction",
+    "source": "https://www.gov.il/he/departments/israel_tax_authority",
+    "lastUpdated": "2026-09-28",
+    "note": "Customary 2% of the price plus VAT when a broker is used; negotiable, and zero when buying directly from a developer or a private seller without a broker.",
+    "TODO_VERIFY": true
+  },
+  "vatRate": {
+    "label": "מע\"מ",
+    "value": 0.18,
+    "unit": "fraction",
+    "source": "https://www.gov.il/he/departments/israel_tax_authority",
+    "lastUpdated": "2026-09-28",
+    "note": "Standard VAT rate in Israel since 1 January 2025, applied to lawyer and broker fees.",
+    "TODO_VERIFY": true
+  }
+}

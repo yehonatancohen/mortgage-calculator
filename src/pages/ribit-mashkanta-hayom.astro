@@ -2,10 +2,10 @@
 /** Monthly rates page, generated from data/rates.json. */
 import ProsePage from '../layouts/ProsePage.astro';
 import Icon from '../components/Icon.astro';
-import { benchmarkRate, datasets } from '../../lib/data';
-import { formatPercent, payment, formatILS } from '../../lib/mortgage';
+import { benchmarkRate, datasets, ratesHistory } from '../../lib/data';
+import { formatPercent, formatNumber, payment, formatILS } from '../../lib/mortgage';
 import { datasetLd, faqLd } from '../seo/schema';
-import { hebrewDate, hebrewMonth } from '../ui/dates';
+import { hebrewMonth } from '../ui/dates';
 
 const r = datasets.rates;
 const period = hebrewMonth(String(r.period.value));
@@ -13,9 +13,44 @@ const tracks = Object.entries(r.tracks) as [string, { label: string; value: numb
 const updated = tracks.reduce((m, [, t]) => (t.lastUpdated > m ? t.lastUpdated : m), '0000-00-00');
 const bench = benchmarkRate();
 const path = '/ribit-mashkanta-hayom/';
+
+/* History: BOI monthly series for the two tracks that have a stable public series code. */
+const fu = ratesHistory.series.fixedUnlinked.points;
+const fl = ratesHistory.series.fixedLinked.points;
+const last = fu.length - 1;
+const at = (pts: { period: string; value: number }[], back: number) => pts[pts.length - 1 - back]!;
+const pp = (n: number) => `${n > 0 ? '+' : n < 0 ? '−' : ''}${formatNumber(Math.abs(Math.round(n * 100) / 100), 2)}`;
+const changeRows = [ratesHistory.series.fixedUnlinked, ratesHistory.series.fixedLinked].map((sr) => {
+  const now = at(sr.points, 0);
+  const prev = at(sr.points, 1);
+  const yearAgo = at(sr.points, 12);
+  const window = sr.points.slice(-12);
+  return { label: sr.label, now: now.value, prev, yearAgo, dPrev: now.value - prev.value, dYear: now.value - yearAgo.value, lo: Math.min(...window.map((x) => x.value)), hi: Math.max(...window.map((x) => x.value)) };
+});
+const [fixedRow] = changeRows;
+const years = [...new Set(fu.map((x) => x.period.slice(0, 4)))];
+const yearAvg = (pts: { period: string; value: number }[], y: string) => {
+  const v = pts.filter((x) => x.period.startsWith(y));
+  return { avg: v.reduce((a, b) => a + b.value, 0) / v.length, n: v.length };
+};
+const yearRows = years.map((y) => ({ y, u: yearAvg(fu, y), l: yearAvg(fl, y) }));
+
+/* Chart geometry (LTR: time runs left to right). */
+const W = 640, H = 240, PL = 36, PR = 8, PT = 10, PB = 24;
+const all = [...fu, ...fl].map((x) => x.value);
+const yMin = Math.floor(Math.min(...all)), yMax = Math.ceil(Math.max(...all));
+const x = (i: number) => PL + (i / last) * (W - PL - PR);
+const y = (v: number) => PT + (1 - (v - yMin) / (yMax - yMin)) * (H - PT - PB);
+const line = (pts: { value: number }[]) => pts.map((pt, i) => `${x(i).toFixed(1)},${y(pt.value).toFixed(1)}`).join(' ');
+const gridYs = Array.from({ length: yMax - yMin + 1 }, (_, i) => yMin + i);
+const yearTicks = fu.map((pt, i) => ({ i, pt })).filter(({ pt }) => pt.period.endsWith('-01'));
+const first = fu[0]!;
+const mix = datasets.assumptions.benchmarkMix.value as Record<string, number>;
 const faq = [
   { q: 'מה ריבית המשכנתא הממוצעת היום?', a: `לפי נתוני ${period}, הריבית הממוצעת לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. הריבית שתקבלו תלויה בפרופיל שלכם, בתמהיל ובבנק.` },
   { q: 'מאיפה הנתונים?', a: 'מהפרסום החודשי של בנק ישראל על ריביות ממוצעות בהלוואות חדשות לדיור. אנחנו מעדכנים את הטבלה כשמתפרסם חודש חדש.' },
+  { q: 'האם הריבית עולה או יורדת?', a: `הריבית הממוצעת בקבועה לא צמודה ${fixedRow!.dPrev === 0 ? 'לא השתנתה' : fixedRow!.dPrev < 0 ? 'ירדה' : 'עלתה'} ב־${formatNumber(Math.abs(Math.round(fixedRow!.dPrev * 100) / 100), 2)} נקודות אחוז בין ${hebrewMonth(fixedRow!.prev.period)} ל${period}, ו${fixedRow!.dYear === 0 ? 'לא השתנתה' : fixedRow!.dYear < 0 ? 'ירדה' : 'עלתה'} ב־${formatNumber(Math.abs(Math.round(fixedRow!.dYear * 100) / 100), 2)} נקודות לעומת ${hebrewMonth(fixedRow!.yearAgo.period)}.` },
+  { q: 'איך מחושב "תמהיל טיפוסי לא צמוד"?', a: `כממוצע משוקלל של שלושה מסלולים לא צמודים: פריים (${formatPercent(mix.prime!, 0)}), קבועה לא צמודה (${formatPercent(mix.fixedUnlinked!, 0)}) ומשתנה כל 5 שנים לא צמודה (${formatPercent(mix.variableUnlinked5y!, 0)}). זו נקודת הייחוס של מחשבון המחזור, והיא ההנחה שלנו ולא נתון רשמי של בנק ישראל.` },
   { q: 'למה הריבית שהציעו לי שונה?', a: 'הממוצע משקף את כל ההלוואות החדשות. הריבית האישית תלויה בשיעור המימון, ביחס ההחזר להכנסה, בתקופה ובתמהיל.' },
 ];
 const jsonLd = [
@@ -24,7 +59,7 @@ const jsonLd = [
     description: 'ריביות ממוצעות בהלוואות חדשות לדיור בישראל, לפי מסלול, מתוך נתוני בנק ישראל.',
     path,
     dateModified: updated,
-    temporalCoverage: String(r.period.value),
+    temporalCoverage: `${first.period}/${r.period.value}`,
     sourceUrl: r.tracks.prime.source,
     variables: tracks.map(([, t]) => t.label),
   }),
@@ -35,11 +70,17 @@ const jsonLd = [
   title="ריבית משכנתא היום"
   metaTitle={`ריבית משכנתא היום: ממוצעים לפי מסלול (${period})`}
   description={`ריבית משכנתא ממוצעת לפי מסלול: פריים, קבועה צמודה ולא צמודה, משתנה. נתוני בנק ישראל ל${period}.`}
-  answer={`לפי נתוני ${period}, ריבית ממוצעת לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. הטבלה מפרטת את הממוצע לכל מסלול.`}
+  answer={`לפי נתוני ${period}, ריבית ממוצעת לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. הריבית הממוצעת בקבועה לא צמודה, ${formatPercent(fixedRow!.now / 100)}, ${fixedRow!.dPrev === 0 ? 'ללא שינוי' : fixedRow!.dPrev < 0 ? 'נמוכה' : 'גבוהה'}${fixedRow!.dPrev === 0 ? '' : ` ב־${formatNumber(Math.abs(Math.round(fixedRow!.dPrev * 100) / 100), 2)} נקודות מחודש קודם`} ו${fixedRow!.dYear < 0 ? 'נמוכה' : 'גבוהה'} ב־${formatNumber(Math.abs(Math.round(fixedRow!.dYear * 100) / 100), 2)} נקודות משנה קודמת.`}
+  sources={[
+    { label: 'בנק ישראל: דוח חודשי על הלוואות לדיור', url: r.tracks.prime.source },
+    { label: 'בנק ישראל: ריביות משכנתא (נתונים היסטוריים)', url: 'https://www.boi.org.il/information/interestrates/mortgage/' },
+    { label: 'בנק ישראל: ממשק הנתונים הסטטיסטיים (SDMX), סדרות BIR_MRTG_99', url: 'https://edge.boi.org.il/' },
+  ]}
+  method="הטבלה הראשונה היא ממוצע ההלוואות החדשות של החודש האחרון שפורסם, לפי מסלול. ההיסטוריה והשינויים מחושבים מסדרות חודשיות של בנק ישראל (קבועה לא צמודה וקבועה צמודה). השינוי הוא הפרש בנקודות אחוז, לא באחוזים. ההחזר ל־₪1M הוא שפיצר ל־25 שנה."
+  related={[{ href: '/', title: 'הריבית שלך גבוהה מהממוצע?', text: 'בדקו כמה תחסכו במחזור.' }, { href: '/calculators/monthly-payment/', title: 'כמה זה יוצא בחודש?', text: 'חשבו החזר חודשי לפי הריבית.' }, { href: '/questions/ribit-mashkanta-memutza/', title: 'מה ריבית המשכנתא הממוצעת?', text: 'התשובה הקצרה, עם דוגמה.' }]}
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'ריבית היום', path }]}
   updated={updated}
   jsonLd={jsonLd}
-  related={[{ href: '/', title: 'הריבית שלך גבוהה מהממוצע?', text: 'בדקו כמה תחסכו במחזור.' }]}
 >
   <div class="table-wrap">
     <table class="data-table data-table--stack">
@@ -56,7 +97,78 @@ const jsonLd = [
 
   <h2>איך לקרוא את הטבלה</h2>
   <p>כל שורה היא ממוצע של ההלוואות החדשות שניתנו באותו חודש במסלול הזה. התמהיל הטיפוסי משקלל פריים, קבועה לא צמודה ומשתנה לא צמודה, והוא הבסיס להשוואה במחשבון המחזור.</p>
-  <p>מקור: <a href={r.tracks.prime.source} rel="noopener">בנק ישראל</a>. עודכן ב־{hebrewDate(updated)}.</p>
+
+  <h2>מה השתנה: קבועה לא צמודה וקבועה צמודה</h2>
+  <p>לשני המסלולים האלה יש סדרה חודשית ציבורית של בנק ישראל, ולכן אפשר להשוות אותם לחודש הקודם ולשנה שעברה. השינוי מוצג בנקודות אחוז.</p>
+  <div class="table-wrap">
+    <table class="data-table data-table--stack">
+      <caption>שינוי בריבית הממוצעת, {period} מול חודש קודם ומול לפני שנה</caption>
+      <thead><tr><th scope="col">מסלול</th><th scope="col" class="num">{period}</th><th scope="col" class="num">חודש קודם</th><th scope="col" class="num">שינוי</th><th scope="col" class="num">לפני שנה</th><th scope="col" class="num">שינוי</th><th scope="col" class="num">טווח 12 חודשים</th></tr></thead>
+      <tbody>
+        {changeRows.map((c) => (
+          <tr>
+            <th scope="row">{c.label}</th>
+            <td class="num" data-label={period}><bdi>{formatPercent(c.now / 100)}</bdi></td>
+            <td class="num" data-label="חודש קודם"><bdi>{formatPercent(c.prev.value / 100)}</bdi></td>
+            <td class="num delta" data-label="שינוי חודשי"><bdi>{pp(c.dPrev)}</bdi></td>
+            <td class="num" data-label="לפני שנה"><bdi>{formatPercent(c.yearAgo.value / 100)}</bdi></td>
+            <td class="num delta" data-label="שינוי שנתי"><bdi>{pp(c.dYear)}</bdi></td>
+            <td class="num" data-label="טווח 12 חודשים"><bdi>{formatPercent(c.lo / 100)}–{formatPercent(c.hi / 100)}</bdi></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>הריבית לאורך זמן</h2>
+  <p>ריבית ממוצעת חודשית בהלוואות חדשות, {hebrewMonth(first.period)} עד {period}. הקו המלא הוא קבועה לא צמודה והקו המקווקו הוא קבועה צמודה (ריבית ריאלית).</p>
+  <svg class="trend-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="trend-title trend-desc" style="direction:ltr">
+    <title id="trend-title">ריבית משכנתא ממוצעת חודשית, {hebrewMonth(first.period)} עד {period}</title>
+    <desc id="trend-desc">קבועה לא צמודה: מ־{formatPercent(first.value / 100)} ב{hebrewMonth(first.period)} ל־{formatPercent(at(fu, 0).value / 100)} ב{period}. קבועה צמודה: מ־{formatPercent(fl[0]!.value / 100)} ל־{formatPercent(at(fl, 0).value / 100)}. הטבלה שמתחת לתרשים מפרטת כל חודש.</desc>
+    {gridYs.map((g) => (<g><line class="grid" x1={PL} x2={W - PR} y1={y(g)} y2={y(g)} stroke-width="1" /><text x={PL - 6} y={y(g) + 4} text-anchor="end">{g}%</text></g>))}
+    {yearTicks.map(({ i, pt }) => (<text x={x(i)} y={H - 6} text-anchor="middle">{pt.period.slice(0, 4)}</text>))}
+    <polyline class="line-b" points={line(fl)} fill="none" stroke-width="2" stroke-linejoin="round" />
+    <polyline class="line-a" points={line(fu)} fill="none" stroke-width="2.5" stroke-linejoin="round" />
+  </svg>
+  <details class="disclosure">
+    <summary>הנתונים החודשיים בטבלה <Icon name="chevron-down" /></summary>
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption class="visually-hidden">ריבית ממוצעת חודשית לפי מסלול</caption>
+        <thead><tr><th scope="col">חודש</th><th scope="col" class="num">קבועה לא צמודה</th><th scope="col" class="num">קבועה צמודה</th></tr></thead>
+        <tbody>
+          {[...fu].reverse().map((pt, i) => <tr><th scope="row">{hebrewMonth(pt.period)}</th><td class="num"><bdi>{formatPercent(pt.value / 100)}</bdi></td><td class="num"><bdi>{formatPercent(fl[last - i]!.value / 100)}</bdi></td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <h2>ממוצעים שנתיים</h2>
+  <div class="table-wrap">
+    <table class="data-table data-table--stack">
+      <caption>ממוצע החודשים בכל שנה (ל־{yearRows.at(-1)!.y}: {yearRows.at(-1)!.u.n} חודשים עד {period})</caption>
+      <thead><tr><th scope="col">שנה</th><th scope="col" class="num">קבועה לא צמודה</th><th scope="col" class="num">קבועה צמודה</th></tr></thead>
+      <tbody>
+        {yearRows.map((yr) => <tr><th scope="row"><bdi class="num">{yr.y}</bdi></th><td class="num" data-label="קבועה לא צמודה"><bdi>{formatPercent(yr.u.avg / 100)}</bdi></td><td class="num" data-label="קבועה צמודה"><bdi>{formatPercent(yr.l.avg / 100)}</bdi></td></tr>)}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>איך להבין את הריבית</h2>
+  <ul>
+    <li><strong>פריים</strong> היא ריבית בנק ישראל ועוד 1.5 נקודות אחוז, ועליה הבנק מוסיף או מפחית מרווח אישי. היא משתנה בכל שינוי ריבית של בנק ישראל.</li>
+    <li><strong>קבועה</strong> נשארת זהה כל התקופה. היא נותנת ודאות, אבל במחזור היא עלולה לגרור עמלת פירעון מוקדם, ראו <a href="/calculators/prepayment-fee/">מחשבון העמלה</a>.</li>
+    <li><strong>משתנה כל 5 שנים</strong> נקבעת מחדש בכל חמש שנים לפי הריבית העדכנית באותו זמן.</li>
+    <li><strong>צמודה</strong> מוצגת כריבית ריאלית. ההחזר בפועל עולה עם מדד המחירים, ראו <a href="/calculators/cpi-linkage/">מחשבון ההצמדה</a>.</li>
+  </ul>
+  <p>ריבית אישית תלויה בשיעור המימון, ביחס ההחזר להכנסה, בתקופה, בתמהיל ובבנק. הממוצע הוא נקודת התחלה למשא ומתן, לא הצעה.</p>
+
+  <h2>מה עושים עם הנתונים</h2>
+  <ul>
+    <li>כבר יש לכם משכנתא: <a href="/">בדקו אם מחזור משתלם</a>.</li>
+    <li>לפני לקיחת משכנתא: <a href="/calculators/monthly-payment/">חשבו את ההחזר החודשי</a> ו<a href="/calculators/how-much-mortgage/">כמה משכנתא אפשר לקבל</a>.</li>
+    <li>שאלות ותשובות: <a href="/questions/ribit-mashkanta-memutza/">מה הריבית הממוצעת היום</a>.</li>
+  </ul>
 
   <h2>שאלות נפוצות</h2>
   <div class="faq">
