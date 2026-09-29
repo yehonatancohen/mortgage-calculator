@@ -74,7 +74,40 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
     <div class="step__body">
       <AmountField name="balance" label="יתרת המשכנתא" icon="home" value={d.balance} min={REFI.balance.min} max={REFI.balance.max} step={REFI.balance.step} textMax={20_000_000} shorthand="balance" />
       <AmountField name="payment" label="החזר חודשי נוכחי" icon="calendar" value={d.payment} min={REFI.payment.min} max={REFI.payment.max} step={REFI.payment.step} textMin={300} textMax={200_000} shorthand="payment" />
+      <div class="tracks" data-tracks hidden>
+        <div class="tracks__list" data-track-list></div>
+        <p class="tracks__total" data-tracks-total aria-live="polite"></p>
+        <template data-track-tpl>
+          <div class="track" data-track>
+            <div class="track__head">
+              <span class="track__title" data-track-title>מסלול</span>
+              <button type="button" class="track__remove" data-track-remove aria-label="הסרת מסלול"><Icon name="x" /></button>
+            </div>
+            <div class="track__grid">
+              <label class="track__field track__field--type">
+                <span>סוג המסלול</span>
+                <select class="track__select" data-track-type>
+                  <option value="fixed">ריבית קבועה</option>
+                  <option value="prime">פריים</option>
+                  <option value="variable">ריבית משתנה</option>
+                </select>
+              </label>
+              <label class="track__field">
+                <span>סכום</span>
+                <span class="amount"><span class="amount__unit" aria-hidden="true">₪</span><input class="amount__input" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="0" data-track-amount /></span>
+                <input class="slider slider--slim" type="range" min="0" max="3000000" step="10000" value="0" tabindex="-1" aria-label="סכום המסלול (סרגל)" data-track-amount-range />
+              </label>
+              <label class="track__field">
+                <span>ריבית</span>
+                <span class="amount"><input class="amount__input" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" placeholder="4.00" data-track-rate /><span class="amount__suffix" aria-hidden="true">%</span></span>
+                <input class="slider slider--slim" type="range" min="1" max="8" step="0.05" value="1" tabindex="-1" aria-label="ריבית המסלול (סרגל)" data-track-rate-range />
+              </label>
+            </div>
+          </div>
+        </template>
+      </div>
       <AmountField name="years" label="כמה שנים נשארו" icon="clock" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" />
+      <button type="button" class="add-track" data-add-track hidden><Icon name="plus" class="add-track__icon" />הוסיפו מסלול</button>
     </div>
   </section>
 

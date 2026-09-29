@@ -9,6 +9,7 @@ import { chipGroup, type ChipGroup } from './chips';
 import { enhanceField, type FieldApi } from './fields';
 import { setLeadContext } from './leadgate';
 import { countTo, reducedMotion, transition } from './motion';
+import { initTracks } from './tracks';
 
 const QUESTIONS = ['q-taken', 'q-fixed', 'q-goal'] as const;
 const STEPS = ['inputs', 'result', ...QUESTIONS, 'lead', 'alert'] as const;
@@ -48,20 +49,22 @@ export function initRefinance(root: HTMLElement) {
   const fields: Record<'balance' | 'payment' | 'years', FieldApi> = {
     balance: enhanceField($('[data-field="balance"]'), (v) => change({ balance: v })),
     payment: enhanceField($('[data-field="payment"]'), (v) => change({ payment: v }), () => payProblem()),
-    years: enhanceField($('[data-field="years"]'), (v) => change({ years: v })),
+    years: enhanceField($('[data-field="years"]'), (v) => {
+      change({ years: v });
+      tracks.recompute();
+    }),
   };
   fields.balance.set(state.balance, { silent: true });
   fields.payment.set(state.payment, { silent: true });
   fields.years.set(state.years, { silent: true });
 
-  $$<HTMLInputElement>('[data-step-id="inputs"] input').forEach((input) =>
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        primary.click();
-      }
-    }),
-  );
+  // Delegated, so inputs added by the tracks editor behave the same.
+  $('[data-step-id="inputs"]').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') {
+      e.preventDefault();
+      primary.click();
+    }
+  });
 
   // ---------- Questions ----------
   const groups = new Map<Step, ChipGroup>();
@@ -80,6 +83,19 @@ export function initRefinance(root: HTMLElement) {
     g.set((state[key] as string | undefined) ?? null);
     groups.set(q, g);
   }
+
+  // ---------- Tracks (optional): amount + rate per track, summed into balance and payment ----------
+  const tracks = initTracks(root, {
+    seedBalance: () => state.balance,
+    years: () => state.years,
+    onTotals: (t) => {
+      const fixed = t.anyFixed ? 'yes' : 'no';
+      change({ balance: t.balance, payment: t.payment, hasFixed: fixed });
+      groups.get('q-fixed')?.set(fixed);
+      tracks.setProblem(payProblem());
+    },
+    onExit: () => change({ balance: fields.balance.get() ?? state.balance, payment: fields.payment.get() ?? state.payment }),
+  });
 
   // ---------- Lead / alert context ----------
   const inputs = () => ({ balance: state.balance, payment: state.payment, years: state.years, taken: state.taken, hasFixed: state.hasFixed, goal: state.goal });
@@ -233,7 +249,8 @@ export function initRefinance(root: HTMLElement) {
 
   primary.addEventListener('click', () => {
     if (step === 'inputs') {
-      const ok = [fields.balance, fields.payment, fields.years].every((f) => f.validate());
+      const checks = tracks.active() ? [tracks.validate(), fields.years.validate()] : [fields.balance, fields.payment, fields.years].map((f) => f.validate());
+      const ok = checks.every(Boolean);
       if (!ok || view.kind === 'invalid') {
         fields.payment.validate();
         root.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
@@ -266,6 +283,7 @@ export function initRefinance(root: HTMLElement) {
     fields.years.set(state.years, { silent: true });
     for (const q of QUESTIONS) groups.get(q)?.set((state[KEY_BY_STEP[q]] as string | undefined) ?? null);
     render(prev, view);
+    tracks.recompute();
     const s = (e.state?.step as Step | undefined) ?? restorable(params.get('s'));
     transition(() => {
       show(s);

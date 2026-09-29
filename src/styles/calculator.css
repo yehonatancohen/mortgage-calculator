@@ -615,3 +615,156 @@
 .check--plain {
   font-size: var(--text-md);
 }
+
+/* Tracks (optional): a quiet way to enter the mortgage track by track */
+.add-track {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-min);
+  padding: var(--space-1) var(--space-4);
+  border: var(--border-w) dashed var(--c-border-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--c-text-2);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+.add-track[hidden] {
+  display: none;
+}
+.add-track:hover {
+  color: var(--c-accent-ink);
+  border-color: var(--c-accent);
+  background: var(--c-accent-soft);
+}
+.add-track__icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+.tracks {
+  display: grid;
+  gap: var(--space-3);
+}
+.tracks[hidden] {
+  display: none;
+}
+.tracks__list {
+  display: grid;
+  gap: var(--space-3);
+}
+.track {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-w) solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface-2);
+}
+.track__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.track__title {
+  font-weight: var(--fw-medium);
+}
+.track__remove {
+  display: grid;
+  place-items: center;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  margin: calc(-1 * var(--space-3));
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--c-text-2);
+}
+.track__remove:hover {
+  color: var(--c-text);
+  background: var(--c-border);
+}
+.track__remove svg {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+}
+.track__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7.5rem;
+  gap: var(--space-3);
+}
+.track__field {
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.track__field--type {
+  grid-column: 1 / -1;
+}
+.track .amount {
+  block-size: var(--target-min);
+}
+.track .amount__input {
+  font-size: var(--text-md);
+  padding-inline: var(--space-3);
+}
+.track__select {
+  block-size: var(--target-min);
+  padding-inline: var(--space-3);
+  border: var(--border-w) solid var(--c-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font: inherit;
+  font-size: var(--text-md);
+}
+.track__select:focus-visible {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--c-focus) 25%, transparent);
+}
+.tracks__total {
+  min-block-size: 1.5em;
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.tracks__total--attention {
+  color: var(--c-attention);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .track {
+    animation: track-in var(--dur-base) var(--ease-out);
+  }
+}
+@keyframes track-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.track__field {
+  min-inline-size: 0;
+}
+.track .amount {
+  min-inline-size: 0;
+}
+.track .amount__input {
+  inline-size: 100%;
+}
+/* Slim slider under a track input: a nudge, not a second control */
+.slider--slim {
+  block-size: 1.75rem;
+  margin-block-start: var(--space-1);
+}
+.slider--slim::-webkit-slider-thumb {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin-block-start: calc(2px - 0.5625rem);
+}
+.slider--slim::-moz-range-thumb {
+  inline-size: 0.9375rem;
+  block-size: 0.9375rem;
+}
