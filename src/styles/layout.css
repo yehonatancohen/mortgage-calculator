@@ -270,8 +270,8 @@ aside.side > h2 {
    second column beside it instead of empty margin either side. */
 @media (min-width: 64rem) {
   .primary {
-    grid-template-columns: minmax(0, var(--card-max)) minmax(16rem, var(--aside-max));
-    justify-content: center;
+    grid-template-columns: minmax(0, var(--card-max)) minmax(0, 1fr);
+    column-gap: var(--space-16);
     align-items: start;
   }
   .calc-slot,
@@ -300,6 +300,16 @@ aside.side > h2 {
   .hero {
     --hero-overlap: var(--space-20);
     padding-block-end: var(--hero-overlap);
+  }
+}
+/* Desktop: the title block shares the page's start edge with the calculator instead of floating centred. */
+@media (min-width: 64rem) {
+  .hero .hero__inner {
+    max-inline-size: var(--page-max);
+  }
+  .hero .page-intro {
+    max-inline-size: 44rem;
+    margin-inline: 0;
   }
 }
 .hero__inner {
@@ -350,6 +360,7 @@ aside.side > h2 {
   margin-inline: auto;
   padding-block-start: var(--space-16);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-12);
 }
 .content > section,
@@ -365,8 +376,25 @@ aside.side > h2 {
   margin-block-start: 0;
 }
 @media (min-width: 64rem) {
-  .examples-section {
-    max-inline-size: var(--content-wide);
+  .content {
+    max-inline-size: none;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-8);
+    row-gap: var(--space-16);
+  }
+  .content > section,
+  .content > .next-link,
+  .content > .related {
+    max-inline-size: none;
+    margin-inline: 0;
+    grid-column: 1 / -1;
+  }
+  /* FAQ takes the wider share; the sources sit beside it. */
+  .content > [aria-labelledby='faq-title'] {
+    grid-column: span 7;
+  }
+  .content > [aria-labelledby='sources-title'] {
+    grid-column: span 5;
   }
   .examples {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -755,7 +783,6 @@ aside.side > h2 {
 }
 
 /* Single-column grids must not grow to fit wide children (tables scroll in their own wrapper). */
-.content,
 .calc,
 .step,
 .step__body,
