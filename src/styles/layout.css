@@ -753,6 +753,12 @@ aside.side > h2 {
 .link-list li {
   border-block-end: var(--border-w) solid var(--c-border);
 }
+@media (min-width: 48rem) {
+  .link-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-8);
+  }
+}
 .link-list a {
   display: grid;
   gap: var(--space-1);

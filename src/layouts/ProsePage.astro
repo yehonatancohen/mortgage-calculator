@@ -24,6 +24,20 @@ interface Props {
   method?: string;
 }
 const { title, metaTitle = title, description, answer, crumbs, updated, jsonLd, noindex, ogType, draft, related = [], sources, method } = Astro.props;
+
+// "On this page": every h2 in the body gets an anchor and a contents entry. Shown beside the text on desktop.
+const toc: { id: string; text: string }[] = [];
+let n = 0;
+const body = (await Astro.slots.render('default')).replace(/<h2([^>]*)>([\s\S]*?)<\/h2>/g, (whole, attrs: string, inner: string) => {
+  const text = inner.replace(/<[^>]+>/g, '').trim();
+  if (!text) return whole;
+  const existing = /\sid="([^"]+)"/.exec(attrs);
+  const id = existing ? existing[1]! : `s${++n}`;
+  toc.push({ id, text });
+  return existing ? whole : `<h2${attrs} id="${id}">${inner}</h2>`;
+});
+const hasSources = !!sources && sources.length > 0;
+const hasSide = toc.length >= 3 || hasSources || related.length > 0;
 ---
 <Base title={metaTitle} description={description} breadcrumbs={crumbs} jsonLd={jsonLd} noindex={noindex} ogType={ogType}>
   <main id="main" class="page">
@@ -35,19 +49,29 @@ const { title, metaTitle = title, description, answer, crumbs, updated, jsonLd, 
         {updated && <p class="meta-line">עודכן לאחרונה: <time datetime={updated}>{hebrewDate(updated)}</time></p>}
         {draft && <p class="draft-note">טיוטה: מבנה הכותרות מוכן, והתוכן ייכתב וייבדק לפני פרסום. העמוד לא מאונדקס.</p>}
       </header>
-      <div class="prose">
-        <slot />
-      </div>
-      {sources && sources.length > 0 && <SourceBox sources={sources} updated={updated} method={method} />}
-      {related.length > 0 && (
-        <aside class="article__related" aria-label="המשך">
-          {related.map((r) => (
-            <a class="next-link" href={r.href}>
-              <span><span class="next-link__title">{r.title}</span><br /><span class="next-link__text">{r.text}</span></span>
-              <Icon name="arrow-left" />
-            </a>
-          ))}
-        </aside>
+      <div class="prose" set:html={body} />
+      {hasSide && (
+        <div class="article__side">
+          {toc.length >= 3 && (
+            <nav class="toc" aria-labelledby="toc-title">
+              <h2 id="toc-title" class="toc__title">בעמוד הזה</h2>
+              <ol>
+                {toc.map((t) => <li><a href={`#${t.id}`}>{t.text}</a></li>)}
+              </ol>
+            </nav>
+          )}
+          {hasSources && <SourceBox sources={sources} updated={updated} method={method} />}
+          {related.length > 0 && (
+            <aside class="article__related" aria-label="המשך">
+              {related.map((r) => (
+                <a class="next-link" href={r.href}>
+                  <span><span class="next-link__title">{r.title}</span><br /><span class="next-link__text">{r.text}</span></span>
+                  <Icon name="arrow-left" />
+                </a>
+              ))}
+            </aside>
+          )}
+        </div>
       )}
     </article>
   </main>
@@ -66,9 +90,67 @@ const { title, metaTitle = title, description, answer, crumbs, updated, jsonLd, 
     display: grid;
     gap: var(--space-3);
   }
+  .article__side {
+    display: grid;
+    gap: var(--space-6);
+    align-content: start;
+  }
   .article__related {
     display: grid;
     gap: var(--space-3);
-    margin-block-start: var(--space-8);
+  }
+  .toc {
+    display: none;
+  }
+  .toc__title {
+    font-size: var(--text-base);
+    margin-block-end: var(--space-3);
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    border-inline-start: var(--border-w) solid var(--c-border);
+  }
+  .toc a {
+    display: block;
+    padding: var(--space-2) var(--space-4);
+    color: var(--c-text-2);
+    font-size: var(--text-sm);
+    line-height: 1.45;
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--c-accent-ink);
+    text-decoration: underline;
+  }
+
+  /* Desktop: header across the top, text in the main column, contents + sources + related beside it. */
+  @media (min-width: 64rem) {
+    .article {
+      max-inline-size: none;
+      margin-inline: 0;
+      grid-template-columns: minmax(0, 1fr) 20rem;
+      column-gap: var(--space-12);
+      row-gap: var(--space-10);
+      align-items: start;
+    }
+    .article .prose {
+      max-inline-size: none;
+    }
+    .article__head {
+      grid-column: 1 / -1;
+      max-inline-size: 52rem;
+    }
+    .article__side {
+      position: sticky;
+      top: var(--space-8);
+      max-block-size: calc(100vh - var(--space-16));
+      overflow-y: auto;
+    }
+    .toc {
+      display: block;
+    }
   }
 </style>
