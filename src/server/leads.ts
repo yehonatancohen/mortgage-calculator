@@ -6,6 +6,7 @@ import { scoring } from '../../config/scoring';
 import { limits, refinanceAssumptions, benchmarkRate } from '../../lib/data';
 import { affordability, formatILS, formatPercent, isValidILMobile, refinanceSavings, toE164IL } from '../../lib/mortgage';
 import { scoreRefinanceLead, tierBuyerLead } from '../../lib/scoring/score';
+import { toRefinanceInput, type RefiState, type TrackState } from '../ui/refinanceView';
 import { CONSENT } from '../config/consent';
 import { newId, randomToken } from './crypto';
 import type { Env } from './env';
@@ -86,21 +87,47 @@ export interface Computed {
   lines: [string, string][];
 }
 
+const TRACK_TYPES = ['fixed', 'prime', 'variable'] as const;
+const TRACK_LABEL = { fixed: 'קבועה', prime: 'פריים', variable: 'משתנה' } as const;
+const MAX_TRACKS = 6;
+
+/** Tracks arrive from the browser; keep only well-formed ones, or none at all. */
+function cleanTracks(v: unknown): TrackState[] | undefined {
+  if (!Array.isArray(v) || v.length === 0 || v.length > MAX_TRACKS) return undefined;
+  const out: TrackState[] = [];
+  for (const item of v) {
+    const t = (item ?? {}) as Record<string, unknown>;
+    const amount = num(t.amount, 1, 20_000_000);
+    const rate = num(t.rate, 0.1, 20);
+    const type = oneOf(t.type, TRACK_TYPES);
+    if (amount === null || rate === null || !type) return undefined;
+    const years = num(t.years, 1, 40);
+    const margin = num(t.margin, -3, 5);
+    out.push({ amount: Math.round(amount), rate, type, years: years === null ? undefined : Math.round(years), margin: type === 'fixed' || margin === null ? undefined : margin });
+  }
+  return out;
+}
+
 export function computeRefinance(raw: Record<string, unknown>, phoneVerified: boolean, timing: string, entryPage: string): Computed | null {
   const balance = num(raw.balance, 10_000, 20_000_000);
   const monthly = num(raw.payment, 100, 200_000);
   const years = num(raw.years, 1, 40);
   if (balance === null || monthly === null || years === null) return null;
-  const inputs = {
-    balance: Math.round(balance),
+  const tracks = cleanTracks(raw.tracks);
+  const reportedFee = num(raw.reportedFee, 0, 5_000_000);
+  const inputs: RefiState = {
+    // With tracks, the balance is what the tracks add up to, never a separate client number.
+    balance: tracks ? Math.round(tracks.reduce((s, t) => s + t.amount, 0)) : Math.round(balance),
     payment: Math.round(monthly),
     years: Math.round(years),
     taken: oneOf(raw.taken, TAKEN),
     hasFixed: oneOf(raw.hasFixed, YNU),
     goal: oneOf(raw.goal, GOALS),
+    tracks,
+    reportedFee: reportedFee === null ? undefined : Math.round(reportedFee),
   };
   const a = refinanceAssumptions();
-  const r = refinanceSavings({ balance: inputs.balance, monthlyPayment: inputs.payment, months: inputs.years * 12, taken: inputs.taken, hasFixed: inputs.hasFixed, goal: inputs.goal }, a);
+  const r = refinanceSavings(toRefinanceInput(inputs), a);
   const answered = [inputs.taken, inputs.hasFixed, inputs.goal].filter(Boolean).length;
   const s = scoreRefinanceLead(
     {
@@ -111,6 +138,7 @@ export function computeRefinance(raw: Record<string, unknown>, phoneVerified: bo
       benchmarkRate: a.benchmarkRate,
       netSavingsLow: r.ok ? r.netTotal.low : null,
       netSavingsHigh: r.ok ? r.netTotal.high : null,
+      netSavingsMid: r.ok ? r.netTotal.mid : null,
       feeHigh: r.ok ? r.fee.high : null,
       timing,
       goal: inputs.goal ?? null,
@@ -126,13 +154,19 @@ export function computeRefinance(raw: Record<string, unknown>, phoneVerified: bo
   ];
   if (r.ok) {
     lines.push(['ריבית אפקטיבית משוערת', formatPercent(r.currentRate)]);
-    lines.push(['חיסכון נטו משוער', `${formatILS(Math.max(0, r.netTotal.low))}–${formatILS(r.netTotal.high)}`]);
-    lines.push(['עמלת פירעון משוערת', `${formatILS(r.fee.low)}–${formatILS(r.fee.high)}`]);
+    lines.push(['חיסכון נטו משוער (מקרה טיפוסי)', formatILS(Math.max(0, r.netTotal.mid))]);
+    lines.push(['טווח אפשרי', `${formatILS(Math.max(0, r.netTotal.low))}–${formatILS(r.netTotal.high)}`]);
+    lines.push(r.feeReported ? ['עמלת פירעון מהדוח (מדויקת, ליד איכותי)', formatILS(r.fee.mid)] : ['עמלת פירעון משוערת', `${formatILS(r.fee.low)}–${formatILS(r.fee.high)}`]);
+    for (const [i, t] of (inputs.tracks ?? []).entries()) {
+      const kept = r.kept.find((k) => k.index === i);
+      const margin = t.margin === undefined ? '' : t.type === 'prime' ? `, פריים פחות ${t.margin}%` : `, מרווח ${t.margin}%`;
+      lines.push([`מסלול ${i + 1}`, `${TRACK_LABEL[t.type]} ${formatILS(t.amount)} ב־${t.rate}%${margin}${t.years ? `, ${t.years} שנים` : ''}${kept ? ' (לא נכלל במחזור)' : ''}`]);
+    }
   }
   if (inputs.taken) lines.push(['נלקחה', inputs.taken]);
   if (inputs.hasFixed) lines.push(['מסלול קבוע', inputs.hasFixed]);
   if (inputs.goal) lines.push(['מטרה', inputs.goal]);
-  return { inputs, results: r as unknown as Record<string, unknown>, score: s.total, scoreDetail: s, tier: s.tier, lines };
+  return { inputs: { ...inputs }, results: r as unknown as Record<string, unknown>, score: s.total, scoreDetail: s, tier: s.tier, lines };
 }
 
 export function computeBuyer(raw: Record<string, unknown>, phoneVerified: boolean, timing: string): Computed | null {

@@ -164,6 +164,8 @@ describe('prepayment fee (simplified estimate)', () => {
 const A: RefinanceAssumptions = {
   benchmarkRate: 0.04,
   marketFixedRate: 0.045,
+  marketMargin: { primeDiscount: 0.0067, variable: 0.0098 },
+  marginTolerance: 0.0025,
   bandBase: 0.006,
   bandNarrowKnown: 0.0015,
   bandNarrowUnknown: 0.0005,
@@ -211,7 +213,7 @@ describe('refinanceSavings', () => {
     expect(width(r3)).toBeLessThan(width(r1));
     expect(r0.accuracy).toBe(55);
     expect(r3.accuracy).toBe(100);
-    expect(r3.fee).toEqual({ low: 60, high: 60 });
+    expect(r3.fee).toEqual({ low: 60, mid: 60, high: 60 });
   });
   it('"don\'t know" narrows less than a known answer', () => {
     const base = { balance: 1_000_000, monthlyPayment: payment(1_000_000, 0.055, 240), months: 240 };

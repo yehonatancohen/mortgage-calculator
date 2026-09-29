@@ -3,12 +3,15 @@
  * tracks add up to the balance and monthly payment the calculator already works with, so the
  * savings math and the lead payload stay unchanged.
  */
-import { formatILS, formatWhileTyping, parseAmount, payment } from '../../lib/mortgage';
+import { formatILS, formatWhileTyping, parseAmount, payment, type TrackType } from '../../lib/mortgage';
+import type { TrackState } from '../ui/refinanceView';
 
 export interface TrackTotals {
   balance: number;
   payment: number;
   anyFixed: boolean;
+  /** The complete tracks, with their own margin and years when the borrower gave them. */
+  tracks: TrackState[];
 }
 
 interface Options {
@@ -24,6 +27,14 @@ interface Options {
 const MAX_TRACKS = 6;
 const AMOUNT_MAX = 20_000_000;
 const RATE: [number, number] = [0.1, 20];
+/** Prime discount / variable margin, in percent. Negative is allowed ("prime plus 0.2"). */
+const MARGIN: [number, number] = [-3, 5];
+const YEARS: [number, number] = [1, 40];
+
+const MARGIN_COPY: Record<'prime' | 'variable', { label: string; hint: string }> = {
+  prime: { label: 'פריים פחות (לא חובה)', hint: 'למשל 0.5 אם כתוב "פריים פחות 0.5". מופיע בדוח.' },
+  variable: { label: 'מרווח מעל העוגן (לא חובה)', hint: 'למשל 0.2 אם כתוב "עוגן ועוד 0.2". מופיע בדוח.' },
+};
 
 const parseRate = (raw: string) => {
   const n = Number(raw.replace(',', '.'));
@@ -45,18 +56,42 @@ export function initTracks(root: HTMLElement, opts: Options) {
   const read = (row: HTMLElement) => {
     const amountEl = row.querySelector<HTMLInputElement>('[data-track-amount]')!;
     const rateEl = row.querySelector<HTMLInputElement>('[data-track-rate]')!;
+    const marginEl = row.querySelector<HTMLInputElement>('[data-track-margin]')!;
+    const yearsEl = row.querySelector<HTMLInputElement>('[data-track-years]')!;
     const amount = parseAmount(amountEl.value);
     const rate = parseRate(rateEl.value);
+    const type = (row.querySelector('[data-track-type]') as unknown as { value: string }).value as TrackType;
+    const margin = type === 'fixed' ? null : parseRate(marginEl.value);
+    const years = parseRate(yearsEl.value);
     return {
       amountEl,
       rateEl,
+      marginEl,
+      yearsEl,
       blank: amountEl.value.trim() === '' && rateEl.value.trim() === '',
       amount,
       rate,
+      type,
+      margin,
+      years,
       okAmount: amount !== null && amount > 0 && amount <= AMOUNT_MAX,
       okRate: rate !== null && rate >= RATE[0] && rate <= RATE[1],
-      fixed: (row.querySelector('[data-track-type]') as unknown as { value: string }).value === 'fixed',
+      // Margin and years are optional: empty is fine, a typed value has to make sense.
+      okMargin: type === 'fixed' || marginEl.value.trim() === '' || (margin !== null && margin >= MARGIN[0] && margin <= MARGIN[1]),
+      okYears: yearsEl.value.trim() === '' || (years !== null && Number.isInteger(years) && years >= YEARS[0] && years <= YEARS[1]),
+      fixed: type === 'fixed',
     };
+  };
+
+  /** Show the margin field only where a margin exists (prime, variable) and word it for the type. */
+  const syncType = (row: HTMLElement) => {
+    const { type } = read(row);
+    const field = row.querySelector<HTMLElement>('[data-track-margin-field]')!;
+    field.hidden = type === 'fixed';
+    if (type !== 'fixed') {
+      field.querySelector<HTMLElement>('[data-track-margin-label]')!.textContent = MARGIN_COPY[type].label;
+      field.querySelector<HTMLElement>('[data-track-margin-hint]')!.textContent = MARGIN_COPY[type].hint;
+    }
   };
   const flag = (el: HTMLInputElement, bad: boolean) => {
     el.setAttribute('aria-invalid', String(bad));
@@ -94,19 +129,28 @@ export function initTracks(root: HTMLElement, opts: Options) {
 
   function recompute() {
     if (!api.active()) return;
-    const months = Math.max(1, Math.round(opts.years())) * 12;
     let balance = 0;
     let pay = 0;
     let anyFixed = false;
+    const complete: TrackState[] = [];
     for (const row of rows()) {
       const r = read(row);
       if (!r.okAmount || !r.okRate) continue;
+      // A track may end in a different year than the rest; fall back to the mortgage-wide years.
+      const years = r.okYears && r.years !== null ? r.years : Math.max(1, Math.round(opts.years()));
       balance += r.amount!;
-      pay += payment(r.amount!, r.rate! / 100, months);
+      pay += payment(r.amount!, r.rate! / 100, years * 12);
       anyFixed ||= r.fixed;
+      complete.push({
+        amount: r.amount!,
+        rate: r.rate!,
+        type: r.type,
+        years: r.okYears && r.years !== null ? r.years : undefined,
+        margin: r.type !== 'fixed' && r.okMargin && r.margin !== null ? r.margin : undefined,
+      });
     }
     setTotal(balance, pay);
-    if (balance > 0) opts.onTotals({ balance: Math.round(balance), payment: Math.round(pay), anyFixed });
+    if (balance > 0) opts.onTotals({ balance: Math.round(balance), payment: Math.round(pay), anyFixed, tracks: complete });
   }
 
   function addRow(amount?: number) {
@@ -114,6 +158,7 @@ export function initTracks(root: HTMLElement, opts: Options) {
     if (amount) row.querySelector<HTMLInputElement>('[data-track-amount]')!.value = formatILS(amount).slice(1);
     list.appendChild(row);
     syncRow(row);
+    syncType(row);
     refresh();
     return row;
   }
@@ -160,12 +205,26 @@ export function initTracks(root: HTMLElement, opts: Options) {
       t.setSelectionRange(caret, caret);
     } else if (t.matches('[data-track-rate]')) {
       t.value = t.value.replace(/[^\d.,]/g, '');
+    } else if (t.matches('[data-track-margin]')) {
+      t.value = t.value.replace(/[^\d.,-]/g, '');
+      flag(t, false);
+      recompute();
+      return;
+    } else if (t.matches('[data-track-years]')) {
+      t.value = t.value.replace(/\D/g, '');
+      flag(t, false);
+      recompute();
+      return;
     } else return;
     syncRow(row!);
     flag(t, false);
     recompute();
   });
-  list.addEventListener('change', recompute);
+  list.addEventListener('change', (e) => {
+    const row = (e.target as HTMLElement).closest<HTMLElement>('[data-track]');
+    if (row && (e.target as HTMLElement).matches('[data-track-type]')) syncType(row);
+    recompute();
+  });
   list.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-track-remove]');
     if (!btn) return;
@@ -199,7 +258,9 @@ export function initTracks(root: HTMLElement, opts: Options) {
         if (r.blank) continue;
         flag(r.amountEl, !r.okAmount);
         flag(r.rateEl, !r.okRate);
-        if (r.okAmount && r.okRate) complete++;
+        flag(r.marginEl, !r.okMargin);
+        flag(r.yearsEl, !r.okYears);
+        if (r.okAmount && r.okRate && r.okMargin && r.okYears) complete++;
         else ok = false;
       }
       if (complete === 0) {

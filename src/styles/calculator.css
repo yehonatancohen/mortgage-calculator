@@ -167,6 +167,7 @@
   color: var(--c-savings);
 }
 [data-kind='none'] .q-result__figure,
+[data-kind='borderline'] .q-result__figure,
 [data-kind='invalid'] .q-result__figure {
   color: var(--c-text-3);
 }
@@ -275,6 +276,7 @@
   white-space: nowrap;
 }
 .calc__preview[data-kind='none'] .calc__preview-value,
+.calc__preview[data-kind='borderline'] .calc__preview-value,
 .calc__preview[data-kind='invalid'] .calc__preview-value {
   font-size: var(--text-md);
   font-weight: var(--fw-medium);
@@ -703,6 +705,39 @@
 }
 .track__field--type {
   grid-column: 1 / -1;
+}
+.track__field--margin {
+  grid-column: 1 / -1;
+}
+.track__field--margin[hidden] {
+  display: none;
+}
+.track__hint,
+.report-fee__hint {
+  font-size: var(--text-sm);
+  color: var(--c-text-3);
+}
+.track__hint:empty {
+  display: none;
+}
+/* Optional fee copied from the bank statement: quiet, below the required fields */
+.report-fee {
+  display: grid;
+  gap: var(--space-1);
+}
+.report-fee__label {
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+}
+.report-fee__opt {
+  color: var(--c-text-3);
+}
+.report-fee .amount {
+  block-size: var(--target-min);
+}
+.report-fee .amount__input {
+  font-size: var(--text-md);
+  padding-inline: var(--space-3);
 }
 .track .amount {
   block-size: var(--target-min);

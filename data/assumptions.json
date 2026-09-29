@@ -101,6 +101,13 @@
     "lastUpdated": "2026-09-26",
     "note": "Our estimate of a new mortgage's one-off costs: appraisal, bank file-opening fee and lien registration. No official source publishes a total; banks and appraisers set their own prices. Documented on /methodology/."
   },
+  "marginTolerance": {
+    "value": 0.25,
+    "unit": "percent",
+    "source": "internal:methodology",
+    "lastUpdated": "2026-09-29",
+    "note": "A prime or variable track whose margin is at most this much worse than today's market average is treated as good enough to keep: the switching costs outweigh a gap that small."
+  },
   "meaningfulTotal": {
     "value": 10000,
     "unit": "ils",

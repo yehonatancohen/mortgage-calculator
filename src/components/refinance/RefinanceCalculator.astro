@@ -102,11 +102,25 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
                 <span class="amount"><input class="amount__input" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" placeholder="4.00" data-track-rate /><span class="amount__suffix" aria-hidden="true">%</span></span>
                 <input class="slider slider--slim" type="range" min="1" max="8" step="0.05" value="1" tabindex="-1" aria-label="ריבית המסלול (סרגל)" data-track-rate-range />
               </label>
+              <label class="track__field track__field--margin" data-track-margin-field hidden>
+                <span data-track-margin-label>מרווח (לא חובה)</span>
+                <span class="amount"><input class="amount__input" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" placeholder="0.50" data-track-margin /><span class="amount__suffix" aria-hidden="true">%</span></span>
+                <small class="track__hint" data-track-margin-hint></small>
+              </label>
+              <label class="track__field track__field--years">
+                <span>שנים שנותרו (לא חובה)</span>
+                <span class="amount"><input class="amount__input" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="כמו למטה" data-track-years /><span class="amount__suffix" aria-hidden="true">שנים</span></span>
+              </label>
             </div>
           </div>
         </template>
       </div>
-      <AmountField name="years" label="כמה שנים נשארו" icon="clock" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" />
+      <AmountField name="years" label="כמה שנים נשארו (בכל המסלולים)" icon="clock" value={d.years} min={REFI.years.min} max={REFI.years.max} step={REFI.years.step} sliderOnly suffix="שנים" />
+      <label class="report-fee" data-report-fee>
+        <span class="report-fee__label">עמלת פירעון מוקדם מהדוח <span class="report-fee__opt">(לא חובה)</span></span>
+        <span class="amount"><span class="amount__unit" aria-hidden="true">₪</span><input class="amount__input" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" placeholder="למשל 14,300" data-report-fee-input aria-describedby="report-fee-hint" /></span>
+        <small class="report-fee__hint" id="report-fee-hint">מופיעה בדוח יתרות לסילוק מהבנק. אם תזינו אותה, החישוב יהיה מדויק יותר.</small>
+      </label>
       <button type="button" class="add-track" data-add-track hidden><Icon name="plus" class="add-track__icon" />הוסיפו מסלול</button>
     </div>
   </section>
@@ -116,8 +130,8 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
     <button type="button" class="step__back" data-back><Icon name="arrow-left" class="step__back-icon" />חזרה לנתונים</button>
     <div class="result" data-kind={v.kind}>
       <h2 class="result__label" id="refi-result-title" tabindex="-1" data-out="label">{v.label}</h2>
-      <p class="result__figure" data-out="figure" style={figureStyle(v.figure)} hidden={v.kind === 'none' || v.kind === 'invalid'}>{v.figure}</p>
-      <p class="result__sentence" data-out="sentence" hidden={!(v.kind === 'none' || v.kind === 'invalid')}>{v.sentence}</p>
+      <p class="result__figure" data-out="figure" style={figureStyle(v.figure)} hidden={v.kind !== 'typical'}>{v.figure}</p>
+      <p class="result__sentence" data-out="sentence" hidden={v.kind === 'typical'}>{v.sentence}</p>
       <p class="result__sub" data-out="sub">{v.sub}</p>
     </div>
 
@@ -155,8 +169,8 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
         <span class="q-count"><bdi class="num">{i + 1}</bdi> מתוך <bdi class="num">3</bdi></span>
       </div>
       <div class="q-result">
-        <span class="q-result__label" data-out="q-label">{v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'}</span>
-        <bdi class="q-result__figure num" data-out="q-figure">{v.kind === 'none' || v.kind === 'invalid' ? '—' : v.figure}</bdi>
+        <span class="q-result__label" data-out="q-label">חיסכון משוער</span>
+        <bdi class="q-result__figure num" data-out="q-figure">{v.kind === 'typical' ? v.figure : '—'}</bdi>
         <div class="meter meter--compact">
           <div class="meter__head"><span data-out="accuracy">{v.answeredText}</span></div>
           <div class="meter__track" aria-hidden="true"><div class="meter__fill" data-out="accuracy-bar" style={`--value: ${(v.answered / 3) * 100}%`}></div></div>
@@ -180,8 +194,8 @@ const figureStyle = (text: string) => `--chars: ${text.length}`;
   <section class="step" data-step-id="lead" aria-labelledby="lead-title" hidden>
     <button type="button" class="step__back" data-back><Icon name="arrow-left" class="step__back-icon" />חזרה</button>
     <div class="recap">
-      <span class="recap__label" data-out="recap-label">{v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'}</span>
-      <bdi class="recap__figure num" data-out="recap-figure">{v.kind === 'none' || v.kind === 'invalid' ? '—' : v.figure}</bdi>
+      <span class="recap__label" data-out="recap-label">{v.kind === 'typical' ? 'חיסכון משוער' : 'הבדיקה מול יועץ'}</span>
+      <bdi class="recap__figure num" data-out="recap-figure">{v.kind === 'typical' ? v.figure : v.preview}</bdi>
     </div>
     <LeadGate kind="refinance" />
   </section>

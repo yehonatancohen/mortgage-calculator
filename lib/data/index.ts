@@ -65,6 +65,8 @@ export function refinanceAssumptions(): RefinanceAssumptions {
     bandNarrowKnown: pct(a.bandNarrowKnown.value),
     bandNarrowUnknown: pct(a.bandNarrowUnknown.value),
     bandMin: pct(a.bandMin.value),
+    marketMargin: { primeDiscount: pct(rates.margins.primeDiscount.value), variable: pct(rates.margins.variableMargin.value) },
+    marginTolerance: pct(a.marginTolerance.value),
     fixedShareIfYes: a.fixedShareIfYes.value as [number, number],
     fixedShareIfUnknown: a.fixedShareIfUnknown.value as [number, number],
     fixedRateByBucket,

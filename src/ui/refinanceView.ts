@@ -10,9 +10,22 @@ import {
   refinanceSavings,
   type Goal,
   type RefinanceAssumptions,
+  type RefinanceInput,
   type TakenBucket,
+  type TrackType,
   type YesNoUnknown,
 } from '../../lib/mortgage';
+
+/** One mortgage track as the borrower typed it. Percent values are percents, not fractions. */
+export interface TrackState {
+  amount: number;
+  rate: number;
+  type: TrackType;
+  /** Years remaining on this track; falls back to the mortgage-wide years. */
+  years?: number;
+  /** Prime: discount below prime. Variable: margin above the anchor. */
+  margin?: number;
+}
 
 export interface RefiState {
   balance: number;
@@ -21,6 +34,30 @@ export interface RefiState {
   taken?: TakenBucket;
   hasFixed?: YesNoUnknown;
   goal?: Goal;
+  /** Set only while the borrower enters the mortgage track by track. */
+  tracks?: TrackState[];
+  /** Prepayment fee copied from the bank's statement (₪). */
+  reportedFee?: number;
+}
+
+/** The one place UI state becomes math input, shared by the browser and the lead server. */
+export function toRefinanceInput(s: RefiState): RefinanceInput {
+  return {
+    balance: s.balance,
+    monthlyPayment: s.payment,
+    months: Math.max(1, Math.round(s.years)) * 12,
+    taken: s.taken,
+    hasFixed: s.hasFixed,
+    goal: s.goal,
+    reportedFee: s.reportedFee,
+    tracks: s.tracks?.map((t) => ({
+      balance: t.amount,
+      rate: t.rate / 100,
+      months: Math.max(1, Math.round(t.years ?? s.years)) * 12,
+      type: t.type,
+      margin: t.margin === undefined ? undefined : t.margin / 100,
+    })),
+  };
 }
 
 export interface RefiData {
@@ -29,7 +66,11 @@ export interface RefiData {
   ratesPeriod: string;
 }
 
-export type FigureKind = 'range' | 'upTo' | 'none' | 'invalid';
+/**
+ * typical = worth checking, with a figure for the typical case; borderline = depends on the
+ * offer, no figure; none = the mortgage is fine as it is; invalid = the numbers do not add up.
+ */
+export type FigureKind = 'typical' | 'borderline' | 'none' | 'invalid';
 
 export interface RefiView {
   kind: FigureKind;
@@ -81,7 +122,7 @@ const ltr = (s: string) => `⁦${s}⁩`;
 
 export function refinanceView(s: RefiState, d: RefiData): RefiView {
   const a = d.assumptions;
-  const r = refinanceSavings({ balance: s.balance, monthlyPayment: s.payment, months: Math.max(1, Math.round(s.years)) * 12, taken: s.taken, hasFixed: s.hasFixed, goal: s.goal }, a);
+  const r = refinanceSavings(toRefinanceInput(s), a);
 
   const base = {
     low: 0,
@@ -120,13 +161,28 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
   const afterMid = (r.newPayment.low + r.newPayment.high) / 2;
   const afterPct = Math.max(4, Math.min(100, (afterMid / s.payment) * 100));
   const bandPp = formatNumberPp((r.newRate.high - r.newRate.low) / 2);
+  const allKept = r.trackCount > 0 && r.kept.length === r.trackCount;
+  const keptLines = r.kept.map(({ index, reason }) => {
+    const t = s.tracks![index]!;
+    const name = `מסלול ${index + 1}`;
+    if (reason === 'margin') {
+      const market = t.type === 'prime' ? `פריים פחות ${pctText(a.marketMargin.primeDiscount * 100)}` : `עוגן ועוד ${pctText(a.marketMargin.variable * 100)}`;
+      const own = t.type === 'prime' ? `פריים פחות ${pctText(t.margin!)}` : `עוגן ועוד ${pctText(t.margin!)}`;
+      return `${name}: המרווח שלך (${own}) טוב או קרוב למה שהבנקים נותנים היום (${market}). המרווח קבוע לכל התקופה, ולכן לא כללנו את המסלול במחזור.`;
+    }
+    return `${name}: הריבית שלו (${formatPercent(t.rate / 100)}) נמוכה מריבית השוק, ולכן לא כללנו אותו במחזור.`;
+  });
+  const feeLine = r.feeReported
+    ? `עמלת פירעון מוקדם: ${formatILS(r.fee.mid)}, כפי שהזנת מהדוח.`
+    : `עמלת פירעון מוקדם משוערת: ${ltr(formatILSRange(roundDown(r.fee.low, 10), roundUp(r.fee.high, 10)))}.`;
   const assumptions = [
-    `הריבית האפקטיבית שלך לפי הנתונים: כ־${formatPercent(r.currentRate)}.`,
-    `ריבית למשכנתא חדשה: ${ltr(`${formatPercent(r.newRate.low)}–${formatPercent(r.newRate.high)}`)} (ממוצע שוק ${formatPercent(a.benchmarkRate)} ±${bandPp}, נתוני ${d.ratesPeriod}).`,
-    `עמלת פירעון מוקדם משוערת: ${ltr(formatILSRange(roundDown(r.fee.low, 10), roundUp(r.fee.high, 10)))}.`,
-    `עלויות מעבר (שמאות, פתיחת תיק ורישום): ${ltr(formatILSRange(r.switchingCosts.low, r.switchingCosts.high))}.`,
+    ...keptLines,
+    `${r.trackCount > 0 ? 'הריבית הממוצעת של המסלולים שהזנת' : 'הריבית האפקטיבית שלך לפי הנתונים'}: כ־${formatPercent(r.currentRate)}.`,
+    `ריבית למשכנתא חדשה: ${ltr(`${formatPercent(r.newRate.low)}–${formatPercent(r.newRate.high)}`)}. ההחלטה מתבססת על ממוצע השוק, ${formatPercent(a.benchmarkRate)} (±${bandPp}, נתוני ${d.ratesPeriod}), ולא על הקצה הטוב של הטווח.`,
+    ...(allKept ? [] : [feeLine, `עלויות מעבר (שמאות, פתיחת תיק ורישום): ${ltr(formatILSRange(r.switchingCosts.low, r.switchingCosts.high))}.`]),
     'החישוב לא כולל הצמדה למדד. אם חלק מהמשכנתא צמוד, ההחזר בפועל ישתנה עם המדד.',
   ];
+  const keptSub = r.kept.length > 0 && !allKept ? `${r.kept.length === 1 ? 'מסלול אחד' : `${r.kept.length} מסלולים`} לא נכלל במחזור כי התנאים שלו טובים.` : '';
   const common = {
     ...base,
     invalidReason: null,
@@ -135,7 +191,7 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
     afterPct: pctRound(afterPct / 100),
     afterLoPct: pctRound(Math.max(0.04, Math.min(1, r.newPayment.low / s.payment))),
     afterHiPct: pctRound(Math.max(0.04, Math.min(1, r.newPayment.high / s.payment))),
-    costs: `עמלת פירעון ועלויות מעבר, כלולות בחישוב: ${ltr(costsRange(r))}`,
+    costs: allKept ? '' : `עמלת פירעון ועלויות מעבר, כלולות בחישוב: ${ltr(costsRange(r))}`,
     answeredText: answeredText(r.answered),
     assumptions,
     accuracy: r.accuracy,
@@ -147,43 +203,41 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
     return {
       ...common,
       kind: 'none',
-      label: 'חיסכון אפשרי לאורך התקופה',
-      sentence: 'כרגע מחזור לא צפוי לחסוך לך סכום משמעותי.',
-      sub: `הריבית שלך (כ־${formatPercent(r.currentRate)}) כבר קרובה לממוצע בשוק.`,
-      preview: 'אין חיסכון משמעותי',
+      label: 'המשכנתא שלך טובה',
+      sentence: allKept ? 'כדאי לא לגעת בה. המרווחים והריביות שלך טובים ממה שמקבלים היום.' : 'כדאי לא לגעת בה. מחזור צפוי לעלות לך יותר ממה שיחסוך.',
+      sub: allKept ? '' : `הריבית שלך (כ־${formatPercent(r.currentRate)}) נמוכה או קרובה לממוצע בשוק (${formatPercent(a.benchmarkRate)}).${keptSub ? ` ${keptSub}` : ''}`,
+      preview: 'כדאי לא לגעת',
       qualifies: false,
-      announce: `כרגע מחזור לא צפוי לחסוך סכום משמעותי. הריבית שלך כ־${formatPercent(r.currentRate)}.`,
+      announce: `המשכנתא שלך טובה, כדאי לא לגעת בה. הריבית שלך כ־${formatPercent(r.currentRate)}.`,
     };
   }
 
   const qualifies = s.balance >= d.minBalance;
-  if (h.kind === 'upTo') {
-    const figure = formatILS(h.high);
+  if (h.kind === 'borderline') {
     return {
       ...common,
-      kind: 'upTo',
-      label: 'חיסכון אפשרי לאורך התקופה, עד',
-      low: h.high,
-      high: h.high,
-      figure,
-      sub: h.monthlyHigh > 0 ? `עד כ־${formatILS(h.monthlyHigh)} פחות בחודש` : '',
-      preview: `עד ${figure}`,
+      kind: 'borderline',
+      label: 'גבולי, תלוי בהצעה שתקבלו',
+      sentence: 'ייתכן חיסכון קטן, אבל הוא תלוי בריבית שתקבלו בפועל.',
+      sub: `רק בתרחיש הטוב ביותר החיסכון מגיע לכ־${formatILS(h.high)}. כדאי לבדוק הצעה לפני שמחליטים.${keptSub ? ` ${keptSub}` : ''}`,
+      preview: 'גבולי',
       qualifies,
-      announce: `חיסכון אפשרי של עד ${figure} לאורך התקופה.`,
+      announce: 'התוצאה גבולית ותלויה בהצעה שתקבלו. כדאי לבדוק הצעה לפני שמחליטים.',
     };
   }
-  const figure = formatILSRange(h.low, h.high);
+  const figure = `כ־${formatILS(h.mid)}`;
+  const spread = h.low < h.mid || h.high > h.mid ? ` · טווח אפשרי ${ltr(formatILSRange(h.low, h.high))}` : '';
   return {
     ...common,
-    kind: 'range',
-    label: 'חיסכון אפשרי לאורך התקופה',
-    low: h.low,
-    high: h.high,
+    kind: 'typical',
+    label: 'חיסכון משוער לאורך התקופה',
+    low: h.mid,
+    high: h.mid,
     figure,
-    sub: `כ־${ltr(formatILSRange(h.monthlyLow, h.monthlyHigh))} פחות בחודש`,
+    sub: `כ־${formatILS(h.monthlyMid)} פחות בחודש${spread}${keptSub ? `. ${keptSub}` : ''}`,
     preview: figure,
     qualifies,
-    announce: `חיסכון אפשרי של ${figure} לאורך התקופה.`,
+    announce: `חיסכון משוער של ${figure} לאורך התקופה.`,
   };
 }
 
@@ -195,6 +249,8 @@ export function costsRange(r: { fee: { low: number; high: number }; switchingCos
 const roundDown = (n: number, step: number) => Math.floor(n / step) * step;
 const roundUp = (n: number, step: number) => Math.ceil(n / step) * step;
 const formatNumberPp = (fraction: number) => `${(Math.round(fraction * 1000) / 10).toFixed(1)}%`;
+/** A percent already expressed in percent (0.67 → "0.67%"). */
+const pctText = (percent: number) => `${Number(percent.toFixed(2))}%`;
 
 /** URL <-> state. Short keys keep shared links readable. */
 const TAKEN_KEYS = ['before2015', '2015to2019', '2020to2022', 'since2023', 'unknown'] as const;
@@ -217,6 +273,7 @@ export function stateFromParams(p: URLSearchParams, defaults: RefiState, bounds:
     taken: pick('t', TAKEN_KEYS),
     hasFixed: pick('f', YNU_KEYS),
     goal: pick('g', GOAL_KEYS),
+    reportedFee: p.has('rf') && Number.isFinite(Number(p.get('rf'))) && Number(p.get('rf')) >= 0 && Number(p.get('rf')) <= 5_000_000 ? Math.round(Number(p.get('rf'))) : undefined,
   };
 }
 
@@ -228,6 +285,7 @@ export function paramsFromState(s: RefiState, step: string): URLSearchParams {
   if (s.taken) p.set('t', s.taken);
   if (s.hasFixed) p.set('f', s.hasFixed);
   if (s.goal) p.set('g', s.goal);
+  if (s.reportedFee !== undefined) p.set('rf', String(s.reportedFee));
   if (step !== 'inputs') p.set('s', step);
   return p;
 }

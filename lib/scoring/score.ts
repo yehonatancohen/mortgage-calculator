@@ -13,6 +13,8 @@ export interface RefinanceLeadFacts {
   benchmarkRate: number;
   netSavingsLow: number | null;
   netSavingsHigh: number | null;
+  /** Typical-case net saving. When present it is used instead of the midpoint of low and high. */
+  netSavingsMid?: number | null;
   feeHigh: number | null;
   timing: string | null;
   goal: string | null;
@@ -41,6 +43,8 @@ export function scoreRefinanceLead(f: RefinanceLeadFacts, cfg: ScoringConfig): S
   if (f.netSavingsHigh !== null) {
     savingsMid = f.netSavingsLow !== null && f.netSavingsLow > 0 ? (f.netSavingsLow + f.netSavingsHigh) / 2 : f.netSavingsHigh / 2;
   }
+  // The typical case is the honest value of the lead; the best case must not inflate the score.
+  if (f.netSavingsMid !== undefined && f.netSavingsMid !== null) savingsMid = Math.max(0, f.netSavingsMid);
 
   const s = {
     balance: lin(f.balance, cfg.value.balance.from, cfg.value.balance.to),

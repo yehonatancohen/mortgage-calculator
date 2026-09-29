@@ -48,6 +48,25 @@
       "note": "dy260831.xlsx, table 877-1, CPI-linked variable loans with the next rate change in 2–5 years: anchor 1.63% + margin 1.79% (real rate)."
     }
   },
+  "margins": {
+    "$comment": "Average margins on new unlinked variable-rate housing loans, August 2026 (percentage points). Used to tell whether a borrower's existing prime or variable track has a better margin than the market gives today.",
+    "primeDiscount": {
+      "label": "הנחה ממוצעת מהעוגן במסלול פריים",
+      "value": 0.67,
+      "unit": "percent",
+      "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
+      "lastUpdated": "2026-09-26",
+      "note": "dy260831.xlsx, table 877-2, unlinked variable loans whose rate can change within a month: margin −0.67% below the anchor."
+    },
+    "variableMargin": {
+      "label": "מרווח ממוצע מעל העוגן במסלול משתנה כל 5 שנים",
+      "value": 0.98,
+      "unit": "percent",
+      "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
+      "lastUpdated": "2026-09-26",
+      "note": "dy260831.xlsx, table 877-2, unlinked variable loans with the next rate change in 2–5 years: margin +0.98% above the anchor."
+    }
+  },
   "fixedRateByOriginBucket": {
     "$comment": "Range of yearly average rates on new UNLINKED FIXED housing loans for each origination period (compared with fixedUnlinked in the fee estimate). Min and max of the yearly averages, rounded outward to 0.1.",
     "before2015": {

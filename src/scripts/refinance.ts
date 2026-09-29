@@ -2,7 +2,7 @@
  * Refinance calculator controller: steps, history, URL state, live updates, motion.
  * All numbers come from lib/mortgage through the shared view model (src/ui/refinanceView.ts).
  */
-import { formatILS, formatILSRange } from '../../lib/mortgage';
+import { formatILS, formatWhileTyping, parseAmount } from '../../lib/mortgage';
 import { paramsFromState, refinanceView, stateFromParams, type RefiData, type RefiState, type RefiView } from '../ui/refinanceView';
 import { track, trackOnce } from './analytics';
 import { chipGroup, type ChipGroup } from './chips';
@@ -90,30 +90,43 @@ export function initRefinance(root: HTMLElement) {
     years: () => state.years,
     onTotals: (t) => {
       const fixed = t.anyFixed ? 'yes' : 'no';
-      change({ balance: t.balance, payment: t.payment, hasFixed: fixed });
+      change({ balance: t.balance, payment: t.payment, hasFixed: fixed, tracks: t.tracks });
       groups.get('q-fixed')?.set(fixed);
       tracks.setProblem(payProblem());
     },
-    onExit: () => change({ balance: fields.balance.get() ?? state.balance, payment: fields.payment.get() ?? state.payment }),
+    onExit: () => change({ balance: fields.balance.get() ?? state.balance, payment: fields.payment.get() ?? state.payment, tracks: undefined }),
+  });
+
+  // ---------- Optional prepayment fee from the bank's statement ----------
+  const feeInput = $<HTMLInputElement>('[data-report-fee-input]');
+  if (state.reportedFee !== undefined) feeInput.value = formatILS(state.reportedFee).slice(1);
+  feeInput.addEventListener('input', () => {
+    const { text, caret } = formatWhileTyping(feeInput.value, feeInput.selectionStart ?? feeInput.value.length);
+    feeInput.value = text.split('.')[0]!;
+    feeInput.setSelectionRange(caret, caret);
+    const n = parseAmount(feeInput.value);
+    const fee = n !== null && n >= 0 && n <= 5_000_000 ? Math.round(n) : undefined;
+    change({ reportedFee: fee });
+    if (fee !== undefined) trackOnce('report_fee_entered');
   });
 
   // ---------- Lead / alert context ----------
-  const inputs = () => ({ balance: state.balance, payment: state.payment, years: state.years, taken: state.taken, hasFixed: state.hasFixed, goal: state.goal });
+  const inputs = () => ({ balance: state.balance, payment: state.payment, years: state.years, taken: state.taken, hasFixed: state.hasFixed, goal: state.goal, tracks: state.tracks, reportedFee: state.reportedFee });
   const leadRoot = root.querySelector<HTMLElement>('[data-lead]');
   const alertRoot = root.querySelector<HTMLElement>('[data-alert]');
   if (leadRoot) setLeadContext(leadRoot, inputs);
   if (alertRoot) setLeadContext(alertRoot, inputs);
 
   // ---------- Rendering ----------
-  const figureText = (kind: RefiView['kind'], vals: number[]) => (kind === 'range' ? formatILSRange(vals[0]!, vals[1]!) : formatILS(vals[1]!));
-  const previewText = (v: RefiView, vals: number[]) => (v.kind === 'upTo' ? `עד ${formatILS(vals[1]!)}` : v.kind === 'range' ? formatILSRange(vals[0]!, vals[1]!) : v.preview);
+  // The count-up animates the typical-case figure only (low === high).
+  const figureText = (vals: number[]) => `כ־${formatILS(vals[1]!)}`;
 
   let announceTimer = 0;
   function render(prev: RefiView, v: RefiView) {
     root.dataset.kind = v.kind;
     $('.result').dataset.kind = v.kind;
-    const numeric = v.kind === 'range' || v.kind === 'upTo';
-    const prevNumeric = prev.kind === 'range' || prev.kind === 'upTo';
+    const numeric = v.kind === 'typical';
+    const prevNumeric = prev.kind === 'typical';
     const from = prevNumeric ? [prev.low, prev.high] : [v.low, v.high];
 
     out('label').forEach((el) => (el.textContent = v.label));
@@ -125,18 +138,20 @@ export function initRefinance(root: HTMLElement) {
     });
     if (numeric) {
       figure.style.setProperty('--chars', String(v.figure.length));
-      countTo(figure, from, [v.low, v.high], (vals) => figureText(v.kind, vals));
+      countTo(figure, from, [v.low, v.high], figureText);
     }
     out('sub').forEach((el) => (el.textContent = v.sub));
 
     const pv = out('preview')[0]!;
     pv.style.setProperty('--chars', String(v.preview.length));
-    if (numeric && prevNumeric && prev.kind === v.kind) countTo(pv, from, [v.low, v.high], (vals) => previewText(v, vals));
+    if (numeric && prevNumeric) countTo(pv, from, [v.low, v.high], figureText);
     else pv.textContent = v.preview;
     preview.dataset.kind = v.kind;
 
-    for (const k of ['q-figure', 'recap-figure']) out(k).forEach((el) => (el.textContent = numeric ? v.figure : '—'));
-    for (const k of ['q-label', 'recap-label']) out(k).forEach((el) => (el.textContent = v.kind === 'upTo' ? 'חיסכון אפשרי, עד' : 'חיסכון אפשרי'));
+    out('q-figure').forEach((el) => (el.textContent = numeric ? v.figure : '—'));
+    out('recap-figure').forEach((el) => (el.textContent = numeric ? v.figure : v.preview));
+    out('q-label').forEach((el) => (el.textContent = 'חיסכון משוער'));
+    out('recap-label').forEach((el) => (el.textContent = numeric ? 'חיסכון משוער' : 'הבדיקה מול יועץ'));
 
     out('today').forEach((el) => (el.textContent = v.todayText));
     out('after').forEach((el) => (el.textContent = v.afterText));
@@ -174,6 +189,8 @@ export function initRefinance(root: HTMLElement) {
       const allAnswered = QUESTIONS.every((q) => state[KEY_BY_STEP[q]] !== undefined);
       if (!view.qualifies) {
         primary.textContent = view.kind === 'invalid' ? 'חזרה לנתונים' : 'עדכנו אותי כשזה ישתלם';
+      } else if (view.kind === 'borderline') {
+        primary.textContent = 'לבדיקת הצעה מול יועץ';
       } else if (allAnswered) {
         primary.textContent = 'לבדיקה חינם מול יועץ משכנתאות';
       } else {
@@ -276,8 +293,10 @@ export function initRefinance(root: HTMLElement) {
   addEventListener('popstate', (e) => {
     const params = new URLSearchParams(location.search);
     const prev = view;
-    state = stateFromParams(params, cfg.defaults, cfg.bounds);
+    // Tracks are not kept in the URL; while the tracks editor is open they stay as typed.
+    state = { ...stateFromParams(params, cfg.defaults, cfg.bounds), tracks: tracks.active() ? state.tracks : undefined };
     view = refinanceView(state, data);
+    feeInput.value = state.reportedFee !== undefined ? formatILS(state.reportedFee).slice(1) : '';
     fields.balance.set(state.balance, { silent: true });
     fields.payment.set(state.payment, { silent: true });
     fields.years.set(state.years, { silent: true });
