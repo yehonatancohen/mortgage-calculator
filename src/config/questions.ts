@@ -121,7 +121,7 @@ export function buildQuestions(): Question[] {
     description: `ריבית משכנתא ממוצעת ב${period} לפי מסלול, מנתוני בנק ישראל: לתמהיל טיפוסי לא צמוד כ־${formatPercent(bench)}.`,
     short: `לפי נתוני בנק ישראל ל${period}, הריבית הממוצעת בהלוואות חדשות לדיור לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. פריים ${formatPercent(trackRates.prime)}, קבועה לא צמודה ${formatPercent(trackRates.fixedUnlinked)}, וקבועה צמודה ${formatPercent(trackRates.fixedLinked)} (ריבית ריאלית, לפני הצמדה).`,
     data: [
-      { type: 'table', caption: `ריבית שנתית נומינלית ממוצעת בהלוואות חדשות, ${period}`, head: ['מסלול', 'ריבית ממוצעת', 'החזר ל־₪1M ל־25 שנה'], rows: [
+      { type: 'table', caption: `ריבית שנתית ממוצעת בהלוואות חדשות, ${period}`, head: ['מסלול', 'ריבית ממוצעת', 'החזר ל־₪1M ל־25 שנה'], rows: [
         ...Object.values(datasets.rates.tracks).map((t) => [t.label, formatPercent(t.value / 100), formatILS(payment(1_000_000, t.value / 100, 300))]),
         ['תמהיל טיפוסי לא צמוד', formatPercent(bench), formatILS(payment(1_000_000, bench, 300))],
       ] },

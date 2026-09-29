@@ -1,5 +1,5 @@
 {
-  "$comment": "Average rates on new housing loans by track, August 2026 (nominal annual %). Linked tracks are real rates before CPI. Source: Bank of Israel monthly report on housing loans (report 877), published 14/09/2026.",
+  "$comment": "Average rates on new housing loans by track, August 2026 (annual %, reported by BOI as effective on an annual basis). Linked tracks are real rates before CPI. Source: Bank of Israel monthly report on housing loans (report 877), published 14/09/2026.",
   "period": {
     "value": "2026-08",
     "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
@@ -8,7 +8,7 @@
   },
   "tracks": {
     "prime": {
-      "label": "פריים",
+      "label": "מסלול פריים",
       "value": 4.44,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",

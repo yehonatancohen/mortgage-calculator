@@ -10,7 +10,7 @@ interface Props {
   /** One sentence on how the figures on the page were calculated. */
   method?: string;
 }
-const { sources, updated, method = 'כל המספרים בעמוד מחושבים אוטומטית מהנתונים המצוינים כאן, בריבית נומינלית שנתית עם חישוב חודשי.' } = Astro.props;
+const { sources, updated, method = 'כל המספרים בעמוד מחושבים אוטומטית מהנתונים המצוינים כאן, בריבית שנתית עם חישוב חודשי (ריבית ÷ 12).' } = Astro.props;
 ---
 <aside class="source-box" aria-labelledby="source-box-title">
   <h2 id="source-box-title">מקורות, עדכון ומתודולוגיה</h2>

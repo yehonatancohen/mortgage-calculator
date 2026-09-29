@@ -5,7 +5,7 @@ import { benchmarkRate, datasets } from '../../../lib/data';
 import { formatILS, formatPercent, payment } from '../../../lib/mortgage';
 import { monthlyView, type MonthlyState } from '../../ui/calcs';
 
-const rate = Math.round(benchmarkRate() * 100 * 20) / 20; // nearest 0.05%
+const rate = Math.round(benchmarkRate() * 10000) / 100; // same rounding as the rates page (0.01%)
 const initial: MonthlyState = { loan: 1_000_000, rate, years: 25 };
 const v = monthlyView(initial);
 const updated = datasets.rates.tracks.prime.lastUpdated;
