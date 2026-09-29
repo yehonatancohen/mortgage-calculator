@@ -7,6 +7,48 @@ Stack:
 - **Hosting:** Cloudflare Workers with static assets.
 - **Database:** Cloudflare D1.
 
+**🌐 Live, free calculator: [תכל'ס משכנתא – tachles-mashkanta.co.il](https://tachles-mashkanta.co.il/)**
+
+## The math of Israeli mortgages / המתמטיקה של משכנתאות בישראל
+
+The pure, tested maths lives in [`lib/mortgage/`](lib/mortgage/) (no I/O, no framework), so it can be read or reused on its own. Rates are **nominal annual, compounded monthly** (monthly rate `i = annual / 12`), which is how Israeli banks quote them.
+
+### שפיצר (annuity / Spitzer)
+
+Equal monthly payments; the interest share falls and the principal share grows over time.
+
+```
+payment = P · i / (1 − (1 + i)^−n)          P = principal, n = months
+balance after k payments = P · (1+i)^k − payment · ((1+i)^k − 1) / i
+```
+
+See [`annuity.ts`](lib/mortgage/annuity.ts) and `spitzerSchedule` in [`schedule.ts`](lib/mortgage/schedule.ts).
+
+### קרן שווה (equal principal)
+
+A fixed principal share of `P / n` each month plus interest on the remaining balance, so the first payment is the highest and payments fall over time. Total interest is lower than שפיצר at the same rate, in exchange for a higher starting payment. See `equalPrincipalSchedule` in [`schedule.ts`](lib/mortgage/schedule.ts).
+
+### ריבית קבועה מול משתנה, צמודה ולא צמודה
+
+- **קבועה (fixed):** the rate is set for the life of the track.
+- **משתנה (variable):** the rate resets on a schedule (for example every 5 years, or prime-linked "פריים").
+- **צמודה למדד (CPI-linked):** the balance is multiplied by the change in the Consumer Price Index each month, then the rate applies to the linked balance. Real cost = rate + inflation. **The calculator does not model CPI linkage, and the site says so.**
+- **לא צמודה (unlinked):** no inflation adjustment; usually a higher nominal rate.
+
+### Solving for the current rate
+
+When a borrower knows the balance, monthly payment and months left but not the rate, [`solveRate.ts`](lib/mortgage/solveRate.ts) solves for it (Newton's method inside a bisection bracket) and returns a reason instead of throwing when the combination is impossible.
+
+### Refinance economics
+
+Savings = old remaining cost − new cost − switching costs − estimated prepayment fee (עמלת פירעון מוקדם, a simplified model of the Banking Order in [`prepaymentFee.ts`](lib/mortgage/prepaymentFee.ts)). Results are shown as a range, rounded down. Full methodology, with every figure and its source: [tachles-mashkanta.co.il/methodology](https://tachles-mashkanta.co.il/methodology/).
+
+---
+
+## Development notes
+
+This repo is the source of the live site above.
+
 ## Quick start
 
 ```sh
