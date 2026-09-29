@@ -1,0 +1,89 @@
+---
+import CalculatorPage from '../../layouts/CalculatorPage.astro';
+import AmountField from '../../components/AmountField.astro';
+import { datasets, trackRates } from '../../../lib/data';
+import { formatILS, formatPercent } from '../../../lib/mortgage';
+import { cpiView, CPI_SCENARIOS, type CpiState } from '../../ui/calcs';
+
+const real = Math.round(trackRates.fixedLinked * 100 * 20) / 20;
+const initial: CpiState = { loan: 1_000_000, rate: real, years: 25, inflation: 2 };
+const v = cpiView(initial);
+const updated = datasets.rates.tracks.fixedLinked.lastUpdated;
+
+const faq = [
+  { q: 'איך ההצמדה למדד עובדת?', a: 'במסלול צמוד, יתרת הקרן עולה בכל חודש בשיעור עליית מדד המחירים לצרכן, וההחזר החודשי מחושב מחדש על היתרה המוצמדת. הריבית המוצגת במסלול היא ריבית ריאלית, מעל המדד.' },
+  { q: 'למה ההחזר במסלול צמוד עולה עם הזמן?', a: 'כי כל עליית מדד מגדילה את היתרה שעליה משלמים ריבית ואת ההחזר. לכן אותו סכום נומינלי בסוף התקופה שווה פחות מבתחילתה, וההחזר הראשון לא משקף את ההחזר העתידי.' },
+  { q: 'איזו אינפלציה להזין?', a: 'אי אפשר לחזות אותה. המחשבון מציג כמה תרחישים קבועים (0%, 2%, 4%, 6%) כדי להראות טווח. היעד של בנק ישראל הוא טווח של 1%–3% בשנה.' },
+  { q: 'מה ההבדל בין ריבית נומינלית לריאלית?', a: 'ריבית נומינלית היא הריבית כפי שנכתבת בהלוואה לא צמודה. ריבית ריאלית היא הריבית מעל האינפלציה, ובמסלול צמוד מוסיפים לה את עליית המדד בפועל.' },
+];
+---
+<CalculatorPage
+  title="מחשבון הצמדה למדד: כמה ההחזר יעלה באינפלציה?"
+  metaTitle="מחשבון הצמדה למדד במשכנתא: החזר וסך תשלומים לפי אינפלציה"
+  description="כמה תשלמו יותר במסלול צמוד אם האינפלציה תעלה? מחשבון שמראה את ההחזר הראשון, האחרון וסך התשלומים לפי אינפלציה שנתית שתבחרו."
+  answer={`הלוואה צמודה של ${formatILS(initial.loan)} ל־25 שנה בריבית ריאלית ${formatPercent(real / 100)}: באינפלציה של ${initial.inflation}% בשנה ההחזר יעלה מ־${v.out.first} ל־${v.out.last}, וסך התשלומים יעלה ב־${v.out.extra} לעומת אותה הלוואה ללא הצמדה.`}
+  appName="מחשבון הצמדה למדד"
+  updated={updated}
+  method="מדד המחירים לצרכן עולה בשיעור קבוע לפי האינפלציה השנתית שבחרתם, בפריסה חודשית. בכל חודש היתרה מוצמדת ומחושב החזר שפיצר על היתרה המוצמדת ועל החודשים שנותרו. ההשוואה היא לאותה הלוואה בלי הצמדה."
+  faq={faq}
+  crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'הצמדה למדד', path: '/calculators/cpi-linkage/' }]}
+  sources={[
+    { label: 'הלשכה המרכזית לסטטיסטיקה: מדד המחירים לצרכן', url: 'https://www.cbs.gov.il/he/mediarelease/Madad' },
+    { label: 'בנק ישראל: דוח חודשי על הלוואות לדיור', url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/' },
+  ]}
+  next={{ href: '/guides/hatzmada-lemadad-mashkanta/', title: 'המדריך: הצמדה למדד במשכנתא', text: 'מה זה אומר בפועל ואיך מחליטים.' }}
+>
+  <div class="card calc-card" data-calc="cpi-linkage">
+    <script type="application/json" data-calc-data set:html={JSON.stringify({ initial })} />
+    <p class="visually-hidden" aria-live="polite" data-announce></p>
+    <div class="calc-card__fields">
+      <AmountField name="loan" label="סכום המסלול הצמוד" value={initial.loan} min={100_000} max={5_000_000} step={10_000} textMax={30_000_000} shorthand="balance" scale={['₪100K', '₪5M']} />
+      <AmountField name="rate" label="ריבית ריאלית שנתית" value={initial.rate} min={0.5} max={6} step={0.05} textMin={0.1} textMax={15} unit="none" suffix="%" decimals={2} scale={['0.5%', '6%']} />
+      <AmountField name="years" label="תקופה" value={initial.years} min={4} max={30} step={1} sliderOnly suffix="שנים" scale={['4', '30']} />
+      <AmountField name="inflation" label="אינפלציה שנתית (הנחה)" value={initial.inflation} min={0} max={8} step={0.25} textMin={0} textMax={20} unit="none" suffix="%" decimals={2} scale={['0%', '8%']} />
+    </div>
+    <div class="calc-card__out">
+      <div class="result">
+        <p class="result__label">תוספת לסך התשלומים בגלל ההצמדה</p>
+        <p class="result__figure result__figure--neutral" data-out="extra" data-count style={`--chars: ${v.out.extra!.length}`}>{v.out.extra}</p>
+      </div>
+      <dl class="kv" data-summary>
+        <div><dt>החזר ראשון</dt><dd data-out="first">{v.out.first}</dd></div>
+        <div><dt>החזר אחרון</dt><dd data-out="last">{v.out.last}</dd></div>
+        <div><dt>עלייה בהחזר לאורך התקופה</dt><dd data-out="growth">{v.out.growth}</dd></div>
+        <div><dt>החזר קבוע ללא הצמדה</dt><dd data-out="flat">{v.out.flat}</dd></div>
+        <div><dt>סך התשלומים</dt><dd data-out="total">{v.out.total}</dd></div>
+      </dl>
+      <p class="disclaimer">הערכה בלבד, בהנחת אינפלציה קבועה. <a href="/methodology/">איך חישבנו</a></p>
+    </div>
+  </div>
+
+  <Fragment slot="example">
+    <p>אותה הלוואה ({formatILS(initial.loan)}, {initial.years} שנה, ריבית ריאלית {formatPercent(real / 100)}) בתרחישי אינפלציה שונים:</p>
+    <div class="table-wrap">
+      <table class="data-table data-table--stack">
+        <thead><tr><th scope="col">אינפלציה</th><th scope="col" class="num">החזר ראשון</th><th scope="col" class="num">החזר אחרון</th><th scope="col" class="num">סך התשלומים</th><th scope="col" class="num">תוספת</th></tr></thead>
+        <tbody data-rows="scenarios">
+          {v.rows!.scenarios!.map((cells) => <tr>{cells.map((c, i) => (i === 0 ? <th scope="row">{c}</th> : <td class="num" data-label={['', 'החזר ראשון', 'החזר אחרון', 'סך התשלומים', 'תוספת'][i]}><bdi>{c}</bdi></td>))}</tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p class="meta-line">התרחישים: {CPI_SCENARIOS.join('%, ')}% בשנה. הטבלה מתעדכנת עם הסכום, הריבית והתקופה.</p>
+  </Fragment>
+
+  <Fragment slot="explanation">
+    <p><strong>הצמדה למדד</strong> אומרת שהיתרה וההחזר עולים עם מדד המחירים לצרכן. הריבית במסלול צמוד נמוכה יותר מבמסלול לא צמוד, אבל אינפלציה גבוהה מהצפוי מגדילה את ההחזר.</p>
+    <p>ה"תוספת" בתוצאה היא ההפרש בסך התשלומים הנומינלי מול אותה הלוואה בלי הצמדה. חלק גדול ממנה משקף את שחיקת ערך הכסף ולא עלות ריאלית, והכנסה שעולה עם המחירים מקזזת אותה.</p>
+    <p>למי שרוצה יותר ודאות, אפשר לשלב מסלולים צמודים ולא צמודים. ראו את <a href="/guides/hatzmada-lemadad-mashkanta/">מדריך ההצמדה</a>.</p>
+  </Fragment>
+</CalculatorPage>
+
+<script>
+  import { initCalc } from '../../scripts/calc';
+  import { cpiView, type CpiState } from '../../ui/calcs';
+  const root = document.querySelector<HTMLElement>('[data-calc="cpi-linkage"]');
+  if (root) {
+    const { initial } = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!) as { initial: CpiState };
+    initCalc(root, initial, cpiView);
+  }
+</script>

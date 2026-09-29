@@ -1,0 +1,20 @@
+---
+/** Internal linking between the calculators: related tools, the question pages and the rates data. */
+import { calcByPath } from '../config/calculators';
+import { QUESTION_TITLES } from '../config/questions';
+
+const current = calcByPath(Astro.url.pathname);
+const tools = (current?.related ?? []).map((p) => calcByPath(p)).filter((c) => c !== undefined);
+const questions = (current?.questions ?? []).map((p) => ({ href: p, title: QUESTION_TITLES[p.split('/')[2]!] ?? '' })).filter((q) => q.title);
+---
+{(tools.length > 0 || questions.length > 0) && (
+  <section class="related-calcs" aria-labelledby="related-title">
+    <h2 id="related-title">עוד כלים ותשובות</h2>
+    <ul class="chip-links">
+      {tools.map((c) => <li><a href={c.path}>{c.short}</a></li>)}
+      {questions.map((q) => <li><a href={q.href}>{q.title}</a></li>)}
+      <li><a href="/ribit-mashkanta-hayom/">ריבית משכנתא היום</a></li>
+      <li><a href="/calculators/">כל המחשבונים</a></li>
+    </ul>
+  </section>
+)}

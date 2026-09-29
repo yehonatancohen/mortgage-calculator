@@ -85,3 +85,21 @@ export const datasetLd = (o: { name: string; description: string; path: string; 
   creator: { '@id': orgId() },
   isAccessibleForFree: true,
 });
+
+export const itemListLd = (name: string, items: { name: string; path: string }[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name,
+  itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, url: abs(it.path) })),
+});
+
+export const aboutPageLd = (o: { name: string; description: string; path: string; dateModified: string }) => ({
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: o.name,
+  description: o.description,
+  url: abs(o.path),
+  inLanguage: 'he-IL',
+  dateModified: o.dateModified,
+  about: { '@id': orgId() },
+});

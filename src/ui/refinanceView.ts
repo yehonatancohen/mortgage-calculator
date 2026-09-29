@@ -57,7 +57,7 @@ export interface RefiView {
   afterHiPct: number;
   /** Always-visible cost line under the bars (fee + switching costs, included in the result). */
   costs: string;
-  /** "2 מתוך 3": how many optional questions are answered (the meter measures this, not accuracy). */
+  /** Progress copy framed as an invitation ("עוד 2 שאלות כדי לדייק את ההערכה"), never as a score of how inaccurate the result is. */
   answeredText: string;
   assumptions: string[];
   accuracy: number;
@@ -65,6 +65,14 @@ export interface RefiView {
   qualifies: boolean;
   /** Screen-reader summary (one sentence). */
   announce: string;
+}
+
+/** Optional questions left to sharpen the estimate. Always positive framing. */
+export function answeredText(answered: number, total = 3): string {
+  const left = Math.max(0, total - answered);
+  if (left === 0) return 'ההערכה מדויקת ככל שאפשר';
+  if (left === 1) return 'עוד שאלה אחת כדי לדייק את ההערכה';
+  return `עוד ${left} שאלות כדי לדייק את ההערכה`;
 }
 
 const pctRound = (n: number) => Math.round(n * 1000) / 10;
@@ -87,7 +95,7 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
     afterLoPct: 100,
     afterHiPct: 100,
     costs: '',
-    answeredText: '0 מתוך 3',
+    answeredText: answeredText(0),
     accuracy: a.accuracy.base,
     answered: 0,
   };
@@ -128,7 +136,7 @@ export function refinanceView(s: RefiState, d: RefiData): RefiView {
     afterLoPct: pctRound(Math.max(0.04, Math.min(1, r.newPayment.low / s.payment))),
     afterHiPct: pctRound(Math.max(0.04, Math.min(1, r.newPayment.high / s.payment))),
     costs: `עמלת פירעון ועלויות מעבר, כלולות בחישוב: ${ltr(costsRange(r))}`,
-    answeredText: `${r.answered} מתוך 3`,
+    answeredText: answeredText(r.answered),
     assumptions,
     accuracy: r.accuracy,
     answered: r.answered,

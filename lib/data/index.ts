@@ -8,6 +8,8 @@ import prepaymentFee from '../../data/prepayment-fee.json';
 import regulation from '../../data/regulation.json';
 import purchaseTaxData from '../../data/purchase-tax.json';
 import cpi from '../../data/cpi.json';
+import purchaseCostsData from '../../data/purchase-costs.json';
+import ratesHistoryData from '../../data/rates-history.json';
 import { pct, type RefinanceAssumptions, type TakenBucket, type TaxBracket } from '../mortgage';
 
 export interface Sourced<T = unknown> {
@@ -97,7 +99,27 @@ export const purchaseTaxBrackets = {
   validFrom: purchaseTaxData.validFrom.value,
 };
 
-export const datasets = { rates, assumptions, prepaymentFee, regulation, purchaseTax: purchaseTaxData, cpi };
+export const datasets = { rates, assumptions, prepaymentFee, regulation, purchaseTax: purchaseTaxData, cpi, purchaseCosts: purchaseCostsData };
+
+/** One-off purchase cost defaults (fractions) and the appraisal/file-opening range for a new mortgage. */
+export const purchaseCosts = {
+  lawyerRate: purchaseCostsData.lawyerFeeRate.value,
+  brokerRate: purchaseCostsData.brokerFeeRate.value,
+  vatRate: purchaseCostsData.vatRate.value,
+  mortgageFees: assumptions.switchingCosts.value as [number, number],
+};
+
+/** Monthly BOI series (nominal annual %), oldest first. Kept outside `datasets`: it is a time series, not a single sourced value. */
+export const ratesHistory = {
+  source: ratesHistoryData.source,
+  lastUpdated: ratesHistoryData.lastUpdated,
+  series: Object.fromEntries(
+    Object.entries(ratesHistoryData.series).map(([k, v]) => [
+      k,
+      { label: v.label, points: (Object.entries(v.values) as [string, number][]).sort(([a], [b]) => a.localeCompare(b)).map(([period, value]) => ({ period, value })) },
+    ]),
+  ) as Record<'fixedUnlinked' | 'fixedLinked', { label: string; points: { period: string; value: number }[] }>,
+};
 
 /** Every sourced value in every dataset, with its JSON path. */
 export function sourcedValues(): { file: string; path: string; entry: Sourced }[] {

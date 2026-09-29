@@ -7,3 +7,4 @@ export * from './affordability';
 export * from './purchaseTax';
 export * from './format';
 export * from './phone';
+export * from './scenarios';

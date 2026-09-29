@@ -22,6 +22,8 @@ const d = entry.data;
   noindex={d.draft}
   ogType="article"
   related={d.related}
+  sources={d.sources.length > 0 ? d.sources : [{ label: 'בנק ישראל: דוח חודשי על הלוואות לדיור', url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/' }]}
+  method="המדריך מסביר עקרונות ומביא מספרים מהקבצים המתוארכים של האתר. חישובים אישיים נעשים במחשבונים המקושרים, לפי המתודולוגיה שלנו."
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מדריכים', path: '/guides/' }, { name: d.title, path }]}
   jsonLd={d.draft ? [] : [articleLd({ headline: d.title, description: d.description, path, datePublished: d.published, dateModified: d.updated })]}
 >

@@ -1,24 +1,46 @@
 ---
 import ProsePage from '../../layouts/ProsePage.astro';
+import { CALCULATORS, CALC_GROUPS, type CalcGroup } from '../../config/calculators';
+import { QUESTION_TITLES } from '../../config/questions';
+import { itemListLd } from '../../seo/schema';
 
-const calcs = [
-  { href: '/', title: 'מחשבון מחזור משכנתא', text: 'כמה תחסכו אם תמחזרו, נטו אחרי עמלות. תוצאה מיידית.' },
-  { href: '/calculators/monthly-payment/', title: 'החזר חודשי', text: 'כמה תשלמו כל חודש, בשפיצר ובקרן שווה.' },
-  { href: '/calculators/how-much-mortgage/', title: 'כמה משכנתא אפשר לקבל', text: 'לפי הכנסה, הון עצמי ומגבלות המימון.' },
-  { href: '/calculators/prepayment-fee/', title: 'עמלת פירעון מוקדם', text: 'הערכת העמלה על מסלול בריבית קבועה.' },
-  { href: '/calculators/purchase-tax/', title: 'מס רכישה', text: 'לפי מדרגות רשות המסים, לדירה יחידה ונוספת.' },
-  { href: '/calculators/amortization/', title: 'לוח סילוקין', text: 'שפיצר מול קרן שווה, שנה אחר שנה.' },
-];
+const groups = Object.keys(CALC_GROUPS) as CalcGroup[];
 ---
 <ProsePage
   title="מחשבוני משכנתא"
-  description="מחשבוני משכנתא חינמיים: מחזור, החזר חודשי, כמה משכנתא אפשר לקבל, עמלת פירעון מוקדם, מס רכישה ולוח סילוקין."
-  answer="כל המחשבונים חינמיים, מציגים תוצאה מיד ומפרטים את ההנחות שלהם."
+  metaTitle="מחשבוני משכנתא חינמיים: מחזור, הון עצמי, החזר חודשי, הצמדה ועוד"
+  description="תשעה מחשבוני משכנתא חינמיים במקום אחד: מחזור, פירעון חלקי, הצמדה למדד, כמה משכנתא אפשר לקבל, הון עצמי ועלויות רכישה, מס רכישה, החזר חודשי ולוח סילוקין."
+  answer="תשעה מחשבונים שעובדים יחד: כל אחד נותן תוצאה מיד, מציג את ההנחות ומפנה למחשבון הבא בדרך. הנתונים מבנק ישראל ומרשות המסים, עם תאריך עדכון."
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }]}
+  jsonLd={[itemListLd('מחשבוני משכנתא', CALCULATORS.map((c) => ({ name: c.title, path: c.path })))]}
+  sources={[{ label: 'בנק ישראל: דוח חודשי על הלוואות לדיור', url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/' }, { label: 'רשות המסים: מיסוי מקרקעין', url: 'https://www.gov.il/he/pages/inst-01-2026' }]}
+  method="כל מחשבון נשען על אותן פונקציות חישוב ועל אותם קבצי נתונים, ולכן המספרים עקביים בין המחשבונים."
+  related={[
+    { href: '/ribit-mashkanta-hayom/', title: 'ריבית משכנתא היום', text: 'הנתונים שמזינים את המחשבונים, עם היסטוריה.' },
+    { href: '/questions/', title: 'שאלות ותשובות', text: 'תשובות קצרות עם מספרים לשאלות נפוצות.' },
+  ]}
 >
-  <ul class="link-list">
-    {calcs.map((c) => (
-      <li><a href={c.href}><span class="link-list__title">{c.title}</span><span class="link-list__text">{c.text}</span></a></li>
+  {groups.map((g) => (
+    <section class="hub-group" aria-labelledby={`grp-${g}`}>
+      <h2 id={`grp-${g}`}>{CALC_GROUPS[g].title}</h2>
+      <p class="hub-group__intro">{CALC_GROUPS[g].text}</p>
+      <ul class="link-list">
+        {CALCULATORS.filter((c) => c.group === g).map((c) => (
+          <li>
+            <a href={c.path}><span class="link-list__title">{c.title}</span><span class="link-list__text">{c.text}</span></a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <h2>איך המחשבונים מתחברים</h2>
+  <p>מי שקונה דירה עובר בדרך כלל מ<a href="/calculators/how-much-mortgage/">כמה משכנתא אפשר לקבל</a> ל<a href="/calculators/upfront-costs/">הון עצמי ועלויות</a> ול<a href="/calculators/monthly-payment/">החזר חודשי</a>. מי שכבר יש לו משכנתא בודק <a href="/">מחזור</a>, <a href="/calculators/prepayment-fee/">עמלת פירעון</a> ו<a href="/calculators/partial-prepayment/">פירעון חלקי</a>. בכל עמוד יש קישורים למחשבונים הקשורים.</p>
+
+  <h2>שאלות ותשובות לפי מחשבון</h2>
+  <ul>
+    {CALCULATORS.flatMap((c) => c.questions.map((qp) => ({ c, qp }))).filter(({ qp }, i, all) => all.findIndex((x) => x.qp === qp) === i).map(({ qp }) => (
+      <li><a href={qp}>{QUESTION_TITLES[qp.split('/')[2]!]}</a></li>
     ))}
   </ul>
 </ProsePage>

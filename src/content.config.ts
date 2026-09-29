@@ -18,6 +18,8 @@ const guides = defineCollection({
     draft: z.boolean().default(true),
     related: z.array(z.object({ href: z.string(), title: z.string(), text: z.string() })).default([]),
     order: z.number().default(100),
+    /** Data sources shown in the source box under the guide. */
+    sources: z.array(z.object({ label: z.string(), url: z.string() })).default([]),
   }),
 });
 

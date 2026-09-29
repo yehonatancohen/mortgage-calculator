@@ -6,6 +6,11 @@ published: '2026-09-22'
 updated: '2026-09-28'
 draft: false
 order: 3
+sources:
+  - label: 'בנק ישראל: דוח חודשי על הלוואות לדיור'
+    url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/'
+  - label: 'בנק ישראל: ריביות משכנתא'
+    url: 'https://www.boi.org.il/information/interestrates/mortgage/'
 related:
   - href: '/ribit-mashkanta-hayom/'
     title: 'ריבית משכנתא היום'

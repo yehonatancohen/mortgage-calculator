@@ -30,6 +30,7 @@ const faq = [
   answer={`על דירה יחידה ב־${formatILS(initial.price)} מס הרכישה המשוער הוא ${v.out.total}. בחרו סוג דירה והזינו מחיר.`}
   appName="מחשבון מס רכישה"
   updated={updated}
+  method="חישוב מדורג: כל חלק של המחיר ממוסה בשיעור המדרגה שלו לפי טבלת רשות המסים, והמס הוא סכום המדרגות. ללא הקלות מיוחדות."
   faq={faq}
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'מחשבונים', path: '/calculators/' }, { name: 'מס רכישה', path: '/calculators/purchase-tax/' }]}
   sources={[{ label: 'רשות המסים: הוראת ביצוע מיסוי מקרקעין 1/2026', url: 'https://www.gov.il/he/pages/inst-01-2026' }]}

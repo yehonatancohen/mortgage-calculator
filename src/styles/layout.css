@@ -810,3 +810,82 @@ aside.side > h2 {
     unicode-bidi: isolate;
   }
 }
+
+/* Source box: data source, update date and method on financial pages */
+.source-box {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--c-border, var(--c-surface-2));
+  border-radius: var(--radius-md, 0.75rem);
+  background: var(--c-surface-2);
+  font-size: var(--text-sm);
+  color: var(--c-text-2);
+  max-inline-size: var(--measure, 42rem);
+}
+.source-box h2 {
+  font-size: var(--text-base);
+  margin: 0;
+  color: var(--c-text);
+}
+.source-box p,
+.source-box ul {
+  margin: 0;
+}
+
+/* Hub: calculator groups and related links */
+.hub-group {
+  display: grid;
+  gap: var(--space-3);
+}
+.hub-group + .hub-group {
+  margin-block-start: var(--space-8);
+}
+.hub-group__intro {
+  color: var(--c-text-2);
+  margin: 0;
+}
+.related-calcs {
+  display: grid;
+  gap: var(--space-3);
+}
+.related-calcs h2 {
+  font-size: var(--text-lg);
+}
+.chip-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.chip-links a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--c-surface-2);
+  border-radius: var(--radius-pill);
+  color: var(--c-accent-ink);
+  text-decoration: none;
+  font-size: var(--text-sm);
+}
+.chip-links a:hover {
+  background: var(--c-surface-2);
+}
+
+/* Rates page: change badges and history chart */
+.delta {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.trend-chart {
+  inline-size: 100%;
+  block-size: auto;
+  color: var(--c-text-2);
+}
+.trend-chart .line-a { stroke: var(--c-accent-ink); }
+.trend-chart .line-b { stroke: var(--c-text-2); stroke-dasharray: 5 4; }
+.trend-chart text { fill: currentColor; font-size: 11px; }
+.trend-chart .grid { stroke: var(--c-surface-2); }

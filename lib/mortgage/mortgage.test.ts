@@ -281,3 +281,54 @@ describe('purchaseTax', () => {
     expect(() => purchaseTax(1, [{ upTo: 5, rate: 0 }, { upTo: 3, rate: 0 }, { upTo: null, rate: 0 }])).toThrow();
   });
 });
+
+import { indexedSpitzer, partialPrepayment, upfrontCosts } from '.';
+
+describe('partialPrepayment', () => {
+  const base = { balance: 800_000, annualRate: 0.045, monthsRemaining: 240, lumpSum: 100_000 };
+  it('shortening keeps the payment and saves months and interest', () => {
+    const r = partialPrepayment(base);
+    expect(r.shorten.months).toBeLessThan(240);
+    expect(r.shorten.monthsSaved).toBe(240 - r.shorten.months);
+    expect(r.shorten.interestSaved).toBeGreaterThan(0);
+  });
+  it('lowering keeps the term and cuts the payment proportionally', () => {
+    const r = partialPrepayment(base);
+    expect(r.lower.payment).toBeCloseTo(r.currentPayment * (700_000 / 800_000), 6);
+    expect(r.lower.monthlySaving).toBeGreaterThan(0);
+  });
+  it('shortening saves more interest than lowering for the same lump sum', () => {
+    const r = partialPrepayment(base);
+    expect(r.shorten.interestSaved).toBeGreaterThan(r.lower.interestSaved);
+  });
+  it('caps the lump sum at the balance', () => {
+    const r = partialPrepayment({ ...base, lumpSum: 5_000_000 });
+    expect(r.lumpSum).toBe(800_000);
+    expect(r.shorten.months).toBe(0);
+    expect(r.lower.payment).toBe(0);
+  });
+});
+
+describe('indexedSpitzer', () => {
+  it('equals the plain annuity at zero inflation', () => {
+    const r = indexedSpitzer(1_000_000, 0.03, 300, 0);
+    expect(r.firstPayment).toBeCloseTo(r.unindexedPayment, 6);
+    expect(r.totalPaid).toBeCloseTo(r.unindexedTotal, 4);
+  });
+  it('payments and totals rise with inflation', () => {
+    const lo = indexedSpitzer(1_000_000, 0.03, 300, 0.02);
+    const hi = indexedSpitzer(1_000_000, 0.03, 300, 0.05);
+    expect(hi.totalPaid).toBeGreaterThan(lo.totalPaid);
+    expect(lo.totalPaid).toBeGreaterThan(lo.unindexedTotal);
+    expect(lo.yearlyPayments).toHaveLength(25);
+  });
+});
+
+describe('upfrontCosts', () => {
+  it('adds equity share and costs', () => {
+    const r = upfrontCosts({ price: 2_000_000, maxLtv: 0.75, purchaseTax: 1000, lawyerRate: 0.005, brokerRate: 0, vatRate: 0.18, mortgageFees: 4000 });
+    expect(r.minEquityForPrice).toBe(500_000);
+    expect(r.lawyer).toBeCloseTo(11_800, 6);
+    expect(r.cashNeeded).toBeCloseTo(500_000 + 1000 + 11_800 + 4000, 6);
+  });
+});

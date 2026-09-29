@@ -1,0 +1,23 @@
+---
+/** Renders the structured content blocks of a question page (paragraph, list, data table). */
+import type { Block } from '../config/questions';
+interface Props {
+  blocks: Block[];
+}
+const { blocks } = Astro.props;
+---
+{blocks.map((b) => {
+  if (b.type === 'p') return <p>{b.text}</p>;
+  if (b.type === 'ul') return <ul>{b.items.map((i) => <li>{i}</li>)}</ul>;
+  return (
+    <div class="table-wrap">
+      <table class="data-table data-table--stack">
+        <caption>{b.caption}</caption>
+        <thead><tr>{b.head.map((h, i) => <th scope="col" class={i > 0 ? 'num' : undefined}>{h}</th>)}</tr></thead>
+        <tbody>
+          {b.rows.map((r) => <tr>{r.map((c, i) => (i === 0 ? <th scope="row">{c}</th> : <td class="num" data-label={b.head[i]}><bdi>{c}</bdi></td>))}</tr>)}
+        </tbody>
+      </table>
+    </div>
+  );
+})}

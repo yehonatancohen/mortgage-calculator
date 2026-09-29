@@ -6,6 +6,11 @@ published: '2026-09-28'
 updated: '2026-09-28'
 draft: false
 order: 5
+sources:
+  - label: 'הלשכה המרכזית לסטטיסטיקה: מדד המחירים לצרכן'
+    url: 'https://www.cbs.gov.il/he/mediarelease/Madad'
+  - label: 'בנק ישראל: דוח חודשי על הלוואות לדיור'
+    url: 'https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/'
 related:
   - href: '/guides/maslulei-mashkanta/'
     title: 'מסלולי משכנתא: פריים, קבועה, משתנה וצמודה'
