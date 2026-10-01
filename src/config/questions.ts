@@ -85,7 +85,7 @@ export function buildQuestions(): Question[] {
   const qRefiCost: Question = {
     slug: 'kama-ole-mihzur-mashkanta',
     question: 'כמה עולה מחזור משכנתא?',
-    metaTitle: 'כמה עולה מחזור משכנתא? עלויות, עמלות ודוגמה מחושבת',
+    metaTitle: 'כמה עולה מחזור משכנתא? עלויות, עמלות ודוגמה',
     description: `מחזור משכנתא עולה עמלת פירעון מוקדם (תלויה במסלול) ועוד כ־${formatILS(swLo)}–${formatILS(swHi)} עלויות מעבר. נתונים, דוגמה מחושבת ומחשבון.`,
     short: `מחזור משכנתא עולה שני דברים: עמלת פירעון מוקדם על המשכנתא הישנה, ועוד כ־${ltr(`${formatILS(swLo)}–${formatILS(swHi)}`)} עלויות מעבר (שמאות, פתיחת תיק ורישום משכון). בפריים ובמסלולים משתנים העמלה קטנה מאוד. במסלול קבוע היא יכולה להגיע לאלפי שקלים או יותר, ותלויה בפער בין הריבית בחוזה לריבית היום.`,
     data: [
@@ -181,7 +181,7 @@ export function buildQuestions(): Question[] {
   const qEquity: Question = {
     slug: 'kama-hon-atzmi-ledira',
     question: 'כמה הון עצמי צריך לקנות דירה?',
-    metaTitle: 'כמה הון עצמי צריך לדירה? טבלה לפי מחיר וסוג רכישה',
+    metaTitle: 'כמה הון עצמי צריך לדירה? טבלה לפי מחיר',
     description: `לדירה ראשונה ב־2 מיליון ₪ צריך לפחות ${up(e2.minEquityForPrice)} הון עצמי, ועוד עלויות רכישה. טבלה לפי מחיר וסוג הדירה.`,
     short: `לדירה ראשונה בשווי ₪2,000,000 אפשר לממן עד ${pct0(limits.maxLtv.firstHome)}, כלומר ההון העצמי המינימלי הוא ${up(e2.minEquityForPrice)}. מעל זה צריך מזומן לעלויות רכישה: מס רכישה (${formatILS(Math.round(e2.purchaseTax))} כאן), עורך דין ועלויות משכנתא. בסך הכול כ־${up(e2.cashNeeded)} ביום הרכישה, בלי תיווך.`,
     data: [
@@ -207,7 +207,7 @@ export function buildQuestions(): Question[] {
   const qTax: Question = {
     slug: 'kama-mas-rechisha',
     question: 'כמה מס רכישה משלמים על דירה?',
-    metaTitle: 'כמה מס רכישה משלמים על דירה? מדרגות ודוגמה מחושבת',
+    metaTitle: 'כמה מס רכישה משלמים על דירה? מדרגות ודוגמה',
     description: `מס רכישה על דירה יחידה ב־2.5 מיליון ₪: ${formatILS(Math.round(taxExample.total))}. מדרגות רשות המסים, דירה נוספת ודוגמה.`,
     short: `על דירה יחידה בשווי ₪2,500,000 מס הרכישה הוא ${formatILS(Math.round(taxExample.total))} (${formatPercent(taxExample.effectiveRate, 2)} מהמחיר). המס מדורג: המדרגה הראשונה פטורה עד ${formatILS(purchaseTaxBrackets.singleHome[0]!.upTo!)}, ומעליה שיעורים עולים. דירה נוספת ממוסה מהשקל הראשון.`,
     data: [
@@ -263,7 +263,7 @@ export function buildQuestions(): Question[] {
   const qMonthly: Question = {
     slug: 'hachzar-hodshi-mashkanta-million',
     question: 'מה ההחזר החודשי על משכנתא של מיליון שקל?',
-    metaTitle: 'החזר חודשי על משכנתא של מיליון שקל: טבלה לפי ריבית ותקופה',
+    metaTitle: 'החזר חודשי על משכנתא של מיליון שקל: טבלה',
     description: `משכנתא של מיליון ₪ ל־25 שנה בריבית ${formatPercent(rate)}: ${formatILS(Math.round(payment(1_000_000, rate, 300)))} בחודש. טבלה לפי ריבית ותקופה.`,
     short: `משכנתא של ₪1,000,000 ל־25 שנה בריבית ${formatPercent(rate)} (בשפיצר) עולה כ־${formatILS(Math.round(payment(1_000_000, rate, 300)))} בחודש, וסך הריבית לאורך התקופה ${formatILS(Math.round(spitzerSchedule(1_000_000, rate, 300).totalInterest))}. כל נקודת אחוז בריבית משנה את ההחזר בכ־${formatILS(Math.round(payment(1_000_000, rate + 0.01, 300) - payment(1_000_000, rate, 300)))}.`,
     data: [
@@ -287,7 +287,7 @@ export function buildQuestions(): Question[] {
   const qCpi: Question = {
     slug: 'kama-oleh-hatzmada-lamadad',
     question: 'כמה עולה ההצמדה למדד במשכנתא?',
-    metaTitle: 'כמה עולה הצמדה למדד במשכנתא? השוואה לפי אינפלציה',
+    metaTitle: 'כמה עולה הצמדה למדד במשכנתא? השוואה',
     description: `בהלוואה צמודה של מיליון ₪ ל־25 שנה בריבית ריאלית 3%, אינפלציה של 2% בשנה מוסיפה כ־${formatILS(Math.round(idx(0.02).totalPaid - idx(0.02).unindexedTotal))} לסך התשלומים. טבלה לפי אינפלציה.`,
     short: `במסלול צמוד, הקרן וההחזר עולים עם מדד המחירים לצרכן. בהלוואה של ₪1,000,000 ל־25 שנה בריבית ריאלית 3%, אינפלציה קבועה של 2% בשנה מגדילה את סך התשלומים ב־${formatILS(Math.round(idx(0.02).totalPaid - idx(0.02).unindexedTotal))}, והחזר בסוף התקופה גבוה בכ־${formatPercent(idx(0.02).lastPayment / idx(0.02).firstPayment - 1, 0)} מההחזר הראשון. באינפלציה של 4% ההפרש כבר ${formatILS(Math.round(idx(0.04).totalPaid - idx(0.04).unindexedTotal))}.`,
     data: [
@@ -312,7 +312,7 @@ export function buildQuestions(): Question[] {
   const qPrepay: Question = {
     slug: 'ha-im-mishtale-lifroa-mashkanta',
     question: 'האם משתלם לפרוע משכנתא מוקדם?',
-    metaTitle: 'האם משתלם לפרוע משכנתא מוקדם? קיצור תקופה או הקטנת החזר',
+    metaTitle: 'האם משתלם לפרוע משכנתא מוקדם? קיצור או הקטנה',
     description: `פירעון חלקי של ₪100,000 ממשכנתא של ₪800,000 מקצר את התקופה ב־${formatDuration(pp.shorten.monthsSaved)} וחוסך כ־${formatILS(Math.round(pp.shorten.interestSaved))} בריבית. חישוב ומחשבון.`,
     short: `פירעון חלקי כמעט תמיד חוסך ריבית, וכדאי אם הריבית במשכנתא גבוהה מהתשואה הצפויה מהכסף ואם עמלת הפירעון נמוכה. בדוגמה, פירעון של ₪100,000 ממשכנתא של ₪800,000 (${formatPercent(rate)}, 20 שנה שנותרו) בקיצור התקופה חוסך ${formatILS(Math.round(pp.shorten.interestSaved))} ומקצר ${formatDuration(pp.shorten.monthsSaved)}. בהקטנת ההחזר החיסכון בריבית ${formatILS(Math.round(pp.lower.interestSaved))}, וההחזר יורד ב־${formatILS(Math.round(pp.lower.monthlySaving))}.`,
     data: [

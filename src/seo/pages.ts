@@ -46,6 +46,7 @@ export async function allPages(): Promise<PageEntry[]> {
     { path: '/about/', title: 'אודות', description: 'למה האתר קיים, איך הוא עובד ולמה אפשר לסמוך עליו.', index: true, lastmod: LAST, section: 'info' },
     { path: '/how-we-make-money/', title: 'איך תכל\'ס משכנתא מרוויחה כסף', description: 'מי משלם, מה הקשר ליועצי משכנתאות ומה לא משפיע על התוצאות.', index: true, lastmod: LAST, section: 'info' },
     { path: '/accessibility/', title: 'הצהרת נגישות', description: 'רמת הנגישות ודרכי פנייה.', index: true, lastmod: BASE, section: 'info' },
+    { path: '/contact/', title: 'יצירת קשר', description: 'שאלה על מחשבון, תיקון נתון או בקשה לבדיקה מול יועץ עצמאי.', index: true, lastmod: BASE, section: 'info' },
     { path: '/privacy/', title: 'מדיניות פרטיות', description: 'אילו פרטים נאספים ולמי הם מועברים.', index: true, lastmod: BASE, section: 'info' },
     { path: '/terms/', title: 'תנאי שימוש', description: 'תנאי השימוש באתר.', index: true, lastmod: BASE, section: 'info' },
     { path: '/dev/tokens/', title: 'Tokens', description: 'Design tokens', index: false, lastmod: BASE, section: 'info' },
