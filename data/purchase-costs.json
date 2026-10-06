@@ -22,9 +22,8 @@
     "label": "מע\"מ",
     "value": 0.18,
     "unit": "fraction",
-    "source": "https://www.gov.il/he/departments/israel_tax_authority",
-    "lastUpdated": "2026-09-28",
-    "note": "Standard VAT rate in Israel since 1 January 2025, applied to lawyer and broker fees.",
-    "TODO_VERIFY": true
+    "source": "https://www.gov.il/BlobFolder/dynamiccollectorresultitem/represent-info-051224-2/he/vat_represent-info-051224-2.pdf",
+    "lastUpdated": "2026-10-05",
+    "note": "Tax Authority interpretation instruction 01/2025 (05.12.2024): VAT Order (Rate of Tax on Transaction and on Import of Goods)(Amendment), 5784-2024 (published 20.02.2024) raises the rate from 17% to 18%, effective 01.01.2025."
   }
 }
