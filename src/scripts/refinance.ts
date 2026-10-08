@@ -192,7 +192,7 @@ export function initRefinance(root: HTMLElement) {
       } else if (view.kind === 'borderline') {
         primary.textContent = 'לבדיקת הצעה מול יועץ';
       } else if (allAnswered) {
-        primary.textContent = 'לבדיקה חינם מול יועץ משכנתאות';
+        primary.textContent = 'לבדיקה חינם, בלי התחייבות';
       } else {
         primary.textContent = 'לדייק את החישוב';
         secondary.hidden = false;

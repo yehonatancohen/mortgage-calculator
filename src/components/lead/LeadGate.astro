@@ -16,8 +16,14 @@ const id = `lead-${kind}`;
 const title = kind === 'refinance' ? 'בדיקה חינם מול יועץ משכנתאות' : 'בדיקת משכנתא חינם מול יועץ';
 const promises =
   kind === 'refinance'
-    ? ['דוח מפורט על המשכנתא שלך', 'שיחה עם יועץ משכנתאות עצמאי אחד', 'המספר שלך לא נמכר לאף גורם אחר']
-    : ['בדיקה של כמה משכנתא תוכל/י לקבל בפועל', 'שיחה עם יועץ משכנתאות עצמאי אחד', 'המספר שלך לא נמכר לאף גורם אחר'];
+    ? ['דוח מפורט על המשכנתא שלך', 'שיחה עם יועץ משכנתאות עצמאי אחד, בלי התחייבות', 'המספר שלך לא נמכר לאף גורם אחר']
+    : ['בדיקה של כמה משכנתא תוכל/י לקבל בפועל', 'שיחה עם יועץ משכנתאות עצמאי אחד, בלי התחייבות', 'המספר שלך לא נמכר לאף גורם אחר'];
+/** Questions worth asking any advisor, ours included: the top complaints about advisors are price, side payments and refunds. */
+const askAdvisor = [
+  'כמה עולה הליווי, ומה כלול בו? בקשו את המחיר בכתב לפני שמתחילים.',
+  'האם אתה מקבל תשלום מגורם נוסף, כמו בנק או גוף מימון?',
+  'מה קורה אם המחזור לא יוצא לפועל? מה מקבלים בחזרה?',
+];
 ---
 <div class="lead" data-lead data-kind={kind}>
   <!-- Stage: details -->
@@ -46,6 +52,14 @@ const promises =
         </div>
         <p class="field__hint" data-hint-for="timing"></p>
       </fieldset>
+      <div class="after-send">
+        <p class="after-send__title">מה קורה אחרי השליחה</p>
+        <ol class="next-steps">
+          <li>יועץ אחד בלבד מקבל את הפרטים וחוזר אליך {NEXT_STEPS.callWithin}.</li>
+          {NEXT_STEPS.steps.slice(-1).map((s) => <li>{s}</li>)}
+          <li>הבדיקה חינם. ממשיכים רק אם רוצים.</li>
+        </ol>
+      </div>
       <div class="consents">
         <label class="check">
           <input type="checkbox" name="consentContact" required />
@@ -67,6 +81,15 @@ const promises =
         <button type="submit" class="btn btn--primary" data-submit>שליחת הבקשה</button>
       </div>
     </form>
+    <details class="disclosure">
+      <summary>3 שאלות לשאול כל יועץ, גם את שלנו <Icon name="chevron-down" /></summary>
+      <div class="disclosure__body">
+        <ul class="ask-list">
+          {askAdvisor.map((q) => <li>{q}</li>)}
+        </ul>
+        <p><a href="/guides/eich-livchor-yoetz-mashkantaot/">איך לבחור יועץ משכנתאות: 9 שאלות</a></p>
+      </div>
+    </details>
   </div>
 
   <!-- Stage: one-time code -->

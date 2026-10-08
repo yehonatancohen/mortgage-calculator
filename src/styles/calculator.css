@@ -512,6 +512,28 @@
   display: grid;
   gap: var(--space-2);
 }
+/* "What happens after you send": answers the spam and hidden-cost worries next to the consent. */
+.after-send {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--c-surface-2);
+  font-size: var(--text-sm);
+}
+.after-send__title {
+  font-weight: var(--fw-medium);
+}
+.after-send .next-steps {
+  gap: var(--space-1);
+  color: var(--c-text-2);
+}
+.ask-list {
+  padding-inline-start: var(--space-5);
+  display: grid;
+  gap: var(--space-1);
+  margin-block-end: var(--space-2);
+}
 
 /* ---------- Step transitions (View Transitions API) ---------- */
 ::view-transition-old(calc-step),

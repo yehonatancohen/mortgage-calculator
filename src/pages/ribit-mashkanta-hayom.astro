@@ -68,7 +68,7 @@ const jsonLd = [
 ---
 <ProsePage
   title="ריבית משכנתא היום"
-  metaTitle={`ריבית משכנתא היום: ממוצעים לפי מסלול (${period})`}
+  metaTitle={`ריבית משכנתא היום: ממוצעים לפי מסלול`}
   description={`ריבית משכנתא ממוצעת לפי מסלול: פריים, קבועה צמודה ולא צמודה, משתנה. נתוני בנק ישראל ל${period}.`}
   answer={`לפי נתוני ${period}, ריבית ממוצעת לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. הריבית הממוצעת בקבועה לא צמודה, ${formatPercent(fixedRow!.now / 100)}, ${fixedRow!.dPrev === 0 ? 'ללא שינוי' : fixedRow!.dPrev < 0 ? 'נמוכה' : 'גבוהה'}${fixedRow!.dPrev === 0 ? '' : ` ב־${formatNumber(Math.abs(Math.round(fixedRow!.dPrev * 100) / 100), 2)} נקודות מחודש קודם`} ו${fixedRow!.dYear < 0 ? 'נמוכה' : 'גבוהה'} ב־${formatNumber(Math.abs(Math.round(fixedRow!.dYear * 100) / 100), 2)} נקודות משנה קודמת.`}
   sources={[
