@@ -46,5 +46,35 @@
     "source": "https://www.boi.org.il/media/ez4npagt/329.pdf",
     "lastUpdated": "2026-09-26",
     "note": "s. 8"
+  },
+  "maxVariableRateShare": {
+    "value": 0.6666,
+    "unit": "fraction",
+    "source": "https://www.boi.org.il/media/ez4npagt/329.pdf",
+    "lastUpdated": "2026-10-01",
+    "note": "s. 7. The variable-rate part of a housing loan (incl. a non-purchase loan secured by a home) may not exceed 66.66% (two-thirds) of the loan."
+  },
+  "nonPurchaseLoanLtvException": {
+    "maxLtv": {
+      "value": 0.7,
+      "unit": "fraction",
+      "source": "https://www.boi.org.il/media/ez4npagt/329.pdf",
+      "lastUpdated": "2026-10-01",
+      "note": "s. 10a. A bank MAY choose not to apply the usual combined-LTV cap (s. 4, based on the home's category under s. 2) to a housing loan not taken to purchase a property right — up to this LTV — subject to excessOverHalfCapIls below. This is a bank discretion, not a borrower entitlement."
+    },
+    "excessOverHalfCapIls": {
+      "value": 200000,
+      "unit": "ils",
+      "source": "https://www.boi.org.il/media/ez4npagt/329.pdf",
+      "lastUpdated": "2026-10-01",
+      "note": "s. 10a. The part of the loan that brings LTV above 50% may not exceed this amount."
+    }
+  },
+  "anyPurposeSmallLoanExemptionIls": {
+    "value": 120000,
+    "unit": "ils",
+    "source": "https://www.boi.org.il/media/ez4npagt/329.pdf",
+    "lastUpdated": "2026-10-01",
+    "note": "s. 12.2. A loan for any purpose up to this amount, secured by a home, is exempt from the maxVariableRateShare limit (s. 7)."
   }
 }

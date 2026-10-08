@@ -21,6 +21,9 @@ related:
   - href: '/guides/hatzmada-lemadad-mashkanta/'
     title: 'הצמדה למדד המחירים לצרכן'
     text: 'למה זה משנה אם יתרת המשכנתא שלכם צמודה.'
+  - href: '/guides/hagdalat-mashkanta/'
+    title: 'הגדלת משכנתא: לשיפוץ, לאיחוד הלוואות ולכל מטרה'
+    text: 'אפשר להגדיל ולמחזר יחד, באותה פנייה לבנק.'
 ---
 
 ## מה זה מחזור משכנתא
