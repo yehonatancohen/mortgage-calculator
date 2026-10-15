@@ -18,7 +18,7 @@ related:
     title: 'מחשבון מחזור משכנתא'
     text: 'בדקו אם יש בכלל מה לחסוך, לפני שפונים ליועץ.'
   - href: '/guides/kama-ole-yoetz-mashkantaot/'
-    title: 'כמה עולה יועץ משכנתאות'
+    title: 'עלות יועץ משכנתאות'
     text: 'מבני תמחור מקובלים ועל מה משלמים.'
   - href: '/guides/heskem-yoetz-mashkantaot/'
     title: 'הסכם עם יועץ משכנתאות'
