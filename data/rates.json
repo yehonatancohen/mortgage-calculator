@@ -1,51 +1,51 @@
 {
-  "$comment": "Average rates on new housing loans by track, August 2026 (annual %, reported by BOI as effective on an annual basis). Linked tracks are real rates before CPI. Source: Bank of Israel monthly report on housing loans (report 877), published 14/09/2026.",
+  "$comment": "Average rates on new housing loans by track, September 2026 (annual %, reported by BOI as effective on an annual basis). Linked tracks are real rates before CPI. Source: Bank of Israel monthly report on housing loans (report 877), data as of 30/09/2026.",
   "period": {
-    "value": "2026-08",
+    "value": "2026-09",
     "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-    "lastUpdated": "2026-09-26",
-    "note": "Month the figures describe. BOI publishes about two weeks after month end. File: boi_files/Pikuah/dy260831.xlsx."
+    "lastUpdated": "2026-10-19",
+    "note": "Month the figures describe. BOI publishes about two weeks after month end. File: boi_files/Pikuah/dy260930.xlsx."
   },
   "tracks": {
     "prime": {
       "label": "מסלול פריים",
-      "value": 4.44,
+      "value": 4.21,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-      "lastUpdated": "2026-09-26",
-      "note": "dy260831.xlsx, table 877-2, unlinked variable loans whose rate can change within a month (prime-based): anchor 5.11% − margin 0.67%."
+      "lastUpdated": "2026-10-19",
+      "note": "dy260930.xlsx, table 877-2, unlinked variable loans whose rate can change within a month (prime-based): anchor 4.88% − margin 0.67%."
     },
     "fixedUnlinked": {
       "label": "קבועה לא צמודה",
-      "value": 4.62,
+      "value": 4.65,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-      "lastUpdated": "2026-09-26",
-      "note": "dy260831.xlsx, table 877-2, unlinked fixed-rate loans, all terms. Same as BOI series BNK_99034_LR_BIR_MRTG_467."
+      "lastUpdated": "2026-10-19",
+      "note": "dy260930.xlsx, table 877-2, unlinked fixed-rate loans, all terms. Same as BOI series BNK_99034_LR_BIR_MRTG_467."
     },
     "fixedLinked": {
       "label": "קבועה צמודה",
-      "value": 3.29,
+      "value": 3.33,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-      "lastUpdated": "2026-09-26",
-      "note": "dy260831.xlsx, table 877-1, CPI-linked fixed-rate loans, all terms (real rate). Same as BOI series BNK_99034_LR_BIR_MRTG_1492."
+      "lastUpdated": "2026-10-19",
+      "note": "dy260930.xlsx, table 877-1, CPI-linked fixed-rate loans, all terms (real rate). Same as BOI series BNK_99034_LR_BIR_MRTG_1492."
     },
     "variableUnlinked5y": {
       "label": "משתנה כל 5 שנים לא צמודה",
-      "value": 4.49,
+      "value": 4.56,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-      "lastUpdated": "2026-09-26",
-      "note": "dy260831.xlsx, table 877-2, unlinked variable loans with the next rate change in 2–5 years: anchor 3.51% + margin 0.98%."
+      "lastUpdated": "2026-10-19",
+      "note": "dy260930.xlsx, table 877-2, unlinked variable loans with the next rate change in 2–5 years: anchor 3.56% + margin 1.00%."
     },
     "variableLinked5y": {
       "label": "משתנה כל 5 שנים צמודה",
-      "value": 3.42,
+      "value": 3.46,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-      "lastUpdated": "2026-09-26",
-      "note": "dy260831.xlsx, table 877-1, CPI-linked variable loans with the next rate change in 2–5 years: anchor 1.63% + margin 1.79% (real rate)."
+      "lastUpdated": "2026-10-19",
+      "note": "dy260930.xlsx, table 877-1, CPI-linked variable loans with the next rate change in 2–5 years: anchor 1.67% + margin 1.79% (real rate)."
     }
   },
   "margins": {
@@ -55,16 +55,16 @@
       "value": 0.67,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-      "lastUpdated": "2026-09-26",
-      "note": "dy260831.xlsx, table 877-2, unlinked variable loans whose rate can change within a month: margin −0.67% below the anchor."
+      "lastUpdated": "2026-10-19",
+      "note": "dy260930.xlsx, table 877-2, unlinked variable loans whose rate can change within a month: margin −0.67% below the anchor."
     },
     "variableMargin": {
       "label": "מרווח ממוצע מעל העוגן במסלול משתנה כל 5 שנים",
-      "value": 0.98,
+      "value": 1.0,
       "unit": "percent",
       "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-      "lastUpdated": "2026-09-26",
-      "note": "dy260831.xlsx, table 877-2, unlinked variable loans with the next rate change in 2–5 years: margin +0.98% above the anchor."
+      "lastUpdated": "2026-10-19",
+      "note": "dy260930.xlsx, table 877-2, unlinked variable loans with the next rate change in 2–5 years: margin +1.00% above the anchor."
     }
   },
   "fixedRateByOriginBucket": {

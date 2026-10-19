@@ -1,7 +1,7 @@
 {
-  "$comment": "Monthly average rates on new housing loans, nominal annual %, Bank of Israel series (SDMX dataflow BIR_MRTG_99). Fetched 2026-09-28. Only series with a stable public code are included; prime and variable tracks come from the monthly report tables and are not in this file.",
+  "$comment": "Monthly average rates on new housing loans, nominal annual %, Bank of Israel series (SDMX dataflow BIR_MRTG_99). Fetched 2026-09-28; 2026-09 point added 2026-10-19 by reading the same series directly off the monthly report xlsx (table 877-1/877-2 totals) because edge.boi.gov.il's SDMX API returned an error on that date. Only series with a stable public code are included; prime and variable tracks come from the monthly report tables and are not in this file.",
   "source": "https://www.boi.org.il/roles/statistics/banking/housing_cred/monthly-report-on-housing-loans/",
-  "lastUpdated": "2026-09-28",
+  "lastUpdated": "2026-10-19",
   "series": {
     "fixedUnlinked": {
       "label": "קבועה לא צמודה",
@@ -62,7 +62,8 @@
         "2026-05": 4.77,
         "2026-06": 4.73,
         "2026-07": 4.63,
-        "2026-08": 4.62
+        "2026-08": 4.62,
+        "2026-09": 4.65
       }
     },
     "fixedLinked": {
@@ -124,7 +125,8 @@
         "2026-05": 3.31,
         "2026-06": 3.27,
         "2026-07": 3.22,
-        "2026-08": 3.29
+        "2026-08": 3.29,
+        "2026-09": 3.33
       }
     }
   }
