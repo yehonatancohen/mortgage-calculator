@@ -31,5 +31,18 @@
 			"binding": "SESSION",
 			"id": "b0be4cf56eaf49878b35d0ba5d9a53b2"
 		}
-	]
+	],
+	// Preview deployments (`wrangler preview`, run by Workers Builds for every non-master branch)
+	// don't inherit KV bindings. Without this block @astrojs/cloudflare injects an id-less SESSION
+	// binding here and every PR's Cloudflare check fails with "binding SESSION of type kv_namespace
+	// must have a namespace_id specified". D1 is deliberately left out so previews can't write
+	// leads or analytics into the production databases.
+	"previews": {
+		"kv_namespaces": [
+			{
+				"binding": "SESSION",
+				"id": "b0be4cf56eaf49878b35d0ba5d9a53b2"
+			}
+		]
+	}
 }
