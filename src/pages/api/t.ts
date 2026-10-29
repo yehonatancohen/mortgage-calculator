@@ -84,6 +84,9 @@ export const POST: APIRoute = async ({ request }) => {
   const pvId = str(body.pvId, 64);
   const path = str(body.path, 300) || '/';
   const { device, browser, os } = parseDevice(ua);
+  // Automated browsers that don't say so in the UA (e.g. the conversion-review agent's own page
+  // checks) still report headless Chrome's default 800x600 screen on Linux — no real visitor does.
+  if (os === 'Linux' && str(body.screen, 24) === '800x600') return new Response(null, { status: 204 });
 
   let utm: Record<string, string> = {};
   try {
