@@ -45,6 +45,8 @@ export interface Question {
   tool: { href: string; title: string; text: string };
   followUps: { q: string; a: string }[];
   related: string[];
+  /** Links to pages outside /questions/ (e.g. a full data page), shown alongside `tool` and `related`. */
+  extraLinks?: { href: string; title: string; text: string }[];
 }
 
 const BOI_MONTHLY = datasets.rates.tracks.prime.source;
@@ -119,7 +121,7 @@ export function buildQuestions(): Question[] {
     question: 'מה ריבית המשכנתא הממוצעת היום?',
     metaTitle: `מה ריבית המשכנתא הממוצעת? נתוני ${period}`,
     description: `ריבית משכנתא ממוצעת ב${period} לפי מסלול, מנתוני בנק ישראל: לתמהיל טיפוסי לא צמוד כ־${formatPercent(bench)}.`,
-    short: `לפי נתוני בנק ישראל ל${period}, הריבית הממוצעת בהלוואות חדשות לדיור לתמהיל טיפוסי לא צמוד היא כ־${formatPercent(bench)}. פריים ${formatPercent(trackRates.prime)}, קבועה לא צמודה ${formatPercent(trackRates.fixedUnlinked)}, וקבועה צמודה ${formatPercent(trackRates.fixedLinked)} (ריבית ריאלית, לפני הצמדה).`,
+    short: `ריבית המשכנתא הממוצעת ב${period}, לפי נתוני בנק ישראל, היא כ־${formatPercent(bench)} לתמהיל טיפוסי לא צמוד. פריים ${formatPercent(trackRates.prime)}, קבועה לא צמודה ${formatPercent(trackRates.fixedUnlinked)}, וקבועה צמודה ${formatPercent(trackRates.fixedLinked)} (ריבית ריאלית, לפני הצמדה).`,
     data: [
       { type: 'table', caption: `ריבית שנתית ממוצעת בהלוואות חדשות, ${period}`, head: ['מסלול', 'ריבית ממוצעת', 'החזר ל־₪1M ל־25 שנה'], rows: [
         ...Object.values(datasets.rates.tracks).map((t) => [t.label, formatPercent(t.value / 100), formatILS(payment(1_000_000, t.value / 100, 300))]),
@@ -134,10 +136,11 @@ export function buildQuestions(): Question[] {
     updated: ratesUpdated,
     tool: { href: '/', title: 'הריבית שלך גבוהה מהממוצע?', text: 'בדקו כמה תחסכו במחזור.' },
     followUps: [
-      { q: 'איפה רואים את השינוי לאורך זמן?', a: 'בעמוד ריבית משכנתא היום יש היסטוריה חודשית והשוואה לחודש ולשנה קודמים.' },
+      { q: 'איפה רואים את השינוי לאורך זמן?', a: 'בעמוד ריבית משכנתא היום יש היסטוריה חודשית והשוואה לחודש ולשנה קודמים לכל מסלול.' },
       { q: 'האם הריבית בבנק שלי תהיה זהה לממוצע?', a: 'לא בהכרח. הבנקים נותנים ריבית אישית, וההפרש מהממוצע יכול להיות משמעותי בשני הכיוונים.' },
     ],
     related: ['kama-ole-mihzur-mashkanta', 'hachzar-hodshi-mashkanta-million'],
+    extraLinks: [{ href: '/ribit-mashkanta-hayom/', title: 'ריבית משכנתא היום: הטבלה המלאה', text: 'כל המסלולים, היסטוריה חודשית ושינוי לעומת שנה קודמת.' }],
   };
 
   /* 3. Income → mortgage */

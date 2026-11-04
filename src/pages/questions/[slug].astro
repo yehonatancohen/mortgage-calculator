@@ -22,7 +22,7 @@ const faq = [{ q: q.question, a: q.short }, ...q.followUps];
   crumbs={[{ name: 'ראשי', path: '/' }, { name: 'שאלות ותשובות', path: '/questions/' }, { name: q.question, path }]}
   jsonLd={[articleLd({ headline: q.question, description: q.description, path, datePublished: q.updated, dateModified: q.updated }), faqLd(faq)]}
   sources={q.sources}
-  related={[q.tool, ...q.related.map((s) => ({ href: `/questions/${s}/`, title: QUESTION_TITLES[s]!, text: 'שאלה קשורה' }))]}
+  related={[q.tool, ...(q.extraLinks ?? []), ...q.related.map((s) => ({ href: `/questions/${s}/`, title: QUESTION_TITLES[s]!, text: 'שאלה קשורה' }))]}
 >
   <h2>הנתונים</h2>
   <Blocks blocks={q.data} />
