@@ -1,0 +1,808 @@
+{
+  "$comment": "Monthly consumer price index (מדד המחירים לצרכן), general index, published by the Central Bureau of Statistics. Oldest first. Kept outside the sourced-value tree (like rates-history.json): it is a time series, not a single value. Used to compute the ACTUAL cumulative change over a real elapsed period by chaining the official percentMoM figures — never by dividing two indexValue numbers, because CBS periodically rebases the index (see the different indexBase values across the series) so raw index levels are not comparable across a rebasing.",
+  "source": "https://api.cbs.gov.il/index/data/price?id=120010&format=json",
+  "lastUpdated": "2026-11-09",
+  "note": "CBS Index Data API, series code 120010 (מדד המחירים לצרכן – כללי). All 100 months the endpoint returns on 2026-11-09: 2018-06 through 2026-09 (CBS publishes the CPI about two weeks after month end; September 2026 is the latest available). Each entry carries percentMoM (the series own month-over-month % change) and percentYoY (year-over-year % change), plus indexValue/indexBase for display only.",
+  "series": [
+    {
+      "year": 2018,
+      "month": 6,
+      "percentMoM": 0.1,
+      "percentYoY": 1.3,
+      "indexValue": 101.3,
+      "indexBase": "2016 ממוצע"
+    },
+    {
+      "year": 2018,
+      "month": 7,
+      "percentMoM": 0.0,
+      "percentYoY": 1.4,
+      "indexValue": 101.3,
+      "indexBase": "2016 ממוצע"
+    },
+    {
+      "year": 2018,
+      "month": 8,
+      "percentMoM": 0.1,
+      "percentYoY": 1.2,
+      "indexValue": 101.4,
+      "indexBase": "2016 ממוצע"
+    },
+    {
+      "year": 2018,
+      "month": 9,
+      "percentMoM": 0.1,
+      "percentYoY": 1.2,
+      "indexValue": 101.5,
+      "indexBase": "2016 ממוצע"
+    },
+    {
+      "year": 2018,
+      "month": 10,
+      "percentMoM": 0.3,
+      "percentYoY": 1.2,
+      "indexValue": 101.8,
+      "indexBase": "2016 ממוצע"
+    },
+    {
+      "year": 2018,
+      "month": 11,
+      "percentMoM": -0.3,
+      "percentYoY": 1.2,
+      "indexValue": 101.5,
+      "indexBase": "2016 ממוצע"
+    },
+    {
+      "year": 2018,
+      "month": 12,
+      "percentMoM": -0.3,
+      "percentYoY": 0.8,
+      "indexValue": 101.2,
+      "indexBase": "2016 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 1,
+      "percentMoM": -0.1,
+      "percentYoY": 1.2,
+      "indexValue": 100.1,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 2,
+      "percentMoM": 0.1,
+      "percentYoY": 1.2,
+      "indexValue": 100.2,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 3,
+      "percentMoM": 0.5,
+      "percentYoY": 1.4,
+      "indexValue": 100.7,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 4,
+      "percentMoM": 0.3,
+      "percentYoY": 1.3,
+      "indexValue": 101.0,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 5,
+      "percentMoM": 0.7,
+      "percentYoY": 1.5,
+      "indexValue": 101.7,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 6,
+      "percentMoM": -0.6,
+      "percentYoY": 0.8,
+      "indexValue": 101.1,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 7,
+      "percentMoM": -0.3,
+      "percentYoY": 0.5,
+      "indexValue": 100.8,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 8,
+      "percentMoM": 0.2,
+      "percentYoY": 0.6,
+      "indexValue": 101.0,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 9,
+      "percentMoM": -0.2,
+      "percentYoY": 0.3,
+      "indexValue": 100.8,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 10,
+      "percentMoM": 0.4,
+      "percentYoY": 0.4,
+      "indexValue": 101.2,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 11,
+      "percentMoM": -0.4,
+      "percentYoY": 0.3,
+      "indexValue": 100.8,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2019,
+      "month": 12,
+      "percentMoM": 0.0,
+      "percentYoY": 0.6,
+      "indexValue": 100.8,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 1,
+      "percentMoM": -0.4,
+      "percentYoY": 0.3,
+      "indexValue": 100.4,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 2,
+      "percentMoM": -0.1,
+      "percentYoY": 0.1,
+      "indexValue": 100.3,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 3,
+      "percentMoM": 0.4,
+      "percentYoY": 0.0,
+      "indexValue": 100.7,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 4,
+      "percentMoM": -0.3,
+      "percentYoY": -0.6,
+      "indexValue": 100.4,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 5,
+      "percentMoM": -0.3,
+      "percentYoY": -1.6,
+      "indexValue": 100.1,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 6,
+      "percentMoM": -0.1,
+      "percentYoY": -1.1,
+      "indexValue": 100.0,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 7,
+      "percentMoM": 0.2,
+      "percentYoY": -0.6,
+      "indexValue": 100.2,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 8,
+      "percentMoM": 0.0,
+      "percentYoY": -0.8,
+      "indexValue": 100.2,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 9,
+      "percentMoM": -0.1,
+      "percentYoY": -0.7,
+      "indexValue": 100.1,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 10,
+      "percentMoM": 0.3,
+      "percentYoY": -0.8,
+      "indexValue": 100.4,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 11,
+      "percentMoM": -0.2,
+      "percentYoY": -0.6,
+      "indexValue": 100.2,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2020,
+      "month": 12,
+      "percentMoM": -0.1,
+      "percentYoY": -0.7,
+      "indexValue": 100.1,
+      "indexBase": "2018 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 1,
+      "percentMoM": -0.1,
+      "percentYoY": -0.4,
+      "indexValue": 99.7,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 2,
+      "percentMoM": 0.3,
+      "percentYoY": 0.0,
+      "indexValue": 100.0,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 3,
+      "percentMoM": 0.6,
+      "percentYoY": 0.2,
+      "indexValue": 100.6,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 4,
+      "percentMoM": 0.3,
+      "percentYoY": 0.8,
+      "indexValue": 100.9,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 5,
+      "percentMoM": 0.4,
+      "percentYoY": 1.5,
+      "indexValue": 101.3,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 6,
+      "percentMoM": 0.1,
+      "percentYoY": 1.7,
+      "indexValue": 101.4,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 7,
+      "percentMoM": 0.4,
+      "percentYoY": 1.9,
+      "indexValue": 101.8,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 8,
+      "percentMoM": 0.3,
+      "percentYoY": 2.2,
+      "indexValue": 102.1,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 9,
+      "percentMoM": 0.2,
+      "percentYoY": 2.5,
+      "indexValue": 102.3,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 10,
+      "percentMoM": 0.1,
+      "percentYoY": 2.3,
+      "indexValue": 102.4,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 11,
+      "percentMoM": -0.1,
+      "percentYoY": 2.4,
+      "indexValue": 102.3,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2021,
+      "month": 12,
+      "percentMoM": 0.3,
+      "percentYoY": 2.8,
+      "indexValue": 102.6,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 1,
+      "percentMoM": 0.2,
+      "percentYoY": 3.1,
+      "indexValue": 102.8,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 2,
+      "percentMoM": 0.7,
+      "percentYoY": 3.5,
+      "indexValue": 103.5,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 3,
+      "percentMoM": 0.6,
+      "percentYoY": 3.5,
+      "indexValue": 104.1,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 4,
+      "percentMoM": 0.8,
+      "percentYoY": 4.0,
+      "indexValue": 104.9,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 5,
+      "percentMoM": 0.6,
+      "percentYoY": 4.1,
+      "indexValue": 105.5,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 6,
+      "percentMoM": 0.4,
+      "percentYoY": 4.4,
+      "indexValue": 105.9,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 7,
+      "percentMoM": 1.1,
+      "percentYoY": 5.2,
+      "indexValue": 107.1,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 8,
+      "percentMoM": -0.3,
+      "percentYoY": 4.6,
+      "indexValue": 106.8,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 9,
+      "percentMoM": 0.2,
+      "percentYoY": 4.6,
+      "indexValue": 107.0,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 10,
+      "percentMoM": 0.6,
+      "percentYoY": 5.1,
+      "indexValue": 107.6,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 11,
+      "percentMoM": 0.1,
+      "percentYoY": 5.3,
+      "indexValue": 107.7,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2022,
+      "month": 12,
+      "percentMoM": 0.3,
+      "percentYoY": 5.3,
+      "indexValue": 108.0,
+      "indexBase": "2020 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 1,
+      "percentMoM": 0.3,
+      "percentYoY": 5.4,
+      "indexValue": 102.3,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 2,
+      "percentMoM": 0.5,
+      "percentYoY": 5.2,
+      "indexValue": 102.8,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 3,
+      "percentMoM": 0.4,
+      "percentYoY": 5.0,
+      "indexValue": 103.2,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 4,
+      "percentMoM": 0.8,
+      "percentYoY": 5.0,
+      "indexValue": 104.0,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 5,
+      "percentMoM": 0.2,
+      "percentYoY": 4.6,
+      "indexValue": 104.2,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 6,
+      "percentMoM": 0.0,
+      "percentYoY": 4.2,
+      "indexValue": 104.2,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 7,
+      "percentMoM": 0.3,
+      "percentYoY": 3.3,
+      "indexValue": 104.5,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 8,
+      "percentMoM": 0.5,
+      "percentYoY": 4.1,
+      "indexValue": 105.0,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 9,
+      "percentMoM": -0.1,
+      "percentYoY": 3.8,
+      "indexValue": 104.9,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 10,
+      "percentMoM": 0.5,
+      "percentYoY": 3.7,
+      "indexValue": 105.4,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 11,
+      "percentMoM": -0.3,
+      "percentYoY": 3.3,
+      "indexValue": 105.1,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2023,
+      "month": 12,
+      "percentMoM": -0.1,
+      "percentYoY": 3.0,
+      "indexValue": 105.0,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 1,
+      "percentMoM": 0.0,
+      "percentYoY": 2.6,
+      "indexValue": 105.0,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 2,
+      "percentMoM": 0.4,
+      "percentYoY": 2.5,
+      "indexValue": 105.4,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 3,
+      "percentMoM": 0.6,
+      "percentYoY": 2.7,
+      "indexValue": 106.0,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 4,
+      "percentMoM": 0.8,
+      "percentYoY": 2.8,
+      "indexValue": 106.9,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 5,
+      "percentMoM": 0.2,
+      "percentYoY": 2.8,
+      "indexValue": 107.1,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 6,
+      "percentMoM": 0.1,
+      "percentYoY": 2.9,
+      "indexValue": 107.2,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 7,
+      "percentMoM": 0.6,
+      "percentYoY": 3.2,
+      "indexValue": 107.8,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 8,
+      "percentMoM": 0.9,
+      "percentYoY": 3.6,
+      "indexValue": 108.8,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 9,
+      "percentMoM": -0.2,
+      "percentYoY": 3.5,
+      "indexValue": 108.6,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 10,
+      "percentMoM": 0.5,
+      "percentYoY": 3.5,
+      "indexValue": 109.1,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 11,
+      "percentMoM": -0.4,
+      "percentYoY": 3.4,
+      "indexValue": 108.7,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2024,
+      "month": 12,
+      "percentMoM": -0.3,
+      "percentYoY": 3.2,
+      "indexValue": 108.4,
+      "indexBase": "2022 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 1,
+      "percentMoM": 0.6,
+      "percentYoY": 3.8,
+      "indexValue": 101.5,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 2,
+      "percentMoM": 0.0,
+      "percentYoY": 3.4,
+      "indexValue": 101.5,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 3,
+      "percentMoM": 0.5,
+      "percentYoY": 3.3,
+      "indexValue": 102.0,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 4,
+      "percentMoM": 1.1,
+      "percentYoY": 3.6,
+      "indexValue": 103.1,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 5,
+      "percentMoM": -0.3,
+      "percentYoY": 3.1,
+      "indexValue": 102.8,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 6,
+      "percentMoM": 0.3,
+      "percentYoY": 3.3,
+      "indexValue": 103.1,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 7,
+      "percentMoM": 0.4,
+      "percentYoY": 3.1,
+      "indexValue": 103.5,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 8,
+      "percentMoM": 0.7,
+      "percentYoY": 2.9,
+      "indexValue": 104.2,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 9,
+      "percentMoM": -0.6,
+      "percentYoY": 2.5,
+      "indexValue": 103.6,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 10,
+      "percentMoM": 0.5,
+      "percentYoY": 2.5,
+      "indexValue": 104.1,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 11,
+      "percentMoM": -0.5,
+      "percentYoY": 2.4,
+      "indexValue": 103.6,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2025,
+      "month": 12,
+      "percentMoM": 0.0,
+      "percentYoY": 2.6,
+      "indexValue": 103.6,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 1,
+      "percentMoM": -0.3,
+      "percentYoY": 1.8,
+      "indexValue": 103.3,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 2,
+      "percentMoM": 0.2,
+      "percentYoY": 2.0,
+      "indexValue": 103.5,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 3,
+      "percentMoM": 0.4,
+      "percentYoY": 1.9,
+      "indexValue": 103.9,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 4,
+      "percentMoM": 1.2,
+      "percentYoY": 1.9,
+      "indexValue": 105.1,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 5,
+      "percentMoM": -0.3,
+      "percentYoY": 1.9,
+      "indexValue": 104.8,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 6,
+      "percentMoM": 0.0,
+      "percentYoY": 1.6,
+      "indexValue": 104.8,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 7,
+      "percentMoM": 0.3,
+      "percentYoY": 1.5,
+      "indexValue": 105.1,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 8,
+      "percentMoM": 0.7,
+      "percentYoY": 1.5,
+      "indexValue": 105.8,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 9,
+      "percentMoM": -0.5,
+      "percentYoY": 1.6,
+      "indexValue": 105.3,
+      "indexBase": "2024 ממוצע"
+    }
+  ]
+}

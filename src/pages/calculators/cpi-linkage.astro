@@ -1,20 +1,38 @@
 ---
 import CalculatorPage from '../../layouts/CalculatorPage.astro';
 import AmountField from '../../components/AmountField.astro';
-import { datasets, trackRates } from '../../../lib/data';
-import { formatILS, formatPercent } from '../../../lib/mortgage';
+import { datasets, trackRates, cpiIndex } from '../../../lib/data';
+import { formatILS, formatPercent, cpiActualGrowth, type CpiMonth } from '../../../lib/mortgage';
 import { cpiView, CPI_SCENARIOS, type CpiState } from '../../ui/calcs';
+import { hebrewMonth } from '../../ui/dates';
 
 const real = Math.round(trackRates.fixedLinked * 100 * 20) / 20;
 const initial: CpiState = { loan: 1_000_000, rate: real, years: 25, inflation: 2 };
 const v = cpiView(initial);
 const updated = datasets.rates.tracks.fixedLinked.lastUpdated;
 
+const cpiSeries = cpiIndex.series as CpiMonth[];
+const toHorizon = (monthsBack: number) => {
+  const g = cpiActualGrowth(cpiSeries, monthsBack);
+  return {
+    pct: g.cumulativePct,
+    from: hebrewMonth(`${g.fromYear}-${String(g.fromMonth).padStart(2, '0')}`),
+    to: hebrewMonth(`${g.toYear}-${String(g.toMonth).padStart(2, '0')}`),
+    addedToMillion: formatILS(Math.round((initial.loan * g.cumulativePct) / 100 / 1000) * 1000),
+  };
+};
+const [h1y, h3y, h5y, h8y] = [12, 36, 60, 96].map(toHorizon) as [ReturnType<typeof toHorizon>, ReturnType<typeof toHorizon>, ReturnType<typeof toHorizon>, ReturnType<typeof toHorizon>];
+const actualHorizons = [h1y, h3y, h5y, h8y];
+
 const faq = [
   { q: 'איך ההצמדה למדד עובדת?', a: 'במסלול צמוד, יתרת הקרן עולה בכל חודש בשיעור עליית מדד המחירים לצרכן, וההחזר החודשי מחושב מחדש על היתרה המוצמדת. הריבית המוצגת במסלול היא ריבית ריאלית, מעל המדד.' },
   { q: 'למה ההחזר במסלול צמוד עולה עם הזמן?', a: 'כי כל עליית מדד מגדילה את היתרה שעליה משלמים ריבית ואת ההחזר. לכן אותו סכום נומינלי בסוף התקופה שווה פחות מבתחילתה, וההחזר הראשון לא משקף את ההחזר העתידי.' },
   { q: 'איזו אינפלציה להזין?', a: 'אי אפשר לחזות אותה. המחשבון מציג כמה תרחישים קבועים (0%, 2%, 4%, 6%) כדי להראות טווח. היעד של בנק ישראל הוא טווח של 1%–3% בשנה.' },
   { q: 'מה ההבדל בין ריבית נומינלית לריאלית?', a: 'ריבית נומינלית היא הריבית כפי שנכתבת בהלוואה לא צמודה. ריבית ריאלית היא הריבית מעל האינפלציה, ובמסלול צמוד מוסיפים לה את עליית המדד בפועל.' },
+  {
+    q: 'כמה היו בפועל הפרשי ההצמדה בשנים האחרונות?',
+    a: `לפי המדד שפרסמה הלמ"ס, מ${h1y.from} עד ${h1y.to} המדד עלה ${formatPercent(h1y.pct / 100)}, ובחמש השנים האחרונות (${h5y.from}–${h5y.to}) כ-${formatPercent(h5y.pct / 100)}. זה ההפרש בפועל, לא הערכה: על כל מיליון ₪ יתרה צמודה, חמש השנים האחרונות הוסיפו לה כ-${h5y.addedToMillion} (לפני ריבית), רק מעליית המדד.`,
+  },
 ];
 ---
 <CalculatorPage
@@ -69,6 +87,24 @@ const faq = [
       </table>
     </div>
     <p class="meta-line">התרחישים: {CPI_SCENARIOS.join('%, ')}% בשנה. הטבלה מתעדכנת עם הסכום, הריבית והתקופה.</p>
+
+    <h3>ומה קרה בפועל (נתון רשמי, לא הערכה)</h3>
+    <p>אלה לא תרחישים — זאת עליית המדד שבאמת פורסמה. לכל יתרה צמודה של {formatILS(initial.loan)}, כך גדלה בפועל רק מההצמדה (לפני ריבית):</p>
+    <div class="table-wrap">
+      <table class="data-table data-table--stack">
+        <thead><tr><th scope="col">תקופה</th><th scope="col" class="num">עליית המדד בפועל</th><th scope="col" class="num">תוספת ליתרה של {formatILS(initial.loan)}</th></tr></thead>
+        <tbody>
+          {actualHorizons.map((h) => (
+            <tr>
+              <th scope="row">{h.from}–{h.to}</th>
+              <td class="num" data-label="עליית המדד בפועל"><bdi>{formatPercent(h.pct / 100)}</bdi></td>
+              <td class="num" data-label={`תוספת ליתרה של ${formatILS(initial.loan)}`}><bdi>{h.addedToMillion}</bdi></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="meta-line">מחושב משרשור השינוי החודשי שפרסמה הלשכה המרכזית לסטטיסטיקה, כל חודש בנפרד (לא מחלוקת שתי רמות מדד, כי הלמ"ס מחליפה בסיס מדד מזמן לזמן). <a href="https://api.cbs.gov.il/index/data/price?id=120010&format=json" rel="noopener">מדד המחירים לצרכן, סדרה 120010</a>, עד {h1y.to}.</p>
   </Fragment>
 
   <Fragment slot="explanation">
