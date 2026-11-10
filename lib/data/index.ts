@@ -10,6 +10,7 @@ import purchaseTaxData from '../../data/purchase-tax.json';
 import cpi from '../../data/cpi.json';
 import purchaseCostsData from '../../data/purchase-costs.json';
 import ratesHistoryData from '../../data/rates-history.json';
+import cpiIndexData from '../../data/cpi-index.json';
 import { pct, type RefinanceAssumptions, type TakenBucket, type TaxBracket } from '../mortgage';
 
 export interface Sourced<T = unknown> {
@@ -121,6 +122,13 @@ export const ratesHistory = {
       { label: v.label, points: (Object.entries(v.values) as [string, number][]).sort(([a], [b]) => a.localeCompare(b)).map(([period, value]) => ({ period, value })) },
     ]),
   ) as Record<'fixedUnlinked' | 'fixedLinked', { label: string; points: { period: string; value: number }[] }>,
+};
+
+/** Monthly CPI series (oldest first). Kept outside `datasets` like ratesHistory: it is a time series, not a single sourced value. */
+export const cpiIndex = {
+  source: cpiIndexData.source,
+  lastUpdated: cpiIndexData.lastUpdated,
+  series: cpiIndexData.series,
 };
 
 /** Every sourced value in every dataset, with its JSON path. */
