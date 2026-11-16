@@ -1,12 +1,12 @@
 {
   "$comment": "Consumer Price Index (מדד המחירים לצרכן), published monthly by the Central Bureau of Statistics (הלשכה המרכזית לסטטיסטיקה). Backs the CPI-indexation guide only; not wired into any calculator's math (methodology.astro explicitly excludes CPI linkage from the refinance estimate).",
   "annualChangeLatest": {
-    "value": 1.6,
+    "value": 1.1,
     "unit": "percent",
-    "period": "2026-09",
-    "source": "https://www.cbs.gov.il/he/mediarelease/Madad/DocLib/2026/326/10_26_326b.pdf",
-    "lastUpdated": "2026-10-26",
-    "note": "CBS press release 326/2026 (15.10.2026), bullet \"בשנים עשר החודשים האחרונים (ספטמבר 2026 לעומת ספטמבר 2025)\": CPI rose 1.6% (monthly change -0.5%, index level 105.3). Read directly from the official PDF."
+    "period": "2026-10",
+    "source": "https://www.cbs.gov.il/he/mediarelease/Madad/DocLib/2026/362/10_26_362b.pdf",
+    "lastUpdated": "2026-11-16",
+    "note": "CBS press release 362/2026 (15.11.2026), bullet \"בשנים עשר החודשים האחרונים (אוקטובר 2026 לעומת אוקטובר 2025)\": CPI rose 1.1% (monthly change -0.1%, index level 105.2, base 2024 average=100). Read directly from the official PDF."
   },
   "annualChangeRecentYears": {
     "value": { "2024": 3.2, "2025": 2.6 },

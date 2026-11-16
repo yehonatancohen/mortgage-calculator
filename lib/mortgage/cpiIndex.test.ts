@@ -6,15 +6,15 @@ describe('cpiActualGrowth', () => {
   const series = cpiIndex.series as CpiMonth[];
 
   it('chains the real CBS series to known cumulative figures', () => {
-    expect(cpiActualGrowth(series, 12).cumulativePct).toBeCloseTo(1.6986, 3);
-    expect(cpiActualGrowth(series, 36).cumulativePct).toBeCloseTo(7.9535, 3);
-    expect(cpiActualGrowth(series, 60).cumulativePct).toBeCloseTo(17.4987, 3);
-    expect(cpiActualGrowth(series, 96).cumulativePct).toBeCloseTo(19.9702, 3);
+    expect(cpiActualGrowth(series, 12).cumulativePct).toBeCloseTo(1.0914, 3);
+    expect(cpiActualGrowth(series, 36).cumulativePct).toBeCloseTo(7.309, 3);
+    expect(cpiActualGrowth(series, 60).cumulativePct).toBeCloseTo(17.2639, 3);
+    expect(cpiActualGrowth(series, 96).cumulativePct).toBeCloseTo(19.4917, 3);
   });
 
   it('reports the real from/to period', () => {
     const g = cpiActualGrowth(series, 12);
-    expect(g).toMatchObject({ fromYear: 2025, fromMonth: 9, toYear: 2026, toMonth: 9 });
+    expect(g).toMatchObject({ fromYear: 2025, fromMonth: 10, toYear: 2026, toMonth: 10 });
   });
 
   it('matches hand-chaining three known monthly changes', () => {
