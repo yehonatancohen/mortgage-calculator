@@ -38,7 +38,7 @@ File: `src/pages/privacy.astro`, `src/pages/terms.astro`
 - [ ] **Turnstile:** add the site key to `INTEGRATIONS.turnstileSiteKey` and the secret to `TURNSTILE_SECRET`.
 - [ ] **Search Console:** add the verification token to `INTEGRATIONS.googleSiteVerification`.
 - [ ] **Advisor:** configure the advisor who receives Tier A leads (email and webhook).
-- [ ] **Call-back promise:** check `NEXT_STEPS` in `src/config/consent.ts` ("תוך יום עסקים אחד"). It must match what the advisor actually does.
+- [x] **Call-back promise:** the time limit was removed (2026-11-21). The site says an advisor will call back, with no deadline. Add a deadline only once a real advisor commits to one.
 
 ## 6. Guides
 

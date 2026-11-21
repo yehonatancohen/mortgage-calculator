@@ -11,6 +11,5 @@ export const CONSENT = {
 
 /** What happens after a refinance lead is sent. Operational promise: edit to match reality. */
 export const NEXT_STEPS = {
-  callWithin: 'תוך יום עסקים אחד',
   steps: ['היועץ עובר על הנתונים שהזנת.', 'הוא מתקשר אליך מהמספר שלו לשיחה קצרה.', 'אם יש מה לשפר, תקבל/י ממנו דוח מפורט עם הצעה.'],
 } as const;
