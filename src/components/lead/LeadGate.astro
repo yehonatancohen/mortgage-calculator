@@ -55,7 +55,7 @@ const askAdvisor = [
       <div class="after-send">
         <p class="after-send__title">מה קורה אחרי השליחה</p>
         <ol class="next-steps">
-          <li>יועץ אחד בלבד מקבל את הפרטים וחוזר אליך {NEXT_STEPS.callWithin}.</li>
+          <li>יועץ אחד בלבד מקבל את הפרטים וחוזר אליך.</li>
           {NEXT_STEPS.steps.slice(-1).map((s) => <li>{s}</li>)}
           <li>הבדיקה חינם. ממשיכים רק אם רוצים.</li>
         </ol>
@@ -124,7 +124,7 @@ const askAdvisor = [
   <div class="lead__stage lead__done" data-stage="done" hidden>
     <div class="done-mark" aria-hidden="true"><Icon name="check" /></div>
     <h2 class="lead__title" tabindex="-1" data-done-title>הבקשה התקבלה</h2>
-    <p class="lead__text">יועץ משכנתאות יחזור אליך {NEXT_STEPS.callWithin}.</p>
+    <p class="lead__text">יועץ משכנתאות יחזור אליך.</p>
     <ol class="next-steps">
       {NEXT_STEPS.steps.map((s) => <li>{s}</li>)}
     </ol>
