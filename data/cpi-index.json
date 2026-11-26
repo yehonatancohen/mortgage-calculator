@@ -1,17 +1,9 @@
 {
   "$comment": "Monthly consumer price index (מדד המחירים לצרכן), general index, published by the Central Bureau of Statistics. Oldest first. Kept outside the sourced-value tree (like rates-history.json): it is a time series, not a single value. Used to compute the ACTUAL cumulative change over a real elapsed period by chaining the official percentMoM figures — never by dividing two indexValue numbers, because CBS periodically rebases the index (see the different indexBase values across the series) so raw index levels are not comparable across a rebasing.",
   "source": "https://api.cbs.gov.il/index/data/price?id=120010&format=json",
-  "lastUpdated": "2026-11-09",
-  "note": "CBS Index Data API, series code 120010 (מדד המחירים לצרכן – כללי). All 100 months the endpoint returns on 2026-11-09: 2018-06 through 2026-09 (CBS publishes the CPI about two weeks after month end; September 2026 is the latest available). Each entry carries percentMoM (the series own month-over-month % change) and percentYoY (year-over-year % change), plus indexValue/indexBase for display only.",
+  "lastUpdated": "2026-11-16",
+  "note": "CBS Index Data API, series code 120010 (מדד המחירים לצרכן – כללי). All 100 months the endpoint returns on 2026-11-16: 2018-07 through 2026-10 (CBS publishes the CPI about two weeks after month end; October 2026 is the latest available). Each entry carries percentMoM (the series own month-over-month % change) and percentYoY (year-over-year % change), plus indexValue/indexBase for display only.",
   "series": [
-    {
-      "year": 2018,
-      "month": 6,
-      "percentMoM": 0.1,
-      "percentYoY": 1.3,
-      "indexValue": 101.3,
-      "indexBase": "2016 ממוצע"
-    },
     {
       "year": 2018,
       "month": 7,
@@ -802,6 +794,14 @@
       "percentMoM": -0.5,
       "percentYoY": 1.6,
       "indexValue": 105.3,
+      "indexBase": "2024 ממוצע"
+    },
+    {
+      "year": 2026,
+      "month": 10,
+      "percentMoM": -0.1,
+      "percentYoY": 1.1,
+      "indexValue": 105.2,
       "indexBase": "2024 ממוצע"
     }
   ]
